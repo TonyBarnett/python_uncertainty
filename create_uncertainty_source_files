@@ -1,0 +1,20 @@
+import os
+import pymongo
+import random
+
+import data_sources
+
+
+if __name__ == "__main__":
+    dropbox_root = os.getenv('dropboxRoot') + "\\"
+    #  TODO make a version of each of the files used by single_region_model.m and two_region_model.m
+    # These are: U, V, \vec{y}, \vec{g}, \vec{q}, \vec{e}
+
+    # TODO The plan: make new source files, re-map them, re-run model
+    # we'll probably do this by working out the mean and stDev of all input matrices for all years (or just that year),
+    # assuming they're normally distributed, then picking an ovservation for each element,
+    # One question is, if a value is "0" then should it stay 0?
+    # should the diagonal of a matrix be treated separately, as it's usually 60% of the total of a column/ row?
+    mapping = data_sources.get_map()
+    classification_system_data = data_sources.get_classification_systems_data(used=True)
+    print(12)
