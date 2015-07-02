@@ -18,12 +18,13 @@ class TestGetCharsInRange(unittest.TestCase):
         self.assertListEqual(result, ["Y", "Z", "AA", "AB"])
 
     def test_end_before_start(self):
-        result = _get_chars_in_range("C", "A")
-        self.assertListEqual(result, [])
+        self.assertRaises(ValueError, _get_chars_in_range, "C", "A")
+
+    def test_double_end_before_start(self):
+        self.assertRaises(ValueError, _get_chars_in_range, "AB", "AA")
 
     def test_int_range(self):
-        result = _get_chars_in_range("1", "4")
-        self.assertListEqual(result, [])
+        self.assertRaises(ValueError, _get_chars_in_range, "1", "4")
 
     def test_lower_case(self):
         result = _get_chars_in_range("a", "c")
