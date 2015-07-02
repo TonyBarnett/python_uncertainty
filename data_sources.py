@@ -38,12 +38,38 @@ def _base_26_number_plus_1(number: list) -> list:
     for n in range(index - 1, -1, -1):
         number[n] += 1
         # keep incrementing elements until we find one that's less than 26
-        if number[n] < 26:
+        if number[n] <= 26:
             if number[0] == 0:
                 number.pop(0)
             return number
-        number[n] = 0
+        number[n] = 1
 
+
+def _convert_str_to_base_26(value: str) -> list:
+    # ord("A")==65
+    return [ord(c) - 64 for c in value]
+
+
+def _check_end_after_start(start, end) -> None:
+    reverse_start = start[::-1]
+    reverse_end = end[::-1]
+    e = sum((26 ** i) * ord(c) for i, c in enumerate(reverse_end))
+    s = sum((26 ** i) * ord(c) for i, c in enumerate(reverse_start))
+    if s > e:
+        raise ValueError("start value {0} before end value {1}".format(start, end))
+
+def _check_start_end_acceptable(start: str, end: str) -> None:
+    """
+    check that the start and end strings for the char getter are acceptable.
+    TODO: rename this to something more sensible
+    """
+
+    char_regex = regex.compile("[A-Z]+")
+
+    if not char_regex.fullmatch(start) or not char_regex.fullmatch(end):
+        raise ValueError("start and end must be characters")
+
+    _check_end_after_start(start, end)
 
 def _get_chars_in_range(start: str, end: str):
     """
@@ -52,58 +78,25 @@ Returns all characters between start, and end in an excel type manner (so Y Z AA
     @param end:
     @return list of strings:
     """
-    # TODO fix this
     if not start or not end:
         return []
-
-    # ord("A")==65
-    a = 65
 
     end = end.upper()
     start = start.upper()
 
-    if len(start) > len(end) or (len(start) == len(end) and ord(start[0]) > ord(end[0])):
-        raise ValueError("start value {0} before end value {1}".format(start, end))
+    _check_start_end_acceptable(start, end)
 
-    range_builder = list()
+    range_builder = [start]
 
-    start_list = [ord(c) - 64 for c in start]
-    end_list = [ord(c) - 64 for c in end]
+    start_list = _convert_str_to_base_26(start)
+    end_list = _convert_str_to_base_26(end)
 
     # we always want to add start_list value, we're fairly sure that end >= start
-    range_builder.append(start_list)
-    temp = start_list
-    blah = list()
-    while temp != end_list:
-        temp = _base_26_number_plus_1(temp)
-        range_builder.append(temp)
-        blah.append("".join([chr(x + 64) for x in temp]))
-    print(1)
-
-
-    # if len(end) < len(start) \
-    #         or (not (not (len(end) == 2)
-    #                  or not (len(start) == 2)
-    #                  or not (ord(end[0]) < ord(start[0])
-    #                          or (ord(end[0]) == ord(start[0])
-    #                              and ord(end[1]) < ord(start[1]))))):
-    #         raise ValueError('end characters come before start characters, end = {0}, start = {1}'.format(end, start))
-    #
-    # return ([i for i in uppercase
-    #          if len(start) < 2
-    #          and ord(start) <= ord(i)
-    #          and (len(end) > 1
-    #               or ord(end) >= ord(i)
-    #          )]
-    #         + [(i[0] + i[1]) for i in product(uppercase, uppercase)
-    #            if not (not (len(end) > 1)
-    #                    or not (ord(i[0]) < ord(end[0])
-    #                            or (ord(i[0]) == ord(end[0])
-    #                                and ord(i[1]) <= ord(end[1])))
-    #                    or not (len(start) < 2
-    #                            or (ord(i[0]) > ord(start[0])
-    #                                or (ord(i[0]) == ord(start[0])
-    #                                    and ord(i[1]) >= ord(start[1])))))])
+    while start_list != end_list:
+        start_list = _base_26_number_plus_1(start_list)
+        # convert this funny base 26 list to a string
+        range_builder.append("".join([chr(x + 64) for x in start_list]))
+    return range_builder
 
 
 def _get_cell_in_range(start, end) -> iter:
