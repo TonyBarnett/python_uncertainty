@@ -45,7 +45,7 @@ def plot(*_,
          line_y: list=None,
          xlabel: str="X",
          ylabel: str="Y",
-         title: str=None,
+         title: str="Title",
          save_location: str=None,
          scatter_x: list=None,
          scatter_y: list=None):
@@ -56,12 +56,12 @@ def plot(*_,
     if line_x and line_y:
         params += [line_x, line_y, 'r-']
 
-    pyplot.plot(*params, markersize=1)
+    pyplot.plot(*params, markersize=5)
 
     pyplot.xlabel(xlabel)
     pyplot.ylabel(ylabel)
-    if title:
-        pyplot.title(title)
+    pyplot.title(title)
+
     pyplot.tight_layout(pad=0.1)
 
     if not save_location:
