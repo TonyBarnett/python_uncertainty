@@ -32,7 +32,20 @@ def _read_from_sql(query: str, params: tuple=None, db: str=None, server='localho
             return cursor.fetchall()
 
 
-def _get_chars_in_range(start, end):
+def _base_26_number_plus_1(number: list) -> list:
+    number.insert(0, 0)
+    index = len(number)
+    for n in range(index - 1, -1, -1):
+        number[n] += 1
+        # keep incrementing elements until we find one that's less than 26
+        if number[n] < 26:
+            if number[0] == 0:
+                number.pop(0)
+            return number
+        number[n] = 0
+
+
+def _get_chars_in_range(start: str, end: str):
     """
 Returns all characters between start, and end in an excel type manner (so Y Z AA AB AC...). Assumes start is before end
     @param start:
@@ -40,32 +53,57 @@ Returns all characters between start, and end in an excel type manner (so Y Z AA
     @return list of strings:
     """
     # TODO fix this
+    if not start or not end:
+        return []
+
+    # ord("A")==65
+    a = 65
+
     end = end.upper()
     start = start.upper()
 
-    if len(end) < len(start) \
-            or (not (not (len(end) == 2)
-                     or not (len(start) == 2)
-                     or not (ord(end[0]) < ord(start[0])
-                             or (ord(end[0]) == ord(start[0])
-                                 and ord(end[1]) < ord(start[1]))))):
-            raise ValueError('end characters come before start characters, end = {0}, start = {1}'.format(end, start))
+    if len(start) > len(end) or (len(start) == len(end) and ord(start[0]) > ord(end[0])):
+        raise ValueError("start value {0} before end value {1}".format(start, end))
 
-    return ([i for i in uppercase
-             if len(start) < 2
-             and ord(start) <= ord(i)
-             and (len(end) > 1
-                  or ord(end) >= ord(i)
-             )]
-            + [(i[0] + i[1]) for i in product(uppercase, uppercase)
-               if not (not (len(end) > 1)
-                       or not (ord(i[0]) < ord(end[0])
-                               or (ord(i[0]) == ord(end[0])
-                                   and ord(i[1]) <= ord(end[1])))
-                       or not (len(start) < 2
-                               or (ord(i[0]) > ord(start[0])
-                                   or (ord(i[0]) == ord(start[0])
-                                       and ord(i[1]) >= ord(start[1])))))])
+    range_builder = list()
+
+    start_list = [ord(c) - 64 for c in start]
+    end_list = [ord(c) - 64 for c in end]
+
+    # we always want to add start_list value, we're fairly sure that end >= start
+    range_builder.append(start_list)
+    temp = start_list
+    blah = list()
+    while temp != end_list:
+        temp = _base_26_number_plus_1(temp)
+        range_builder.append(temp)
+        blah.append("".join([chr(x + 64) for x in temp]))
+    print(1)
+
+
+    # if len(end) < len(start) \
+    #         or (not (not (len(end) == 2)
+    #                  or not (len(start) == 2)
+    #                  or not (ord(end[0]) < ord(start[0])
+    #                          or (ord(end[0]) == ord(start[0])
+    #                              and ord(end[1]) < ord(start[1]))))):
+    #         raise ValueError('end characters come before start characters, end = {0}, start = {1}'.format(end, start))
+    #
+    # return ([i for i in uppercase
+    #          if len(start) < 2
+    #          and ord(start) <= ord(i)
+    #          and (len(end) > 1
+    #               or ord(end) >= ord(i)
+    #          )]
+    #         + [(i[0] + i[1]) for i in product(uppercase, uppercase)
+    #            if not (not (len(end) > 1)
+    #                    or not (ord(i[0]) < ord(end[0])
+    #                            or (ord(i[0]) == ord(end[0])
+    #                                and ord(i[1]) <= ord(end[1])))
+    #                    or not (len(start) < 2
+    #                            or (ord(i[0]) > ord(start[0])
+    #                                or (ord(i[0]) == ord(start[0])
+    #                                    and ord(i[1]) >= ord(start[1])))))])
 
 
 def _get_cell_in_range(start, end) -> iter:
