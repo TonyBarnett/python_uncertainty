@@ -1,7 +1,7 @@
 from matplotlib import pyplot
 from math import log as ln
 import multiprocessing
-from numpy import polyfit
+from numpy import polyfit, mean
 
 from data_sanitation import clean_value
 from range_operators import float_range
@@ -81,10 +81,7 @@ def get_lbf_from_regression_coefficients(a: float, b: float, max_x: float=130000
 
 
 def get_mean(l: list) -> float:
-    l_bar = 0
-    for l_i in l:
-        l_bar += l_i
-    return l_bar / len(l)
+    return float(mean(l))
 
 
 def get_r_squared(x: list, y: list) -> float:
