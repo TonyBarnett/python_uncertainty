@@ -1,6 +1,7 @@
 import unittest
 from uncertainty.source_uncertainty.uncertainty_functions import get_mean, get_ancestors_and_self
 
+
 class Mean(unittest.TestCase):
     def test_type(self):
         m = get_mean([1])
