@@ -44,3 +44,7 @@ class GetAncestorsAndSelf(unittest.TestCase):
     def test_wrong_type(self):
         with self.assertRaises(TypeError):
             get_ancestors_and_self(123)
+
+    def test_underscore(self):
+        foo = get_ancestors_and_self("22_11")
+        self.assertListEqual(foo, ["22_11", "22_1", "22", "2"])

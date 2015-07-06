@@ -12,7 +12,7 @@ class FactoryTest(unittest.TestCase):
         m = LogNormalDistribution.get_distribution_from_regression_coefficients(1, 2)
         self.assertEqual(type(m), LogNormalDistribution)
 
-    def test_obeservation_type(self):
+    def test_observation_type(self):
         m = LogNormalDistribution(1, 2)
         observation = m.get_observation()
         self.assertEqual(type(observation), float)
@@ -21,3 +21,8 @@ class FactoryTest(unittest.TestCase):
         m = LogNormalDistribution(0.1, 0.1)
         observation = m.get_observation()
         self.assertAlmostEqual(observation, 1, places=0)
+
+    def test_base_observation_error(self):
+        m = Distribution(1, 1)
+        with self.assertRaises(NotImplementedError):
+            m.get_observation()
