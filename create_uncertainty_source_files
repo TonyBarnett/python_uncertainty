@@ -2,7 +2,8 @@ import os
 import pymongo
 import random
 
-import data_sources
+from uncertainty.data_sources.model_data_sources import get_map
+from uncertainty.data_sources.classification_data_source import get_classification_systems_data
 
 
 if __name__ == "__main__":
@@ -15,6 +16,6 @@ if __name__ == "__main__":
     # assuming they're normally distributed, then picking an ovservation for each element,
     # One question is, if a value is "0" then should it stay 0?
     # should the diagonal of a matrix be treated separately, as it's usually 60% of the total of a column/ row?
-    mapping = data_sources.get_map()
-    classification_system_data = data_sources.get_classification_systems_data(used=True)
+    mapping = get_map()
+    classification_system_data = get_classification_systems_data(used=True)
     print(12)
