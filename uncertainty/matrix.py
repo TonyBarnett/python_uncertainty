@@ -1,3 +1,6 @@
+from collections import OrderedDict
+
+
 class Matrix:
     def __init__(self):
         self.row_keys = list()
@@ -14,14 +17,14 @@ class Matrix:
         self.elements[row_key][col_key] = value
 
     def get_row(self, row_key):
-        return [x for x in self.elements[row_key]]
+        return OrderedDict((x, y) for x, y in self.elements[row_key])
 
     def get_column(self, column_key):
-        return {key: value
-                for key, columns in self.elements.items()
-                for col, value in columns.items()
-                if col == column_key
-                }
+        return OrderedDict(((key, value)
+                            for key, columns in self.elements.items()
+                            for col, value in columns.items()
+                            if col == column_key
+                            ))
 
 
 class Vector:
