@@ -51,7 +51,7 @@ def clean_sql(query):
 
 def _build_where_string(where_list):
     if where_list:
-        return clean_sql("WHERE " + " AND ".join(where_list))
+        return " WHERE " + " AND ".join(where_list)
     return ""
 
 
