@@ -1,9 +1,19 @@
+import multiprocessing
+
 from matplotlib import pyplot
+from time import sleep
 
 
 colours = {"black": "k", "blue": "b", "red": "r", "green": "g"}
 markers = {"cross": "x", "line": "-", "dot": ".", "big_dot": "o"}
 marker_size = 5
+
+
+def sort_axes_by_x(x: list, y: list) -> tuple:
+    y = [b for (a, b) in sorted(zip(x, y))]
+    x = sorted(x)
+    return (x, y)
+
 
 
 class PlotType:
@@ -41,6 +51,7 @@ class ScatterPlot(PlotType):
 
 class LinePlot(PlotType):
     def __init__(self, x: list, y: list):
+        (x, y) = sort_axes_by_x(x, y)
         super().__init__(x, y)
         self.marker = "-"
 
@@ -53,11 +64,14 @@ class PlotBuilder:
     def add_plot_type(self, plot_type: PlotType):
         self.plots.append(plot_type)
 
-    def plot(self):
+    def _plot(self, plots):
         pyplot.figure()
 
-        for plot_type in self.plots:
+        for plot_type in plots:
             pyplot.plot(plot_type.x, plot_type.y, plot_type.marker)
             pyplot.hold(True)
+        pyplot.show()
 
-        pyplot.hold(False)
+    def plot(self):
+        p = multiprocessing.Process(target=self._plot, kwargs={"plots": self.plots})
+        p.start()
