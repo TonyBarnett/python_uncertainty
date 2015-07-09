@@ -49,6 +49,27 @@ def clean_sql(query):
     return query.replace("  ", " ")
 
 
+def _build_where_string(where_list):
+    if where_list:
+        return clean_sql("WHERE " + " AND ".join(where_list))
+    return ""
+
+
+def build_import_query(query, source_region=None, target_region=None, year=None):
+    where = list()
+    if source_region is not None:
+        where.append(" strSourceRegion = '{}'".format(source_region))
+
+    if target_region is not None:
+        where.append(" strTargetRegion = '{}'".format(target_region))
+
+    if year is not None:
+        where.append(" intYear = {}".format(year))
+
+    where_string = _build_where_string(where)
+    return clean_sql(query + where_string)
+
+
 def build_source_query(query, region=None, year=None):
     """
 
@@ -64,7 +85,5 @@ def build_source_query(query, region=None, year=None):
     if year is not None:
         where.append(" intYear = {}".format(year))
 
-    where_string = ""
-    if where:
-        where_string = " WHERE " + " AND ".join(where)
+    where_string = _build_where_string(where)
     return clean_sql(query + where_string)
