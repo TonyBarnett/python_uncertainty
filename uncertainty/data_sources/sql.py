@@ -1,7 +1,7 @@
 import pymssql
 
 
-def _build_query(system_id: str, value_id: str, used: bool) -> str:
+def _build_clas_value_query(system_id: str, value_id: str, used: bool) -> str:
     where = list()
     select = "v.strSystemId, v.strValue, v.strDescription "
     from_ = "clasValue v"
@@ -24,11 +24,10 @@ def _build_query(system_id: str, value_id: str, used: bool) -> str:
         query += "INNER JOIN {0} ".format(inner_join)
     # we have to have four letters so we have something to strip off at the end if there are no conditions
     # feels a little hacky but this isn't a big thing
-    where_string = "blah"
-    if used or system_id:
+    where_string = ""
+    if where:
         where_string = "WHERE "
-        for w in where:
-            where_string += " {0} AND".format(w)
+        where_string += " AND ".join(where)
 
     # trim the last AND
     return query + where_string[:-4]
@@ -40,3 +39,25 @@ def _read_from_sql(query: str, params: tuple=None, db: str=None, server='localho
             # The star says you want a list of parameters for the format.
             cursor.execute(query if not params else query.format(*params))
             return cursor.fetchall()
+
+
+
+def _build_source_query(query, region=None, year=None):
+    """
+
+    :param query: the SELECT, the FROM and any JOINs you wish
+    :param region:
+    :param year:
+    :return:
+    """
+    where = list()
+    if region is not None:
+        where.append(" strRegion = '{}'".format(region))
+
+    if year is not None:
+        where.append(" strYear = {}".format(year))
+
+    where_string = ""
+    if where:
+        where_string = " WHERE " + " AND ".join(where)
+    return query + where_string
