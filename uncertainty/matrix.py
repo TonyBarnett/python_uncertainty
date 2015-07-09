@@ -13,6 +13,28 @@ class Matrix:
             self.elements[row_key] = dict()
         self.elements[row_key][col_key] = value
 
+    def get_row(self, row_key):
+        return [x for x in self.elements[row_key]]
+
+    def get_column(self, column_key):
+        return {key: value
+                for key, columns in self.elements.items()
+                for col, value in columns.items()
+                if col == column_key
+                }
+
+
+class Vector:
+    def __init__(self):
+        self.keys = list()
+        self.elements = dict()
+
+    def get_element(self, key):
+        return self.elements[key]
+
+    def set_element(self, key, value):
+        self.elements[key] = value
+
 
 def create_matrix_keys_from_matrix(mat: Matrix) -> Matrix:
     new_matrix = Matrix()
