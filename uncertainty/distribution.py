@@ -1,3 +1,4 @@
+import numpy
 import random
 
 from .source_uncertainty.uncertainty_functions import get_mean, get_standard_deviation
@@ -44,7 +45,9 @@ class LogNormalDistribution(Distribution):
         return super(LogNormalDistribution, cls).get_distribution(mu, sigma)
 
     def get_pdf_line(self, x: list) -> list:
-        pass
+        pdf = [(numpy.exp(-(numpy.log(x_i) - self.mu)**2 / (2 * self.sigma**2))
+        / (x_i * self.sigma * numpy.sqrt(2 * numpy.pi))) for x_i in x]
+        return pdf
 
 
 class NormalDistribution(Distribution):
@@ -55,7 +58,8 @@ class NormalDistribution(Distribution):
         return
 
     def get_pdf_line(self, x: list):
-        pass
+        pdf = [(numpy.exp(-(x_i - self.mu)**2 / (2 * self.sigma**2))
+        / (x_i * self.sigma * numpy.sqrt(2 * numpy.pi))) for x_i in x]
 
     @classmethod
     def get_distribution_from_coordinate_lists(cls, x: list, y: list):
