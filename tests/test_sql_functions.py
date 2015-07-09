@@ -1,6 +1,7 @@
 import unittest
 from uncertainty.data_sources.sql import build_clas_value_query, build_source_query
 
+
 class BuildSqlTest(unittest.TestCase):
     def test_basic_select(self):
         result = build_clas_value_query("3", "4", False)
