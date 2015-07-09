@@ -9,6 +9,8 @@ class Matrix:
         return self.elements[row_key][col_key]
 
     def set_element(self, row_key, col_key, value):
+        if row_key not in self.elements:
+            self.elements[row_key] = dict()
         self.elements[row_key][col_key] = value
 
 
@@ -19,5 +21,28 @@ def create_matrix_keys_from_matrix(mat: Matrix) -> Matrix:
     new_matrix.elements = {row: {column: 0 for column in new_matrix.column_keys} for row in new_matrix.row_keys}
     return new_matrix
 
+
 def create_matrix_from_lists(row_keys, col_keys):
-    pass
+    """
+
+    :param row_keys:
+    :param col_keys:
+    :return:
+    """
+    m = Matrix()
+    for row_key in row_keys:
+        for col_key in col_keys:
+            m.set_element(row_key=row_key, col_key=col_key, value=0)
+
+
+def create_matrix_from_list_of_tuple(db_values: list) -> Matrix:
+    """
+
+    :param db_values: list of tuples(row_key, col_key, value)
+    :return:
+    """
+    m = Matrix()
+    for row, col, value in db_values:
+        m.set_element(row_key=row, col_key=col, value=value)
+
+    return m
