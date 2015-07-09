@@ -10,13 +10,14 @@ class Distribution:
 
     @classmethod
     def get_distribution(cls, mu, sigma):
-        return cls(sigma=1, mu=1)
+        return cls(mu=mu, sigma=sigma)
 
     def get_observation(self):
         raise NotImplementedError()
 
     def get_pdf_line(self, x: list) -> list:
         raise NotImplementedError()
+
 
 class LogNormalDistribution(Distribution):
     def __init__(self, mu, sigma):
@@ -43,4 +44,19 @@ class LogNormalDistribution(Distribution):
         return super(LogNormalDistribution, cls).get_distribution(mu, sigma)
 
     def get_pdf_line(self, x: list) -> list:
+        pass
+
+
+class NormalDistribution(Distribution):
+    def __init__(self, mu, sigma):
+        super().__init__(mu, sigma)
+
+    def get_observation(self):
+        return
+
+    def get_pdf_line(self, x: list):
+        pass
+
+    @classmethod
+    def get_distribution_from_coordinate_lists(cls, x: list, y: list):
         pass
