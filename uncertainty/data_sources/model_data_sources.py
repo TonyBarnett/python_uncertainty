@@ -35,7 +35,7 @@ def get_source_consumption(region=None, year=None) -> dict():
 
 
 def get_source_production(region=None, year=None) -> dict():
-    return _read_from_sql(_build_consumption_query(region, year), db="IOModel")
+    return _read_from_sql(_build_production_query(region, year), db="IOModel")
 
 
 def get_source_emissions(region=None, year=None) -> dict():
