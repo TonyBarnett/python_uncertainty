@@ -11,20 +11,27 @@ class Matrix:
     def get_element(self, row_key, col_key):
         return self.elements[row_key][col_key]
 
+    def _add_keys_to_row_column_lists(self, row_key, col_key):
+        if row_key not in self.row_keys:
+            self.row_keys.append(row_key)
+            self.row_keys = list(sorted(self.row_keys))
+
+        if col_key not in self.column_keys:
+            self.column_keys.append(col_key)
+            self.column_keys = list(sorted(self.column_keys))
+
     def set_element(self, row_key, col_key, value):
-        if row_key not in self.elements:
+        if row_key not in self.row_keys:
             self.elements[row_key] = dict()
+        self._add_keys_to_row_column_lists(row_key=row_key, col_key=col_key)
+
         self.elements[row_key][col_key] = value
 
     def get_row(self, row_key):
-        return OrderedDict((x, y) for x, y in self.elements[row_key])
+        return OrderedDict((x, self.elements[row_key][x]) for (x) in self.column_keys)
 
     def get_column(self, column_key):
-        return OrderedDict(((key, value)
-                            for key, columns in self.elements.items()
-                            for col, value in columns.items()
-                            if col == column_key
-                            ))
+        return OrderedDict(((x, self.elements[x][column_key]) for x in self.row_keys))
 
 
 class Vector:
@@ -32,7 +39,13 @@ class Vector:
         self.keys = list()
         self.elements = dict()
 
+    def _add_key_to_keys(self, key):
+        if key not in self.keys:
+            self.keys.append(key)
+            self.keys = list(sorted(self.keys))
+
     def get_element(self, key):
+        self._add_key_to_keys()
         return self.elements[key]
 
     def set_element(self, key, value):
