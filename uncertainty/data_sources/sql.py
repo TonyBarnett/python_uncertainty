@@ -41,6 +41,9 @@ def _read_from_sql(query: str, params: tuple=None, db: str=None, server='localho
             return cursor.fetchall()
 
 
+def clean_sql(query):
+    return query.replace("  ", " ")
+
 
 def _build_source_query(query, region=None, year=None):
     """
@@ -55,9 +58,9 @@ def _build_source_query(query, region=None, year=None):
         where.append(" strRegion = '{}'".format(region))
 
     if year is not None:
-        where.append(" strYear = {}".format(year))
+        where.append(" intYear = {}".format(year))
 
     where_string = ""
     if where:
         where_string = " WHERE " + " AND ".join(where)
-    return query + where_string
+    return clean_sql(query + where_string)
