@@ -1,4 +1,4 @@
-from .sql import _build_clas_value_query, _read_from_sql
+from .sql import build_clas_value_query, read_from_sql
 
 
 def get_classification_systems_data(system_id: str=None, value_id: str=None, used: bool=None):
@@ -8,9 +8,9 @@ def get_classification_systems_data(system_id: str=None, value_id: str=None, use
     :param used:
     :return:
     """
-    query = _build_clas_value_query(system_id, value_id, used)
+    query = build_clas_value_query(system_id, value_id, used)
     class_sys_data = dict()
-    for sys_id, val_id, description in _read_from_sql(query, tuple([system_id, value_id]), db="ClassificationSystems"):
+    for sys_id, val_id, description in read_from_sql(query, tuple([system_id, value_id]), db="ClassificationSystems"):
         if sys_id not in class_sys_data:
             class_sys_data[sys_id] = dict()
 

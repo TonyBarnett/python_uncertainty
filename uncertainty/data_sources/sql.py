@@ -1,7 +1,7 @@
 import pymssql
 
 
-def _build_clas_value_query(system_id: str, value_id: str, used: bool) -> str:
+def build_clas_value_query(system_id: str, value_id: str, used: bool) -> str:
     where = list()
     select = "v.strSystemId, v.strValue, v.strDescription "
     from_ = "clasValue v"
@@ -33,19 +33,23 @@ def _build_clas_value_query(system_id: str, value_id: str, used: bool) -> str:
     return query + where_string[:-4]
 
 
-def _read_from_sql(query: str, params: tuple=None, db: str=None, server='localhost', uid='sa', pw='deter101!'):
+def make_query_result_tuple(query_results) -> tuple:
+    return tuple([result for result in query_results])
+
+
+def read_from_sql(query: str, params: tuple=None, db: str=None, server='localhost', uid='sa', pw='deter101!'):
     with pymssql.connect(server, uid, pw, db) as conn:
         with conn.cursor() as cursor:
             # The star says you want a list of parameters for the format.
             cursor.execute(query if not params else query.format(*params))
-            return cursor.fetchall()
+            return make_query_result_tuple(cursor.fetchall())
 
 
 def clean_sql(query):
     return query.replace("  ", " ")
 
 
-def _build_source_query(query, region=None, year=None):
+def build_source_query(query, region=None, year=None):
     """
 
     :param query: the SELECT, the FROM and any JOINs you wish
