@@ -40,7 +40,7 @@ class LogNormalDistribution(Distribution):
         return super(LogNormalDistribution, cls).get_distribution(mu, sigma)
 
     @classmethod
-    def get_distribution_from_coordinate_lists(cls, x: list, y: list):
+    def get_distribution_from_coordinate_list(cls, x: list):
         ln_x = [ln(x_i) for x_i in x]
         mu = get_mean(ln_x)
         sigma = get_standard_deviation(ln_x)
@@ -65,7 +65,7 @@ class NormalDistribution(Distribution):
         return pdf
 
     @classmethod
-    def get_distribution_from_coordinate_lists(cls, x: list, y: list):
+    def get_distribution_from_coordinate_list(cls, x: list):
         mu = get_mean(x)
         sigma = get_standard_deviation(x)
         return super(NormalDistribution, cls).get_distribution(mu, sigma)

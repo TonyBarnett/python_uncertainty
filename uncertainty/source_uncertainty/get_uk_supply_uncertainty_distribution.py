@@ -1,15 +1,18 @@
 import logging
 from math import log10
+import numpy
+from collections import Counter
 
-from uncertainty.distribution import LogNormalDistribution
+from uncertainty.distribution import LogNormalDistribution, NormalDistribution
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply, get_uk_supply_error
 from uncertainty.source_uncertainty.uncertainty_functions import linear_regression, \
-    get_lbf_from_regression_coefficients, \
+    get_log_lbf_from_regression_coefficients, \
     get_r_squared, \
     ln, \
-    get_ancestors_and_self, clean_totals
-    # plot, \
-from uncertainty.plot_builder import PlotBuilder, ScatterPlot
+    get_ancestors_and_self, clean_totals, \
+    get_lbf_from_regression_coefficients
+# plot, \
+from uncertainty.plot_builder import PlotBuilder, ScatterPlot, LinePlot
 
 YEAR_RANGE = (2008, 2009, 2010)
 
@@ -39,6 +42,19 @@ def map_supply_to_error(supply_totals: dict, error_totals: dict) -> dict:
     return map_
 
 
+def _plot(line_x, line_y, scatter_x, scatter_y):
+    linear_line = LinePlot(line_x, line_y)
+    scatter = ScatterPlot(scatter_x, scatter_y)
+    builder = PlotBuilder()
+    builder.add_plot_type(linear_line)
+    builder.add_plot_type(scatter)
+    builder.plot()
+
+
+def get_pdf_from_points(y: list):
+    return Counter(y)
+
+
 def get_uk_supply_uncertainty_distribution() -> LogNormalDistribution:
     x_y = list()
     for year in YEAR_RANGE:
@@ -57,34 +73,11 @@ def get_uk_supply_uncertainty_distribution() -> LogNormalDistribution:
         x.append(xi)
         y.append(yi)
     y_relative_error = get_relative_errors(x, y)
-    # (a, b) = linear_regression([ln(x_i) for x_i in x], y_relative_error)
-    #
-    # (x_line, y_line) = get_lbf_from_regression_coefficients(a, b)
 
-    distribution = LogNormalDistribution.get_distribution_from_coordinate_lists(x, y_relative_error)
-    y = distribution.get_pdf_line(x)
-    p = ScatterPlot(x, y)
+    distribution = LogNormalDistribution.get_distribution_from_coordinate_list(y_relative_error)
 
-    pb = PlotBuilder()
-    pb.add_plot_type(p)
-    pb.plot()
-
+    return distribution
 
 if __name__ == '__main__':
-    get_uk_supply_uncertainty_distribution()
-    # logging.basicConfig(format='%(message)s - %(asctime)-15s', level=logging.INFO)
-    # logging.info("starting")
-    # get_uk_supply_uncertainty_distribution()
-    #
-    # plot(scatter_x=x,
-    #      scatter_y=y_relative_error,
-    #      line_x=x_line,
-    #      line_y=y_line,
-    #      # save_location=os.getenv("dropboxRoot") + r"\Thesis\Images\supply_relative_error.pdf",
-    #      xlabel="Supply quantity.",
-    #      ylabel="Relative error in supply.",
-    #      title="Relative error in supply.")
-    #
-    # print("r^2: {0}".format(get_r_squared(x, y)))
-    #
-    # logging.info("done")
+    distribution = get_uk_supply_uncertainty_distribution()
+

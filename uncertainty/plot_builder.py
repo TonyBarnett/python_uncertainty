@@ -15,7 +15,6 @@ def sort_axes_by_x(x: list, y: list) -> tuple:
     return (x, y)
 
 
-
 class PlotType:
     def __init__(self, x: list, y: list):
         self.marker = None
@@ -64,7 +63,7 @@ class PlotBuilder:
     def add_plot_type(self, plot_type: PlotType):
         self.plots.append(plot_type)
 
-    def _plot(self, plots):
+    def _plot_worker(self, plots):
         pyplot.figure()
 
         for plot_type in plots:
@@ -73,5 +72,5 @@ class PlotBuilder:
         pyplot.show()
 
     def plot(self):
-        p = multiprocessing.Process(target=self._plot, kwargs={"plots": self.plots})
+        p = multiprocessing.Process(target=self._plot_worker, kwargs={"plots": self.plots})
         p.start()
