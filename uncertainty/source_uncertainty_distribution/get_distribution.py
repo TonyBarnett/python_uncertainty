@@ -25,7 +25,10 @@ _distribution_region_type_functions = {
         "EU": None,
         "UK": get_uk_emissions_distribution
     },
-    "import":  get_imports_uncertainty_distribution,
+    "import":  {
+        # Slight hack to get around the weird regioned imports thing
+        None: get_imports_uncertainty_distribution
+    },
 }
 
 
