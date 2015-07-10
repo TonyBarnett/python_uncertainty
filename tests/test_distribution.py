@@ -1,6 +1,6 @@
-from mock import patch
 import unittest
-from uncertainty.distribution import Distribution, LogNormalDistribution
+
+from uncertainty.source_uncertainty_distribution.distribution import Distribution, LogNormalDistribution
 
 
 class FactoryTest(unittest.TestCase):

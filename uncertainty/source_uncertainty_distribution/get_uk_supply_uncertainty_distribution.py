@@ -1,16 +1,10 @@
-import logging
 from math import log10
-import numpy
 from collections import Counter
 
-from uncertainty.distribution import LogNormalDistribution, NormalDistribution
+from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply, get_uk_supply_error
-from uncertainty.source_uncertainty.uncertainty_functions import linear_regression, \
-    get_log_lbf_from_regression_coefficients, \
-    get_r_squared, \
-    ln, \
-    get_ancestors_and_self, clean_totals, \
-    get_lbf_from_regression_coefficients
+from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_ancestors_and_self, clean_totals
+
 # plot, \
 from uncertainty.plot_builder import PlotBuilder, ScatterPlot, LinePlot
 

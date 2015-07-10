@@ -1,5 +1,5 @@
 import unittest
-from uncertainty.source_uncertainty.uncertainty_functions import get_mean, get_ancestors_and_self
+from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_mean, get_ancestors_and_self
 
 
 class Mean(unittest.TestCase):
