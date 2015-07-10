@@ -64,11 +64,12 @@ def get_uk_supply_uncertainty_distribution() -> LogNormalDistribution:
     y = list()
 
     for xi, yi in sorted_x_y:
-        x.append(xi)
-        y.append(yi)
+        if yi:
+            x.append(xi)
+            y.append(yi)
     y_relative_error = get_relative_errors(x, y)
 
-    distribution = LogNormalDistribution.get_distribution_from_coordinate_list(y_relative_error)
+    distribution = LogNormalDistribution.get_distribution_from_coordinate_list(y)
 
     return distribution
 
