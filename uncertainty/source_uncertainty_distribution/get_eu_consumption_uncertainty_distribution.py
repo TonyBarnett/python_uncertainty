@@ -1,4 +1,5 @@
-from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution
+from .distribution import LogNormalDistribution
+
 
 def get_eu_consumption_uncertainty_distribution() -> LogNormalDistribution:
     # TODO this is obviously just a placeholder, make some real numbers!
