@@ -216,7 +216,7 @@ def map_emissions_data(source: EmissionsSourceData, target: EmissionsSourceData)
     # Hard-code Censa 123 values
     totals = {str(i): 0 for i in range(1, 124)}
 
-    map_ =  {key: map_value(source.system, key) for key in source.source_data.keys}
+    map_ = {key: map_value(source.system, key) for key in source.source_data.keys}
     map_length = {key: len(map_[key]) for key in source.source_data.keys}
 
     for key in source.source_data.keys:
@@ -227,22 +227,39 @@ def map_emissions_data(source: EmissionsSourceData, target: EmissionsSourceData)
         target.source_data.set_element(key, total)
 
 
+def get_maps_from_list(source: list, system_id: str) -> dict:
+    return {row_key: map_value(system_id, row_key) for row_key in source}
+
+
+def get_map_len_from_map(map_: dict) -> dict:
+    return {key: len(value) for key, value in map_.items()}
+
+
+def get_maps_and_map_len_from_list(source: list, system_id: str) -> tuple:
+    map_ = get_maps_from_list(source, system_id)
+    map_len = get_map_len_from_map(map_)
+    return (map_, map_len)
+
+
 def map_data(source: SourceData, target: SourceData):
 
     # Hard-code Censa 123 values
     totals = {str(i): {str(j): 0 for j in range(1, 124)} for i in range(1, 124)}
 
-    row_map = {row_key: map_value(source.system, row_key) for row_key in source.source_data.row_keys}
-    row_map_len = {row_key: len(value) for row_key, value in row_map.items()}
+    row_map = get_maps_from_list(source.source_data.row_keys, source.system)
+    row_map_len = get_map_len_from_map(row_map)
 
-    col_map = {col_key: map_value(source.system, col_key) for col_key in source.source_data.row_keys}
-    col_map_len = {col_key: len(value) for col_key, value in col_map.items()}
+    col_map = get_maps_from_list(source.source_data.column_keys, source.system)
+    col_map_len = get_map_len_from_map(col_map)
 
+    # this probably needs tidying, row_map[key] is a list, as is col_map[key] so loop over each of these lists and
+    # assign totals, split the totals row_map_len[key] * col_map_len[key] times
     for row_key in source.source_data.row_keys:
         for col_key in source.source_data.column_keys:
-            totals[row_key][col_key] += \
-                source.source_data.elements[row_key][col_key] / \
-                (row_map_len[row_key] * col_map_len[col_key])
+            for row_target in row_map[row_key]:
+                for col_target in col_map[col_key]:
+                    totals[row_target][col_target] += \
+                        source.source_data.elements[row_key][col_key] / (row_map_len[row_key] * col_map_len[col_key])
 
     for row_key, columns in totals.items():
         for col_key, total in columns.items():
