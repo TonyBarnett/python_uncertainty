@@ -28,7 +28,7 @@ class Matrix:
         self.elements[row_key][col_key] = value
 
     def get_row(self, row_key):
-        return OrderedDict((x, self.elements[row_key][x]) for (x) in self.column_keys)
+        return OrderedDict((x, self.elements[row_key][x]) for x in self.column_keys)
 
     def get_column(self, column_key):
         return OrderedDict(((x, self.elements[x][column_key]) for x in self.row_keys))
@@ -44,11 +44,11 @@ class Vector:
             self.keys.append(key)
             self.keys = list(sorted(self.keys))
 
-    def get_element(self, key):
-        self._add_key_to_keys()
+    def __getitem__(self, key):
         return self.elements[key]
 
-    def set_element(self, key, value):
+    def __setitem__(self, key, value):
+        self._add_key_to_keys(key)
         self.elements[key] = value
 
 

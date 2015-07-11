@@ -13,8 +13,8 @@ def get_new_perturbed_vector(vec: Vector, distribution):
     perturbed_vector = Vector()
 
     for row_key in vec.keys:
-        perturbed_value = vec.get_element(row_key) + get_perturbation_from_distribution(distribution)
-        perturbed_vector.set_element(row_key, value=perturbed_value)
+        perturbed_value = vec[row_key] + get_perturbation_from_distribution(distribution)
+        perturbed_vector[row_key] = perturbed_value
 
     return perturbed_vector
 

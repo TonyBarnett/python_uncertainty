@@ -84,7 +84,7 @@ class EmissionsSourceData(SourceDataBase):
         self.perturbed_data = Vector()
 
     def add_item_to_data(self, key: str, value: float):
-        self.source_data.set_element(key, value)
+        self.source_data[key] = value
 
     # OK this is named wrong but it makes things a lot easier to deal with and a vector is a 1D matrix anyway, right?!
     def set_perturbed_matrix(self):
@@ -221,10 +221,10 @@ def map_emissions_data(source: EmissionsSourceData, target: EmissionsSourceData)
 
     for key in source.source_data.keys:
         for target in map_[key]:
-            totals[target] += source.source_data.get_element(key) / map_length[key]
+            totals[target] += source.source_data[key] / map_length[key]
 
     for key, total in totals.items():
-        target.source_data.set_element(key, total)
+        target.source_data[key] = total
 
 
 def map_data(source: SourceData, target: SourceData):
