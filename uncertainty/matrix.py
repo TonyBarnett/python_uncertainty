@@ -1,37 +1,32 @@
 from collections import OrderedDict
-
+from numpy.matrixlib import matrix
 
 class Matrix:
     def __init__(self):
         self.row_keys = list()
         self.column_keys = list()
         # indexed by row_key, column_key
-        self.elements = dict()
+        self.elements = Vector()
 
-    def get_element(self, row_key, col_key):
-        return self.elements[row_key][col_key]
+    @staticmethod
+    def _add_key_to_list_and_sort(key_list: list, key: str):
+        key_list.append(key)
+        key_list = list(sorted(key_list))
 
     def _add_keys_to_row_column_lists(self, row_key, col_key):
         if row_key not in self.row_keys:
-            self.row_keys.append(row_key)
-            self.row_keys = list(sorted(self.row_keys))
-
+            self._add_key_to_list_and_sort(self.row_keys, row_key)
         if col_key not in self.column_keys:
-            self.column_keys.append(col_key)
-            self.column_keys = list(sorted(self.column_keys))
+            self._add_key_to_list_and_sort(self.column_keys, col_key)
 
-    def set_element(self, row_key, col_key, value):
+    def __setitem__(self, row_key, col_key, value):
         if row_key not in self.row_keys:
-            self.elements[row_key] = dict()
+            self.elements[row_key] = Vector()
         self._add_keys_to_row_column_lists(row_key=row_key, col_key=col_key)
-
         self.elements[row_key][col_key] = value
 
-    def get_row(self, row_key):
-        return OrderedDict((x, self.elements[row_key][x]) for x in self.column_keys)
-
-    def get_column(self, column_key):
-        return OrderedDict(((x, self.elements[x][column_key]) for x in self.row_keys))
+    def __getitem__(self, row_key, col_key):
+        return self.elements[row_key][col_key]
 
 
 class Vector:
@@ -68,9 +63,9 @@ def create_matrix_from_lists(row_keys, col_keys):
     :return:
     """
     m = Matrix()
-    for row_key in row_keys:
-        for col_key in col_keys:
-            m.set_element(row_key=row_key, col_key=col_key, value=0)
+    for row in row_keys:
+        for col in col_keys:
+            m[row][col] = 0
 
 
 def create_matrix_from_list_of_tuple(db_values: list) -> Matrix:
@@ -81,6 +76,6 @@ def create_matrix_from_list_of_tuple(db_values: list) -> Matrix:
     """
     m = Matrix()
     for row, col, value in db_values:
-        m.set_element(row_key=row, col_key=col, value=value)
+        m[row, col] = value
 
     return m

@@ -46,13 +46,13 @@ class SourceData(SourceDataBase):
 
     def input_data(self, raw_data: tuple) -> None:
         for _, _, _, source_value, target_value, value in raw_data:
-            self.source_data.set_element(row_key=source_value, col_key=target_value, value=value)
+            self.source_data[source_value][target_value] = value
 
     def set_distribution(self, distribution: Distribution):
         self.distribution = distribution
 
     def add_item_to_data(self, source_key: str, target_key: str, value: float):
-        self.source_data.set_element(row_key=source_key, col_key=target_key, value=value)
+        self.source_data[source_key][target_key] = value
 
     def set_perturbed_matrix(self):
         self.perturbed_data = get_new_perturbed_matrix(self.source_data, self.distribution)
@@ -246,7 +246,7 @@ def map_data(source: SourceData, target: SourceData):
 
     for row_key, columns in totals.items():
         for col_key, total in columns.items():
-            target.source_data.set_element(row_key, col_key, total)
+            target.source_data[row_key][col_key] = total
 
 
 def map_imports_data(source: ImportSourceData, target: ImportSourceData):
