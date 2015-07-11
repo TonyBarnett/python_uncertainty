@@ -2,7 +2,7 @@ from uncertainty.matrix import Matrix, Vector
 
 
 def get_perturbation_from_distribution(distribution) -> float:
-    pass
+    return distribution.get_observation()
 
 
 def _get_log_normal_distribution(a, b):
