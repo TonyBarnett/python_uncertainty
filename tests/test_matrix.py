@@ -1,9 +1,10 @@
 import unittest
+import numpy
 from uncertainty.matrix import create_matrix_from_list_of_tuple, \
     create_matrix_from_lists,\
     Matrix
 from numpy.matrixlib import matrix
-import numpy.testing
+# import numpy.testing
 
 
 class CreateMatrixFromTupleList(unittest.TestCase):
@@ -23,14 +24,6 @@ class CreateMatrixFromTupleList(unittest.TestCase):
         self.assertDictEqual(m.row_keys, {"x": 0, "y": 1})
         self.assertTrue((m.elements == matrix([[1, 0], [0, 100]])).all())
 
-    def test_none_case(self):
-        with self.assertRaises(TypeError):
-            create_matrix_from_list_of_tuple(None)
-
-    def test_bad_tuple(self):
-        with self.assertRaises(ValueError):
-            create_matrix_from_list_of_tuple((("too", "short"), ))
-
     def test_tuple_with_none(self):
         m = create_matrix_from_list_of_tuple(((None, "not_none", 1), ))
         self.assertDictEqual(m.row_keys, {None: 0})
@@ -48,3 +41,33 @@ class CreateMatrixFromTupleList(unittest.TestCase):
         self.assertDictEqual(m.row_keys, {"A": 0, "B": 1})
         self.assertDictEqual(m.column_keys, {"x": 0, "y": 1})
         self.assertTrue((m.elements == [[1, 5], [2, 4]]).all())
+
+    def test_none_case(self):
+        with self.assertRaises(TypeError):
+            create_matrix_from_list_of_tuple(None)
+
+    def test_bad_tuple(self):
+        with self.assertRaises(ValueError):
+            create_matrix_from_list_of_tuple((("too", "short"), ))
+
+class MatrixGet(unittest.TestCase):
+    def _setup_matrix(self):
+        return create_matrix_from_list_of_tuple((("B", "x", 2), ("A", "x", 1), ("A", "y", 5), ("B", "y", 4)))
+
+    def test_type(self):
+        m = self._setup_matrix()
+        self.assertEqual(type(m[("A", "y")]), numpy.int32)
+
+    def test_simple_get(self):
+        m = self._setup_matrix()
+        self.assertEqual(m[("A", "y")], 5)
+
+    def test_missing_column_label(self):
+        m = self._setup_matrix()
+        with self.assertRaises(ValueError):
+            m[("A", )]
+
+    def test_wrong_keys(self):
+        m = self._setup_matrix()
+        with self.assertRaises(KeyError):
+            m[("C", "z")]
