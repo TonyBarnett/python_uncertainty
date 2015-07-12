@@ -1,7 +1,6 @@
 import unittest
 from uncertainty.matrix import create_matrix_from_list_of_tuple, \
     create_matrix_from_lists,\
-    create_matrix_keys_from_matrix, \
     Matrix
 
 
@@ -35,24 +34,24 @@ class CreateMatrixFromTupleList(unittest.TestCase):
         self.assertDictEqual(m.elements, {1: {2: 3}})
 
 
-class GetMatrixRowAndColumn(unittest.TestCase):
-    def _setup_matrix(self) -> Matrix:
-        return create_matrix_from_list_of_tuple([("1", "1", 1), ("1", "2", 4), ("2", "1", 3), ("2", "2", 6)])
-
-    def test_get_row(self):
-        m = self._setup_matrix()
-        self.assertDictEqual(m.get_row("1"), {"1": 1, "2": 4})
-
-    def test_get_col(self):
-        m = self._setup_matrix()
-        self.assertDictEqual(m.get_column("2"), {"1": 4, "2": 6})
-
-    def test_get_col_None(self):
-        m = self._setup_matrix()
-        with self.assertRaises(KeyError):
-            m.get_column(None)
-
-    def test_get_row_None(self):
-        m = self._setup_matrix()
-        with self.assertRaises(KeyError):
-            m.get_row(None)
+# class GetMatrixRowAndColumn(unittest.TestCase):
+#     def _setup_matrix(self) -> Matrix:
+#         return create_matrix_from_list_of_tuple((("1", "1", 1), ("1", "2", 4), ("2", "1", 3), ("2", "2", 6)))
+#
+#     def test_get_row(self):
+#         m = self._setup_matrix()
+#         self.assertDictEqual(m.get_row("1"), {"1": 1, "2": 4})
+#
+#     def test_get_col(self):
+#         m = self._setup_matrix()
+#         self.assertDictEqual(m.get_column("2"), {"1": 4, "2": 6})
+#
+#     def test_get_col_None(self):
+#         m = self._setup_matrix()
+#         with self.assertRaises(KeyError):
+#             m.get_column(None)
+#
+#     def test_get_row_None(self):
+#         m = self._setup_matrix()
+#         with self.assertRaises(KeyError):
+#             m.get_row(None)
