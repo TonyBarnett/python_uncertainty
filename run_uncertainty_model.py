@@ -308,11 +308,11 @@ if __name__ == '__main__':
     #     map the perturbed matrix
     #   run two cf models
 
-    for year in INPUT_YEARS:
-        logging.debug("year: {0}".format(year))
+    for input_year in INPUT_YEARS:
+        logging.debug("year: {0}".format(input_year))
 
         logging.debug("creating and populating matrices")
-        create_and_populate_source_data(year)
+        create_and_populate_source_data(input_year)
 
         logging.debug("getting distributions")
         get_source_data_distribution()

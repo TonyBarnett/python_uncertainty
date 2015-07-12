@@ -74,5 +74,5 @@ def get_uk_supply_uncertainty_distribution() -> LogNormalDistribution:
     return distribution
 
 if __name__ == '__main__':
-    distribution = get_uk_supply_uncertainty_distribution()
+    d = get_uk_supply_uncertainty_distribution()
 
