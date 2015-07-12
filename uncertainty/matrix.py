@@ -65,20 +65,27 @@ class Matrix(MatrixVector):
         data_dict = Matrix.get_data_as_dict(data)
         (rows, columns) = Matrix.get_row_col_list_from_tuple(data)
 
-        mat = list()
-        mat_row = list()
 
-        row_counter = col_counter = 0
+        row_counter = 0
 
         row_keys = OrderedDict()
         col_keys = OrderedDict()
+
+        mat = list()
         # make a list of lists of data,
         # make row and col key lookup,
         for row_key in rows:
+            col_counter = 0
             row_keys[row_key] = row_counter
+
+            mat_row = list()
+
             for col_key in columns:
                 col_keys[col_key] = col_counter
-                mat_row.append(data_dict[row_key][col_key])
+                if col_key in data_dict[row_key]:
+                    mat_row.append(data_dict[row_key][col_key])
+                else:
+                    mat_row.append(0)
                 col_counter += 1
             mat.append(mat_row)
             row_counter += 1
