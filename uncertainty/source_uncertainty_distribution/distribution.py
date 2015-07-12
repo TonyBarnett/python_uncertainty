@@ -47,8 +47,8 @@ class LogNormalDistribution(Distribution):
         return super(LogNormalDistribution, cls).get_distribution(mu, sigma)
 
     def get_pdf_line(self, x: list) -> list:
-        pdf = [(numpy.exp(-(numpy.log(x_i) - self.mu)**2 / (2 * self.sigma**2))
-        / (x_i * self.sigma * numpy.sqrt(2 * numpy.pi))) for x_i in x]
+        pdf = [(numpy.exp(-(numpy.log(x_i) - self.mu) ** 2 / (2 * self.sigma ** 2))
+                / (x_i * self.sigma * numpy.sqrt(2 * numpy.pi))) for x_i in x]
         return pdf
 
 
@@ -60,8 +60,8 @@ class NormalDistribution(Distribution):
         return
 
     def get_pdf_line(self, x: list):
-        pdf = [(numpy.exp(-(x_i - self.mu)**2 / (2 * self.sigma**2))
-        / (x_i * self.sigma * numpy.sqrt(2 * numpy.pi))) for x_i in x]
+        pdf = [(numpy.exp(-(x_i - self.mu) ** 2 / (2 * self.sigma ** 2))
+                / (x_i * self.sigma * numpy.sqrt(2 * numpy.pi))) for x_i in x]
         return pdf
 
     @classmethod

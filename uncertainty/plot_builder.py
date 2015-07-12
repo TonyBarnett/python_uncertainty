@@ -1,8 +1,6 @@
 import multiprocessing
 
 from matplotlib import pyplot
-from time import sleep
-
 
 colours = {"black": "k", "blue": "b", "red": "r", "green": "g"}
 markers = {"cross": "x", "line": "-", "dot": ".", "big_dot": "o"}
@@ -63,7 +61,8 @@ class PlotBuilder:
     def add_plot_type(self, plot_type: PlotType):
         self.plots.append(plot_type)
 
-    def _plot_worker(self, plots):
+    @staticmethod
+    def _plot_worker(plots):
         pyplot.figure()
 
         for plot_type in plots:
@@ -72,5 +71,5 @@ class PlotBuilder:
         pyplot.show()
 
     def plot(self):
-        p = multiprocessing.Process(target=self._plot_worker, kwargs={"plots": self.plots})
+        p = multiprocessing.Process(target=PlotBuilder._plot_worker, kwargs={"plots": self.plots})
         p.start()
