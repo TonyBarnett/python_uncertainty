@@ -42,3 +42,9 @@ class CreateMatrixFromTupleList(unittest.TestCase):
         self.assertDictEqual(m.row_keys, {1: 0})
         self.assertDictEqual(m.column_keys, {2: 0})
         self.assertTrue((m.elements == [[3]]).all())
+
+    def test_two_dimensional_matrix(self):
+        m = create_matrix_from_list_of_tuple((("B", "x", 2), ("A", "x", 1), ("A", "y", 5), ("B", "y", 4)))
+        self.assertDictEqual(m.row_keys, {"A": 0, "B": 1})
+        self.assertDictEqual(m.column_keys, {"x": 0, "y": 1})
+        self.assertTrue((m.elements == [[1, 5], [2, 4]]).all())
