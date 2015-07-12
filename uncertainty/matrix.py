@@ -7,7 +7,7 @@ class MatrixVector:
     def __init__(self, data):
         self.row_keys = OrderedDict()
         self.column_keys = OrderedDict()
-        self.elements = matrix(data) # indexed by row_key, column_key
+        self.elements = matrix(data)  # indexed by row_key, column_key
 
     @staticmethod
     def sort_list_alphabetically(unordered_list: list) -> list:
@@ -22,6 +22,7 @@ class MatrixVector:
 
     def __get__(self, instance, owner):
         return self.elements
+
 
 class Matrix(MatrixVector):
     def __init__(self, data):
@@ -65,7 +66,6 @@ class Matrix(MatrixVector):
         data_dict = Matrix.get_data_as_dict(data)
         (rows, columns) = Matrix.get_row_col_list_from_tuple(data)
 
-
         row_counter = 0
 
         row_keys = OrderedDict()
@@ -102,7 +102,7 @@ class Matrix(MatrixVector):
         :return:
         """
         (row_key, col_key) = item
-        return self.elements(self.row_keys[row_key], self.column_keys[col_key])
+        return self.elements[self.row_keys[row_key], self.column_keys[col_key]]
 
 
 class Vector(MatrixVector):
@@ -117,7 +117,6 @@ class Vector(MatrixVector):
     @staticmethod
     def get_data_as_dict(data: tuple) -> dict:
         return {key: value for key, value in data}
-
 
     # TODO at some point, make this function follow SRP
     @classmethod
