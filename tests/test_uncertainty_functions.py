@@ -8,7 +8,7 @@ class Mean(unittest.TestCase):
         self.assertEqual(float, type(m))
 
     def test_simple_case(self):
-        m = get_mean([1,2,3,4,5])
+        m = get_mean([1, 2, 3, 4, 5])
         self.assertEqual(3, m)
 
     def test_none(self):
@@ -27,7 +27,7 @@ class GetAncestorsAndSelf(unittest.TestCase):
 
     def test_numeric_ancestors(self):
         foo = get_ancestors_and_self("123")
-        self.assertListEqual(foo, ["123", "12", "1" ])
+        self.assertListEqual(foo, ["123", "12", "1"])
 
     def test_separator(self):
         foo = get_ancestors_and_self("1.2")

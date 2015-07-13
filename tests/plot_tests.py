@@ -19,8 +19,8 @@ class AxesSorting(unittest.TestCase):
         self.assertListEqual(b, [6, 3], msg="b and y do not match")
 
     def test_inconsistent_lengths(self):
-        x=[1, 3, 2]
-        y=[4, 5]
+        x = [1, 3, 2]
+        y = [4, 5]
         a, b = sort_axes_by_x(x, y)
         self.assertListEqual(a, [1, 2, 3], msg="a and x do not match")
         self.assertListEqual(b, [4, 5], msg="b and y do not match")

@@ -1,6 +1,6 @@
 import unittest
 from uncertainty.matrix import create_matrix_from_list_of_tuple, \
-    create_matrix_from_lists,\
+    create_matrix_from_lists, \
     create_matrix_keys_from_matrix, \
     Matrix
 
