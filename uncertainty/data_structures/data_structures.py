@@ -1,6 +1,6 @@
-from uncertainty.get_new_random_matrix import get_new_perturbed_matrix, get_new_perturbed_vector
-from uncertainty.matrix import Matrix, Vector
-from uncertainty.source_uncertainty_distribution.distribution import Distribution
+from ..get_new_random_matrix import get_new_perturbed_matrix, get_new_perturbed_vector
+from ..matrix import Matrix, Vector
+from ..source_uncertainty_distribution.distribution import Distribution
 
 
 class BaseData:

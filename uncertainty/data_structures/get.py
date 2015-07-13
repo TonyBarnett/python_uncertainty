@@ -1,4 +1,4 @@
-from data_structures.create import create_emission_source_class, create_import_source_class, create_source_class
+from .create import create_emission_source_class, create_import_source_class, create_source_class
 
 
 def get_data_source_of_type(year: int, region: str, type_: str, target_region: str=None):

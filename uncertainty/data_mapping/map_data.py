@@ -1,6 +1,5 @@
 from ..data_sources.model_data_sources import get_map
-from run_uncertainty_model import EmissionsData, ImportData, MAPPED_DATA, SOURCE_DATA
-from data_structures.data_structures import Data, ImportData, EmissionsData
+from ..data_structures.data_structures import Data, EmissionsData, ImportData
 
 _MAP = get_map(map_collection="Other_NB_Without_Ancestors_multinomial_10")
 
@@ -67,22 +66,27 @@ def map_imports_data(source: ImportData, target: ImportData):
     map_data(source, target)
 
 
-def add_mapped_data_to_global(mapped_data):
-        type_ = mapped_data.type_
-        region = mapped_data.region
-        if type_ not in MAPPED_DATA:
-            MAPPED_DATA[type_] = dict()
-        MAPPED_DATA[type_][region] = mapped_data
+def add_item_to_mapped_data(data, mapped_data):
+    type_ = data.type_
+    region = data.region
+    if type_ not in mapped_data:
+        mapped_data[type_] = dict()
+    mapped_data[type_][region] = data
 
 
-def map_source_data_matrix():
-    for source_data_item in SOURCE_DATA:
-        mapped_data = type(source_data_item).get_new_empty_source_data_item(source_data_item)
-        add_mapped_data_to_global(mapped_data)
-
-        if mapped_data.type_ == "emissions":
-            map_emissions_data(source_data_item, mapped_data)
-        elif mapped_data.type_ == "import":
-            map_imports_data(source_data_item, mapped_data)
+def map_data_of_type(source_data_item, mapped):
+        if mapped.type_ == "emissions":
+            map_emissions_data(source_data_item, mapped)
+        elif mapped.type_ == "import":
+            map_imports_data(source_data_item, mapped)
         else:
-            map_data(source_data_item, mapped_data)
+            map_data(source_data_item, mapped)
+
+
+def map_source_data_matrix(source_data: list):
+    mapped_data = dict()
+    for source_data_item in source_data:
+        mapped = type(source_data_item).get_new_empty_source_data_item(source_data_item)
+        map_data_of_type(source_data_item, mapped)
+        add_item_to_mapped_data(mapped, mapped_data)
+    return mapped_data

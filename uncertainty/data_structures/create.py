@@ -1,4 +1,4 @@
-from data_structures.data_structures import Data, ImportData, EmissionsData
+from .data_structures import Data, ImportData, EmissionsData
 
 
 def create_source_class(year: int, region: str, type_: str) -> Data:
