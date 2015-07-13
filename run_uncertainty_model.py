@@ -22,8 +22,10 @@ def create_and_populate_source_data(year) -> list:
                 source_data.append(source_data_item)
                 populate_source_data_of_type(source_data_item)
     # now do imports, we only care about EU importing into UK for now.
-    source_data_item = get_data_source_of_type(year=year, region="EU", type_="import", target_region="UK")
-    source_data.append(source_data_item)
+    # TODO uncomment the next 3 lines, you will need to work out why IOModel.sor.Exports is empty...
+    # source_data_item = get_data_source_of_type(year=year, region="EU", type_="import", target_region="UK")
+    # source_data.append(source_data_item)
+    # populate_source_data_of_type(source_data_item)
     return source_data
 
 

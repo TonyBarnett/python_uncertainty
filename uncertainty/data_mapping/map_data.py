@@ -18,9 +18,8 @@ def map_emissions_data(source: EmissionsData, target: EmissionsData):
     for key in source.source_data.keys:
         for target in map_[key]:
             totals[target] += source.source_data.get_element(key) / map_length[key]
-
-    for key, total in totals.items():
-        target.source_data.set_element(key, total)
+    data = [(key, total) for key, total in totals.items()]
+    target.add_data_from_tuple(data)
 
 
 def get_maps_from_list(source: list, system_id: str) -> dict:
@@ -57,9 +56,8 @@ def map_data(source: Data, target: Data):
                     totals[row_target][col_target] += \
                         source.source_data.elements[row_key][col_key] / (row_map_len[row_key] * col_map_len[col_key])
 
-    for row_key, columns in totals.items():
-        for col_key, total in columns.items():
-            target.source_data.set_element(row_key, col_key, total)
+    data = [(row_key, col_key, total) for row_key, columns in totals.items() for col_key, total in columns.items()]
+    target.add_data_from_tuple(data)
 
 
 def map_imports_data(source: ImportData, target: ImportData):
