@@ -21,7 +21,7 @@ class MatrixVector:
         return cls(data)
 
     def __get__(self, instance, owner):
-        return self.elements
+        return instance.elements
 
 
 class Matrix(MatrixVector):
@@ -64,7 +64,7 @@ class Matrix(MatrixVector):
         :param data (source_key, target_key, value)
         """
         data_dict = Matrix.get_data_as_dict(data)
-        (rows, columns) = Matrix.get_row_col_list_from_tuple(data)
+        rows, columns = Matrix.get_row_col_list_from_tuple(data)
 
         row_counter = 0
 
