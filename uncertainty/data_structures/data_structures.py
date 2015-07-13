@@ -45,10 +45,10 @@ class Data(BaseData):
 
     def __getitem__(self, item: tuple) -> float:
         (row, column) = item
-        return self.source_data.elements[row, column]
+        return self.source_data[(row, column)]
 
     def __get__(self, instance, owner):
-        return instance.source_data.elements
+        return instance.source_data
 
     def add_data_from_tuple(self, data):
         self.source_data = Matrix.create_matrix_from_tuple(data)
@@ -87,10 +87,10 @@ class EmissionsData(BaseData):
         return len(self.source_data.keys)
 
     def __getitem__(self, item: tuple) -> float:
-        return self.source_data.elements[item]
+        return self.source_data[item]
 
     def __get__(self, instance, owner):
-        return self.source_data.elements
+        return self.source_data
 
     def add_data_from_tuple(self, data):
         self.source_data = Vector(data)
