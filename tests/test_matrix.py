@@ -50,6 +50,7 @@ class CreateMatrixFromTupleList(unittest.TestCase):
         with self.assertRaises(ValueError):
             create_matrix_from_list_of_tuple((("too", "short"), ))
 
+
 class MatrixGet(unittest.TestCase):
     def _setup_matrix(self):
         return create_matrix_from_list_of_tuple((("B", "x", 2), ("A", "x", 1), ("A", "y", 5), ("B", "y", 4)))
@@ -70,3 +71,4 @@ class MatrixGet(unittest.TestCase):
     def test_wrong_keys(self):
         m = self._setup_matrix()
         with self.assertRaises(KeyError):
+            m[("C", "z")]
