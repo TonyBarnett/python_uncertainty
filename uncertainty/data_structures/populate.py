@@ -22,9 +22,8 @@ def populate_source_data(source_data_item: Data):
 
         split_total = total / (len(clean_target_values) + len(clean_source_values))
 
-        for source in clean_source_values:
-            for target in clean_target_values:
-                source_data_item.add_item_to_data(source_key=source, target_key=target, value=split_total)
+        data = [(source, target, split_total) for source in clean_source_values for target in clean_target_values]
+        source_data_item.add_data_from_tuple(tuple(data))
 
 
 def populate_import_source_data(source_data_item: ImportData):
@@ -45,9 +44,8 @@ def populate_import_source_data(source_data_item: ImportData):
 
         split_total = total / (len(clean_target_values) + len(clean_source_values))
 
-        for source in clean_source_values:
-            for target in clean_target_values:
-                source_data_item.add_item_to_data(source_key=source, target_key=target, value=split_total)
+        data = [(source, target, split_total) for source in clean_source_values for target in clean_target_values]
+        source_data_item.add_data_from_tuple(tuple(data))
 
 
 def populate_emissions_source_data(source_data_item: EmissionsData):
@@ -66,8 +64,8 @@ def populate_emissions_source_data(source_data_item: EmissionsData):
 
         split_total = total / len(clean_source_values)
 
-        for source in clean_source_values:
-            source_data_item.add_item_to_data(key=source, value=split_total)
+        data = [(source, split_total) for source in clean_source_values]
+        source_data_item.add_data_from_tuple(tuple(data))
 
 
 def populate_source_data_of_type(source_data_item: BaseData):

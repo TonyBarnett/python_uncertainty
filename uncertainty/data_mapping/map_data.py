@@ -34,7 +34,7 @@ def get_map_len_from_map(map_: dict) -> dict:
 def get_maps_and_map_len_from_list(source: list, system_id: str) -> tuple:
     map_ = get_maps_from_list(source, system_id)
     map_len = get_map_len_from_map(map_)
-    return (map_, map_len)
+    return map_, map_len
 
 
 def map_data(source: Data, target: Data):

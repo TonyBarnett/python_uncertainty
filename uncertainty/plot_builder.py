@@ -10,7 +10,7 @@ marker_size = 5
 def sort_axes_by_x(x: list, y: list) -> tuple:
     y = [b for (a, b) in sorted(zip(x, y))]
     x = sorted(x)
-    return (x, y)
+    return x, y
 
 
 class PlotType:

@@ -77,7 +77,7 @@ def get_log_lbf_from_regression_coefficients(a: float, b: float, max_x: float=13
     for i in float_range(0.1, max_x, 0.5):
         x.append(i)
         y.append(a * ln(i) + b)
-    return (x, y)
+    return x, y
 
 
 def get_lbf_from_regression_coefficients(a: float, b: float, max_x: float=130000)->tuple:
@@ -86,7 +86,7 @@ def get_lbf_from_regression_coefficients(a: float, b: float, max_x: float=130000
     for i in float_range(0.1, max_x, 0.5):
         x.append(i)
         y.append(a * i + b)
-    return (x, y)
+    return x, y
 
 
 def get_mean(l: list) -> float:

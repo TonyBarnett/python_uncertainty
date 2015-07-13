@@ -38,7 +38,7 @@ class Matrix(MatrixVector):
 
         rows = MatrixVector.sort_list_alphabetically(list(set(rows)))
         cols = MatrixVector.sort_list_alphabetically(list(set(cols)))
-        return (rows, cols)
+        return rows, cols
 
     @staticmethod
     def get_data_as_dict(data):

@@ -27,8 +27,8 @@ class BaseData:
 class Data(BaseData):
     def __init__(self, year, region, type_):
         super().__init__(year, region, type_)
-        self.source_data = Matrix()
-        self.perturbed_data = Matrix()
+        self.source_data = None
+        self.perturbed_data = None
 
     def input_data(self, raw_data: tuple) -> None:
         for _, _, _, source_value, target_value, value in raw_data:
@@ -36,9 +36,6 @@ class Data(BaseData):
 
     def set_distribution(self, distribution: Distribution):
         self.distribution = distribution
-
-    def add_item_to_data(self, source_key: str, target_key: str, value: float):
-        self.source_data.set_element(row_key=source_key, col_key=target_key, value=value)
 
     def set_perturbed_matrix(self):
         self.perturbed_data = get_new_perturbed_matrix(self.source_data, self.distribution)
@@ -52,6 +49,9 @@ class Data(BaseData):
 
     def __get__(self, instance, owner):
         return instance.source_data.elements
+
+    def add_data_from_tuple(self, data):
+        self.source_data = Matrix(data)
 
 
 class ImportData(Data):
@@ -76,11 +76,8 @@ class ImportData(Data):
 class EmissionsData(BaseData):
     def __init__(self, year, region, type_):
         super().__init__(year, region, type_)
-        self.source_data = Vector()
-        self.perturbed_data = Vector()
-
-    def add_item_to_data(self, key: str, value: float):
-        self.source_data.set_element(key, value)
+        self.source_data = None
+        self.perturbed_data = None
 
     # OK this is named wrong but it makes things a lot easier to deal with and a vector is a 1D matrix anyway, right?!
     def set_perturbed_matrix(self):
@@ -94,3 +91,6 @@ class EmissionsData(BaseData):
 
     def __get__(self, instance, owner):
         return self.source_data.elements
+
+    def add_data_from_tuple(self, data):
+        self.source_data = Vector(data)
