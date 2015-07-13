@@ -20,7 +20,7 @@ def populate_source_data(source_data_item: Data):
         clean_source_values = clean_value(system, source_value)
         clean_target_values = clean_value(system, target_value)
 
-        split_total = total / (len(clean_target_values) + len(clean_source_values))
+        split_total = total / (len(clean_target_values) * len(clean_source_values))
         for source in clean_source_values:
             for target in clean_target_values:
                 data.append((source, target, split_total))
