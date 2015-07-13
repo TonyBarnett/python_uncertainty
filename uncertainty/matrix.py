@@ -108,6 +108,7 @@ class Matrix(MatrixVector):
 class Vector(MatrixVector):
     def __init__(self, data):
         super().__init__(data)
+        self.keys = list()
 
     def _add_key_to_keys(self, key):
         if key not in self.keys:
