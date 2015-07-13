@@ -4,7 +4,6 @@ from uncertainty.data_sources.excel import _get_excel_column_labels
 
 
 class TestGetCharsInRange(unittest.TestCase):
-
     def test_simple_range(self):
         result = _get_excel_column_labels("A", "F")
         self.assertListEqual(result, ["A", "B", "C", "D", "E", "F"])
@@ -19,15 +18,15 @@ class TestGetCharsInRange(unittest.TestCase):
 
     def test_end_before_start(self):
         with self.assertRaises(ValueError):
-            _get_excel_column_labels ("C", "A")
+            _get_excel_column_labels("C", "A")
 
     def test_double_end_before_start(self):
         with self.assertRaises(ValueError):
-            _get_excel_column_labels ("AB", "AA")
+            _get_excel_column_labels("AB", "AA")
 
     def test_int_range(self):
         with self.assertRaises(ValueError):
-            _get_excel_column_labels ("1", "4")
+            _get_excel_column_labels("1", "4")
 
     def test_lower_case(self):
         result = _get_excel_column_labels("a", "c")

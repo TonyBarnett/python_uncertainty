@@ -70,4 +70,3 @@ class MatrixGet(unittest.TestCase):
     def test_wrong_keys(self):
         m = self._setup_matrix()
         with self.assertRaises(KeyError):
-            m[("C", "z")]
