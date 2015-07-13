@@ -5,7 +5,7 @@ from ..data_sources.model_data_sources import get_source_matrix_of_type
 
 def check_only_one_classification_system(system: list):
     if len(set(system)) != 1:
-        raise ValueError("{0} systems in file where there should only be one".format(len(set(system))))
+        raise ValueError("{0} systems in file where there should exactly be one".format(len(set(system))))
 
 
 def populate_source_data(source_data_item: Data):
