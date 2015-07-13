@@ -51,7 +51,7 @@ class Data(BaseData):
         return instance.source_data.elements
 
     def add_data_from_tuple(self, data):
-        self.source_data = Matrix(data)
+        self.source_data = Matrix.create_matrix_from_tuple(data)
 
 
 class ImportData(Data):
