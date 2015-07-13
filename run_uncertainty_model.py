@@ -5,6 +5,7 @@ from uncertainty.matrix import Matrix, Vector
 from uncertainty.get_new_random_matrix import get_new_perturbed_matrix, get_new_perturbed_vector
 from uncertainty.source_uncertainty_distribution import get_distribution_of_type_and_region
 from uncertainty.data_mapping.map_data import map_value
+from uncertainty.Monte_Carlo.single_region_model import run_single_region_model
 
 from data_sanitation import clean_value
 
@@ -12,7 +13,7 @@ INPUT_YEARS = (2008,)
 INPUT_MATRICES = ("consumption", "production", "emissions")
 INPUT_REGIONS = ("UK", "EU")
 SOURCE_DATA = list()
-MAPPED_DATA = list()
+MAPPED_DATA = dict()
 NUMBER_OF_ITERATIONS = 1
 # NUMBER_OF_ITERATIONS = 10000
 
@@ -57,6 +58,16 @@ class SourceData(SourceDataBase):
     def set_perturbed_matrix(self):
         self.perturbed_data = get_new_perturbed_matrix(self.source_data, self.distribution)
 
+    def __len__(self):
+        return len(self.source_data.row_keys)
+
+    def __getitem__(self, item: tuple) -> float:
+        (row, column) = item
+        return self.source_data.elements[row, column]
+
+    def __get__(self, instance, owner):
+        return self.source_data.elements
+
 
 class ImportSourceData(SourceData):
     def __init__(self, year, source_region, target_region, type_):
@@ -89,6 +100,15 @@ class EmissionsSourceData(SourceDataBase):
     # OK this is named wrong but it makes things a lot easier to deal with and a vector is a 1D matrix anyway, right?!
     def set_perturbed_matrix(self):
         self.perturbed_data = get_new_perturbed_vector(self.source_data, self.distribution)
+
+    def __len__(self):
+        return len(self.source_data.keys)
+
+    def __getitem__(self, item: tuple) -> float:
+        return self.source_data.elements[item]
+
+    def __get__(self, instance, owner):
+        return self.source_data.elements
 
 
 def create_source_class(year: int, region: str, type_: str) -> SourceData:
@@ -270,26 +290,25 @@ def map_imports_data(source: ImportSourceData, target: ImportSourceData):
     map_data(source, target)
 
 
+def add_mapped_data_to_global(mapped_data):
+        type_ = mapped_data.type_
+        region = mapped_data.region
+        if type_ not in MAPPED_DATA:
+            MAPPED_DATA[type_] = dict()
+        MAPPED_DATA[type_][region] = mapped_data
+
+
 def map_source_data_matrix():
     for source_data_item in SOURCE_DATA:
-        type_ = source_data_item.type_
         mapped_data = type(source_data_item).get_new_empty_source_data_item(source_data_item)
-        MAPPED_DATA.append(mapped_data)
+        add_mapped_data_to_global(mapped_data)
 
-        if type_ == "emissions":
+        if mapped_data.type_ == "emissions":
             map_emissions_data(source_data_item, mapped_data)
-        elif type_ == "import":
+        elif mapped_data.type_ == "import":
             map_imports_data(source_data_item, mapped_data)
         else:
             map_data(source_data_item, mapped_data)
-
-
-def run_single_region_model() -> list:
-    pass
-
-
-def run_two_region_model() -> list:
-    pass
 
 
 if __name__ == '__main__':
@@ -321,7 +340,12 @@ if __name__ == '__main__':
         for _ in range(NUMBER_OF_ITERATIONS):
             perturb_source_data_matrix()
             map_source_data_matrix()
-            run_single_region_model()
+
+            uk_consumption = MAPPED_DATA["consumption"]["UK"]
+            uk_production = MAPPED_DATA["production"]["UK"]
+            uk_emissions = MAPPED_DATA["emissions"]["UK"]
+            intensities = run_single_region_model(uk_production, uk_consumption, uk_emissions)
+            print(intensities)
             # run_two_region_model(year)
 
     logging.debug("finished")
