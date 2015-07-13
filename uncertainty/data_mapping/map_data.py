@@ -54,7 +54,7 @@ def map_data(source: Data, target: Data):
             for row_target in row_map[row_key]:
                 for col_target in col_map[col_key]:
                     totals[row_target][col_target] += \
-                        source.source_data.elements[row_key][col_key] / (row_map_len[row_key] * col_map_len[col_key])
+                        source[(row_key, col_key)] / (row_map_len[row_key] * col_map_len[col_key])
 
     data = [(row_key, col_key, total) for row_key, columns in totals.items() for col_key, total in columns.items()]
     target.add_data_from_tuple(data)
