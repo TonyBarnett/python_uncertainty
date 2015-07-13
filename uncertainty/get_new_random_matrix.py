@@ -27,6 +27,6 @@ def get_new_perturbed_matrix(mat: Matrix, distribution) -> Matrix:
 
     for row_key in mat.row_keys:
         for column_key in mat.column_keys:
-            perturbed_value = mat.get_element(row_key, column_key) + get_perturbation_from_distribution(distribution)
+            perturbed_value = mat[(row_key, column_key)] + get_perturbation_from_distribution(distribution)
             perturbed_matrix.set_element(row_key=row_key, col_key=column_key, value=perturbed_value)
     return perturbed_matrix
