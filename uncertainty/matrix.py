@@ -63,29 +63,24 @@ class Matrix(MatrixVector):
         data_dict = Matrix.get_data_as_dict(data)
         rows, columns = Matrix.get_row_col_list_from_tuple(data)
 
-        row_counter = 0
-
         row_keys = OrderedDict()
         col_keys = OrderedDict()
 
         mat = list()
         # make a list of lists of data,
         # make row and col key lookup,
-        for row_key in rows:
-            col_counter = 0
+        for row_counter, row_key in enumerate(rows):
             row_keys[row_key] = row_counter
 
             mat_row = list()
 
-            for col_key in columns:
+            for col_counter, col_key in enumerate(columns):
                 col_keys[col_key] = col_counter
                 if col_key in data_dict[row_key]:
                     mat_row.append(data_dict[row_key][col_key])
                 else:
                     mat_row.append(0)
-                col_counter += 1
             mat.append(mat_row)
-            row_counter += 1
 
         matrix_ = cls.get_new_matrix(mat)
         matrix_.row_keys = row_keys
@@ -132,7 +127,6 @@ class Vector(MatrixVector):
         for key_counter, key in enumerate(keys):
             col_keys[key] = key_counter
             data_as_list.append(data_as_dict[key])
-            key_counter += 1
 
         vec = super().get_new_matrix([data_as_list])
         vec.keys = col_keys
