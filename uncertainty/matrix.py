@@ -143,7 +143,8 @@ class Vector(MatrixVector):
         return vec
 
     def __getitem__(self, key):
-        return self.elements[self.keys[key]]
+        # elements is a (1, n) matrix so is indexed (0, i)
+        return self.elements[0, self.keys[key]]
 
 
 def create_matrix_from_lists(row_keys, col_keys):
