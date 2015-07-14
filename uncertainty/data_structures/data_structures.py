@@ -93,4 +93,4 @@ class EmissionsData(BaseData):
         return self.source_data
 
     def add_data_from_tuple(self, data):
-        self.source_data = Vector(data)
+        self.source_data = Vector.create_vector_from_tuple([(key, total) for _, _, _, key, total in data])
