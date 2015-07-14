@@ -138,10 +138,12 @@ class Vector(MatrixVector):
             data_as_list.append(data_as_dict[key])
             key_counter += 1
 
-        return super().get_new_matrix([data_as_list])
+        vec = super().get_new_matrix([data_as_list])
+        vec.keys = col_keys
+        return vec
 
     def __getitem__(self, key):
-        return self.elements[key]
+        return self.elements[self.keys[key]]
 
 
 def create_matrix_from_lists(row_keys, col_keys):
