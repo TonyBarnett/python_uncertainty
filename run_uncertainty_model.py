@@ -37,9 +37,11 @@ def get_source_data_distribution(source_data):
                                                                             )
 
 
-def get_perturb_source_data_matrices(source_data):
+def get_perturb_source_data(source_data):
+    perturbed_data = list()
     for source_data_item in source_data:
-        source_data_item.set_perturbed_matrix()
+        perturbed_data.append(source_data_item.get_new_perturbed_matrix())
+    return perturbed_data
 
 
 if __name__ == '__main__':
@@ -72,8 +74,8 @@ if __name__ == '__main__':
         for run_number in range(NUMBER_OF_ITERATIONS):
             if run_number % percent_complete == 0:
                 logging.debug("{0}% complete".format(100 * run_number / percent_complete))
-            get_perturb_source_data_matrices(source_data)
-            mapped_data = map_source_data_matrix(source_data)
+            perturbed_data = get_perturb_source_data(source_data)
+            mapped_data = map_source_data_matrix(perturbed_data)
 
             uk_consumption = mapped_data["consumption"]["UK"]
             uk_production = mapped_data["production"]["UK"]

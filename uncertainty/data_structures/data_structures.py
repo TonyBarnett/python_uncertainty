@@ -11,7 +11,7 @@ class BaseData:
         self.type_ = type_
         self.system = system
 
-    def set_perturbed_matrix(self):
+    def get_new_perturbed_matrix(self):
         raise NotImplementedError()
 
     @classmethod
@@ -28,17 +28,17 @@ class Data(BaseData):
     def __init__(self, year, region, type_):
         super().__init__(year, region, type_)
         self.source_data = None
-        self.perturbed_data = None
 
     def input_data(self, raw_data: tuple) -> None:
         for _, _, _, source_value, target_value, value in raw_data:
             self.source_data.set_element(row_key=source_value, col_key=target_value, value=value)
 
-    def set_distribution(self, distribution: Distribution):
-        self.distribution = distribution
-
-    def set_perturbed_matrix(self):
-        self.perturbed_data = get_new_perturbed_matrix(self.source_data, self.distribution)
+    def get_new_perturbed_matrix(self):
+        perturbed_data = Data(self.year, self.region, self.type_)
+        perturbed_data.distribution = self.distribution
+        perturbed_data.system = self.system
+        perturbed_data.source_data = get_new_perturbed_matrix(self.source_data, self.distribution)
+        return perturbed_data
 
     def __len__(self):
         return len(self.source_data.row_keys)
@@ -48,7 +48,7 @@ class Data(BaseData):
         return self.source_data[(row, column)]
 
     def __get__(self, instance, owner):
-        return instance.source_data
+        return instance.perturbed_data
 
     def add_data_from_tuple(self, data):
         self.source_data = Matrix.create_matrix_from_tuple(data)
@@ -77,11 +77,14 @@ class EmissionsData(BaseData):
     def __init__(self, year, region, type_):
         super().__init__(year, region, type_)
         self.source_data = None
-        self.perturbed_data = None
 
     # OK this is named wrong but it makes things a lot easier to deal with and a vector is a 1D matrix anyway, right?!
-    def set_perturbed_matrix(self):
-        self.perturbed_data = get_new_perturbed_vector(self.source_data, self.distribution)
+    def get_new_perturbed_matrix(self):
+        perturbed_data = EmissionsData(self.year, self.region, self.type_)
+        perturbed_data.distribution = self.distribution
+        perturbed_data.system = self.system
+        perturbed_data.source_data = get_new_perturbed_vector(self.source_data, self.distribution)
+        return perturbed_data
 
     def __len__(self):
         return len(self.source_data.keys)
