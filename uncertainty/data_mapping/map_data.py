@@ -16,8 +16,8 @@ def map_emissions_data(source: EmissionsData, target: EmissionsData):
     map_length = {key: len(map_[key]) for key in source.source_data.keys}
 
     for key in source.source_data.keys:
-        for target in map_[key]:
-            totals[target] += source.source_data.get_element(key) / map_length[key]
+        for t in map_[key]:
+            totals[t] += source[key] / map_length[key]
     data = [(key, total) for key, total in totals.items()]
     target.add_data_from_tuple(data)
 
