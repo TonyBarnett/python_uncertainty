@@ -5,12 +5,13 @@ from uncertainty.data_structures.populate import populate_source_data_of_type
 from uncertainty.data_mapping.map_data import map_source_data_matrix
 from uncertainty.source_uncertainty_distribution import get_distribution_of_type_and_region
 from uncertainty.Monte_Carlo.single_region_model import run_single_region_model
+from uncertainty.data_sources.sql import write_intensities_to_sql
 
 INPUT_YEARS = (2008,)
 INPUT_MATRICES = ("consumption", "production", "emissions")
 INPUT_REGIONS = ("UK", "EU")
-NUMBER_OF_ITERATIONS = 1
-# NUMBER_OF_ITERATIONS = 10000
+# NUMBER_OF_ITERATIONS = 1
+NUMBER_OF_ITERATIONS = 10000
 
 
 def create_and_populate_source_data(year) -> list:
@@ -36,7 +37,7 @@ def get_source_data_distribution(source_data):
                                                                             )
 
 
-def perturb_source_data_matrix(source_data):
+def get_perturb_source_data_matrices(source_data):
     for source_data_item in source_data:
         source_data_item.set_perturbed_matrix()
 
@@ -67,15 +68,18 @@ if __name__ == '__main__':
         get_source_data_distribution(source_data)
 
         logging.debug("running Monte Carlo...")
-        for _ in range(NUMBER_OF_ITERATIONS):
-            perturb_source_data_matrix(source_data)
+        percent_complete = NUMBER_OF_ITERATIONS / 100
+        for run_number in range(NUMBER_OF_ITERATIONS):
+            if run_number % percent_complete == 0:
+                logging.debug("{0}% complete".format(100 * run_number / percent_complete))
+            get_perturb_source_data_matrices(source_data)
             mapped_data = map_source_data_matrix(source_data)
 
             uk_consumption = mapped_data["consumption"]["UK"]
             uk_production = mapped_data["production"]["UK"]
             uk_emissions = mapped_data["emissions"]["UK"]
             intensities = run_single_region_model(uk_production, uk_consumption, uk_emissions)
-            print(intensities)
+            write_intensities_to_sql(intensities, run_number, input_year, "Single Region")
             # run_two_region_model(year)
 
     logging.debug("finished")

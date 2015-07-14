@@ -1,4 +1,27 @@
+import multiprocessing
 import pymssql
+
+
+def read_from_sql(query: str, params: tuple=None, db: str=None, server='localhost', uid='sa', pw='deter101!'):
+    with pymssql.connect(server, uid, pw, db) as conn:
+        with conn.cursor() as cursor:
+            # The star says you want a list of parameters for the format.
+            cursor.execute(query if not params else query.format(*params))
+            return make_query_result_tuple(cursor.fetchall())
+
+
+def write_to_sql(query: str, params: tuple=None, db: str=None, server='localhost', uid='sa', pw='deter101!'):
+    with pymssql.connect(server, uid, pw, db) as conn:
+        with conn.cursor() as cursor:
+
+            # The star says you want a list of parameters for the format.
+            if params and isinstance(params[0], tuple):
+                cursor.executemany(query, params)
+            elif params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+        conn.commit()
 
 
 def build_clas_value_query(system_id: str, value_id: str, used: bool) -> str:
@@ -35,14 +58,6 @@ def build_clas_value_query(system_id: str, value_id: str, used: bool) -> str:
 
 def make_query_result_tuple(query_results) -> tuple:
     return tuple([result for result in query_results])
-
-
-def read_from_sql(query: str, params: tuple=None, db: str=None, server='localhost', uid='sa', pw='deter101!'):
-    with pymssql.connect(server, uid, pw, db) as conn:
-        with conn.cursor() as cursor:
-            # The star says you want a list of parameters for the format.
-            cursor.execute(query if not params else query.format(*params))
-            return make_query_result_tuple(cursor.fetchall())
 
 
 def clean_sql(query):
@@ -87,3 +102,37 @@ def build_source_query(query, region=None, year=None):
 
     where_string = _build_where_string(where)
     return clean_sql(query + where_string)
+
+
+def write_to_sql_in_background(query: str,
+                               params: tuple=None,
+                               db: str=None,
+                               server='localhost',
+                               uid='sa',
+                               pw='deter101!'
+                               ):
+    p = multiprocessing.Process(target=write_to_sql, kwargs=dict(query=query,
+                                                                 params=params,
+                                                                 db=db,
+                                                                 server=server,
+                                                                 uid=uid,
+                                                                 pw=pw
+                                                                 ))
+
+    p.start()
+
+
+def write_intensities_to_sql(intensities: list, run_number: int, year: int, model: str) -> None:
+    """
+    Spawn a background worker that writes the intensities to SQL
+    :param intensities:
+    :param run_number:
+    :return:
+    """
+    params = list()
+    for counter, intensity in enumerate(intensities[0]):
+        params.append((year, model, run_number, str(counter + 1), intensity))
+    write_to_sql_in_background("INSERT INTO Intensities (intYear, strModel, intRun, strCensa123Key, fltIntensity) "
+                               "VALUES (%d, %s, %d, %s, %d)",
+                               params=tuple(params),
+                               db="MonteCarlo")
