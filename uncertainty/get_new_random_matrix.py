@@ -15,7 +15,7 @@ def get_new_perturbed_vector(vec: Vector, distribution):
         perturbed_value = vec[row_key] + get_perturbation_from_distribution(distribution)
         data.append((row_key, perturbed_value))
 
-    perturbed_vector = Vector(tuple(data))
+    perturbed_vector = Vector.create_vector_from_tuple(tuple(data))
     return perturbed_vector
 
 
