@@ -138,7 +138,7 @@ class Vector(MatrixVector):
             data_as_list.append(data_as_dict[key])
             key_counter += 1
 
-        super().get_new_matrix([data_as_list])
+        return super().get_new_matrix([data_as_list])
 
     def __getitem__(self, key):
         return self.elements[key]
