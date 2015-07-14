@@ -25,9 +25,6 @@ class MatrixVector:
 
 
 class Matrix(MatrixVector):
-    def __init__(self, data):
-        super().__init__(data)
-
     @staticmethod
     def get_row_col_list_from_tuple(data: tuple) -> tuple:
         rows = list()
@@ -132,8 +129,7 @@ class Vector(MatrixVector):
 
         data_as_list = list()
 
-        key_counter = 0
-        for key in keys:
+        for key_counter, key in enumerate(keys):
             col_keys[key] = key_counter
             data_as_list.append(data_as_dict[key])
             key_counter += 1
