@@ -65,6 +65,12 @@ def map_imports_data(source: ImportData, target: ImportData):
 
 
 def add_item_to_mapped_data(data, mapped_data):
+    """
+    Add data to mapped_data.
+    :param data:
+    :param mapped_data:
+    :return:
+    """
     type_ = data.type_
     region = data.region
     if type_ not in mapped_data:
@@ -73,12 +79,18 @@ def add_item_to_mapped_data(data, mapped_data):
 
 
 def map_data_of_type(source_data_item, mapped):
-        if mapped.type_ == "emissions":
-            map_emissions_data(source_data_item, mapped)
-        elif mapped.type_ == "import":
-            map_imports_data(source_data_item, mapped)
-        else:
-            map_data(source_data_item, mapped)
+    """
+    Determine which type of item source_data_item is, then map it
+    :param source_data_item:
+    :param mapped:
+    :return:
+    """
+    if mapped.type_ == "emissions":
+        map_emissions_data(source_data_item, mapped)
+    elif mapped.type_ == "import":
+        map_imports_data(source_data_item, mapped)
+    else:
+        map_data(source_data_item, mapped)
 
 
 def map_source_data_matrix(source_data: list):
