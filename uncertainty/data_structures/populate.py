@@ -68,7 +68,7 @@ def populate_emissions_source_data(source_data_item: EmissionsData):
 
         for source in clean_source_values:
             data.append((source, split_total))
-    source_data_item.add_data_from_tuple(tuple(source_data))
+    source_data_item.add_data_from_tuple(data)
 
 
 def populate_source_data_of_type(source_data_item: BaseData):
