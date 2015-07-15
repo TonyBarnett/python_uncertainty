@@ -1,28 +1,14 @@
-from math import log10
 from collections import Counter
 
-from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution
+from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution, NormalDistribution
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply, get_uk_supply_error
-from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_ancestors_and_self, clean_totals
+from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_ancestors_and_self, clean_totals, \
+    get_relative_errors
 
 # plot, \
 from uncertainty.plot_builder import PlotBuilder, ScatterPlot, LinePlot
 
 YEAR_RANGE = (2008, 2009, 2010)
-
-
-def get_relative_errors(values: list, errors: list) -> list:
-    """
-    log10((x + \Delta(x)) / x)
-     x is the value and \Delta x is the error
-    :param values:
-    :param errors:
-    :return:
-    """
-    relative_errors = list()
-    for i, value in enumerate(values):
-        relative_errors.append(log10(value + errors[i]) - log10(value))
-    return relative_errors
 
 
 def map_supply_to_error(supply_totals: dict, error_totals: dict) -> dict:
@@ -69,7 +55,7 @@ def get_uk_supply_uncertainty_distribution() -> LogNormalDistribution:
             y.append(yi)
     y_relative_error = get_relative_errors(x, y)
 
-    distribution = LogNormalDistribution.get_distribution_from_coordinate_list(y)
+    distribution = NormalDistribution.get_distribution_from_coordinate_list(y_relative_error)
 
     return distribution
 

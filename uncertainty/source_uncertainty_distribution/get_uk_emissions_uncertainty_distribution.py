@@ -2,8 +2,8 @@ from uncertainty.data_sources.uncertainty_data_sources import get_eu_emissions_e
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import \
     get_mean, \
     get_standard_deviation, \
-    ln
-from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution
+    ln, get_relative_errors
+from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution, NormalDistribution
 
 
 def get_uk_emissions_distribution(plot=None) -> LogNormalDistribution:
@@ -17,11 +17,12 @@ def get_uk_emissions_distribution(plot=None) -> LogNormalDistribution:
         x.append(float(value))
         ln_x.append(ln(float(value)))
         y.append(float(error))
+    y_relative_error = get_relative_errors(x, y)
 
-    mu = get_mean(ln_x)
-    sigma = get_standard_deviation(ln_x)
+    mu = get_mean(y_relative_error)
+    sigma = get_standard_deviation(y_relative_error)
 
-    return LogNormalDistribution(mu, sigma)
+    return NormalDistribution(mu, sigma)
 
 
 if __name__ == '__main__':
