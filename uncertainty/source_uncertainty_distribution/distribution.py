@@ -57,7 +57,7 @@ class NormalDistribution(Distribution):
         super().__init__(mu, sigma)
 
     def get_observation(self):
-        return
+        return random.normalvariate(self.mu, self.sigma)
 
     def get_pdf_line(self, x: list):
         pdf = [(numpy.exp(-(x_i - self.mu) ** 2 / (2 * self.sigma ** 2))
