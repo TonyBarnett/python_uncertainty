@@ -116,7 +116,7 @@ def get_r_squared(x: list, y: list) -> float:
 
 def get_relative_errors(values: list, errors: list) -> list:
     """
-    log10((x + \Delta(x)) / x)
+    \Delta(x) / x
      x is the value and \Delta x is the error
     :param values:
     :param errors:
