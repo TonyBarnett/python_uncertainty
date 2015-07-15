@@ -22,7 +22,7 @@ def get_uk_emissions_distribution(plot=None) -> LogNormalDistribution:
     mu = get_mean(y_relative_error)
     sigma = get_standard_deviation(y_relative_error)
 
-    return NormalDistribution(mu, sigma)
+    return LogNormalDistribution(mu, sigma)
 
 
 if __name__ == '__main__':
