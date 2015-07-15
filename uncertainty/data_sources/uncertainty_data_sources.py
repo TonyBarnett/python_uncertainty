@@ -43,18 +43,18 @@ def get_uk_supply(year) -> dict:
     return values
 
 
-def get_uk_supply_error(year) -> dict:
+def get_uk_supply_error(year=None) -> dict:
     file_name = UNCERTAINTY_DIR + "Annual Business Survey_2008-2013.xlsx"
 
     wb = load_workbook(file_name)
-    labels = _get_data_from_workbook(wb, "Quality Measures", "B14", "B5532")
-    years = _get_data_from_workbook(wb, "Quality Measures", "D14", "D5532")
-    raw_data = _get_data_from_workbook(wb, "Quality Measures", "G14", "G5532")
+    labels = _get_data_from_workbook(wb, "Quality Measures", "B14", "B5332")
+    years = _get_data_from_workbook(wb, "Quality Measures", "D14", "D5332")
+    raw_data = _get_data_from_workbook(wb, "Quality Measures", "G14", "G5332")
 
     data = dict()
     label = ""
     for i, item in enumerate(raw_data):
-        if years[i] != str(year):
+        if year and years[i] != str(year):
             continue
         if labels[i]:
             label = labels[i]
