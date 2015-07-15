@@ -1,4 +1,6 @@
 import logging
+import multiprocessing
+import time
 
 from uncertainty.data_structures.get import get_data_source_of_type
 from uncertainty.data_structures.populate import populate_source_data_of_type
@@ -44,6 +46,26 @@ def get_perturb_source_data(source_data):
     return perturbed_data
 
 
+def process_worker(source_data, percent_complete, input_year, pipe_end):
+    logging.basicConfig(format='%(message)s - %(asctime)-15s', level=logging.DEBUG)
+
+    while True:
+        run_number = pipe_end.recv()
+        if run_number is None:
+            return
+        if run_number % percent_complete == 0:
+            logging.debug("{0}% complete".format(run_number / percent_complete))
+
+        perturbed_data = get_perturb_source_data(source_data)
+        mapped_data = map_source_data_matrix(perturbed_data)
+
+        uk_consumption = mapped_data["consumption"]["UK"]
+        uk_production = mapped_data["production"]["UK"]
+        uk_emissions = mapped_data["emissions"]["UK"]
+        intensities = run_single_region_model(uk_production, uk_consumption, uk_emissions)
+        write_intensities_to_sql(intensities, run_number, input_year, "Single Region")
+        pipe_end.send("hit me")
+
 if __name__ == '__main__':
     logging.basicConfig(format='%(message)s - %(asctime)-15s', level=logging.DEBUG)
 
@@ -59,6 +81,7 @@ if __name__ == '__main__':
     #     make a new perturbed matrix
     #     map the perturbed matrix
     #   run two cf models
+    process_count = 3
 
     for input_year in INPUT_YEARS:
         logging.debug("year: {0}".format(input_year))
@@ -71,17 +94,35 @@ if __name__ == '__main__':
 
         logging.debug("running Monte Carlo...")
         percent_complete = NUMBER_OF_ITERATIONS / 100
-        for run_number in range(NUMBER_OF_ITERATIONS):
-            if run_number % percent_complete == 0:
-                logging.debug("{0}% complete".format(100 * run_number / percent_complete))
-            perturbed_data = get_perturb_source_data(source_data)
-            mapped_data = map_source_data_matrix(perturbed_data)
+        run_number_queue = [x for x in range(NUMBER_OF_ITERATIONS)]
+        pipe_process = list()
+        for _ in range(process_count):
+            mine, theirs = multiprocessing.Pipe(duplex=True)
+            process = multiprocessing.Process(target=process_worker, kwargs={"source_data": source_data,
+                                                                             "percent_complete": percent_complete,
+                                                                             "input_year": input_year,
+                                                                             "pipe_end": theirs
+                                                                             })
+            process.start()
+            pipe_process.append({'pipe': mine, 'process': process})
 
-            uk_consumption = mapped_data["consumption"]["UK"]
-            uk_production = mapped_data["production"]["UK"]
-            uk_emissions = mapped_data["emissions"]["UK"]
-            intensities = run_single_region_model(uk_production, uk_consumption, uk_emissions)
-            write_intensities_to_sql(intensities, run_number, input_year, "Single Region")
+        for pp in pipe_process:
+            thing = run_number_queue.pop()
+            # pp["pipe"].send(thing)
+            pp["pipe"].send(thing)
             # run_two_region_model(year)
+        while pipe_process:
+            for pp in pipe_process:
+                if pp["pipe"].poll():
+                    pp["pipe"].recv()
+                    if run_number_queue:
+                        message = run_number_queue.pop()
+                        pp["pipe"].send(message)
+                    else:
+                        pp["pipe"].send(None)
+
+                    # pp["pipe"].send(message)
+            time.sleep(1)
+            pipe_process = [x for x in pipe_process if x["process"].is_alive()]
 
     logging.debug("finished")
