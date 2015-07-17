@@ -1,6 +1,6 @@
 from collections import Counter
 
-from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution, NormalDistribution
+from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply, get_uk_supply_error
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_ancestors_and_self, clean_totals, \
     get_relative_errors

@@ -1,4 +1,4 @@
-from data_sanitation import clean_value
+from utility_functions.data_sanitation import clean_value
 from .data_structures import Data, ImportData, EmissionsData, BaseData
 from ..data_sources.model_data_sources import get_source_matrix_of_type
 

@@ -3,7 +3,7 @@ from uncertainty.source_uncertainty_distribution.uncertainty_functions import \
     get_mean, \
     get_standard_deviation, \
     ln, get_relative_errors
-from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution, NormalDistribution
+from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution
 
 
 def get_uk_emissions_distribution(plot=None) -> LogNormalDistribution:

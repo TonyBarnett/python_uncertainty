@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from numpy import ndarray
+
 from numpy.matrixlib import matrix
 
 

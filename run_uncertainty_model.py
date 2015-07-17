@@ -98,17 +98,15 @@ if __name__ == '__main__':
         pipe_process = list()
         for _ in range(process_count):
             mine, theirs = multiprocessing.Pipe(duplex=True)
-            process = multiprocessing.Process(target=process_worker, kwargs={"source_data": source_data,
-                                                                             "percent_complete": percent_complete,
-                                                                             "input_year": input_year,
-                                                                             "pipe_end": theirs
-                                                                             })
+            process = multiprocessing.Process(target=process_worker, kwargs=dict(source_data=source_data,
+                                                                                 percent_complete=percent_complete,
+                                                                                 input_year=input_year,
+                                                                                 pipe_end=theirs))
             process.start()
             pipe_process.append({'pipe': mine, 'process': process})
 
         for pp in pipe_process:
             thing = run_number_queue.pop()
-            # pp["pipe"].send(thing)
             pp["pipe"].send(thing)
             # run_two_region_model(year)
         while pipe_process:

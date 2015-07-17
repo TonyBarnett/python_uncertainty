@@ -3,8 +3,8 @@ from math import log as ln
 import multiprocessing
 from numpy import polyfit, mean, std
 
-from data_sanitation import clean_value
-from range_operators import float_range
+from utility_functions.data_sanitation import clean_value
+from utility_functions.range_operators import float_range
 
 
 def get_ancestors_and_self(key: str) -> list:

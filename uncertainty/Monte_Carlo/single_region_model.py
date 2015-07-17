@@ -1,5 +1,5 @@
 from uncertainty.matrix import Matrix, Vector
-from models import single_region
+from IOModel.models import single_region
 import numpy
 
 
