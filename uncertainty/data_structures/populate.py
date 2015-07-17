@@ -1,6 +1,7 @@
 from utility_functions.data_sanitation import clean_value
-from .data_structures import Data, ImportData, EmissionsData, BaseData
+from .data_structures import Data, ImportData, EmissionsData, BaseData, TotalsOnlyData
 from ..data_sources.model_data_sources import get_source_matrix_of_type
+from utility_functions.data_sanitation import _is_number
 
 
 def check_only_one_classification_system(system: list):
@@ -71,8 +72,33 @@ def populate_emissions_source_data(source_data_item: EmissionsData):
     source_data_item.add_data_from_tuple(data)
 
 
+def make_constraints(data) -> dict:
+    """
+    for each known cell, make a constraint such that cell(row_index, col_index) == total
+    :param data:
+    :return:
+    """
+    conditions = dict()
+    for row_index, row_data in enumerate(data):
+        for col_index, value in enumerate(row_data):
+            if value and _is_number(value):
+                conditions[(row_index, col_index)] = value
+    return conditions
+
+
+def populate_totals_only_source_data(source_data_item: TotalsOnlyData):
+    data, row_totals, column_totals = get_source_matrix_of_type(source_data_item.type_,
+                                                                source_data_item.region,
+                                                                source_data_item.year)
+    constraints = make_constraints(data)
+    source_data_item.set_row_and_column_totals(row_totals, column_totals)
+    source_data_item.set_constraints(constraints)
+
+
 def populate_source_data_of_type(source_data_item: BaseData):
-    if source_data_item.type_ == "emissions":
+    if source_data_item.type_ == "production" and source_data_item.region == "UK":
+        populate_totals_only_source_data(source_data_item)
+    elif source_data_item.type_ == "emissions":
         populate_emissions_source_data(source_data_item)
     elif source_data_item.type_ == "import":
         populate_import_source_data(source_data_item)

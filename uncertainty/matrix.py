@@ -132,9 +132,28 @@ class Vector(MatrixVector):
         vec.keys = col_keys
         return vec
 
+    @classmethod
+    def create_vector_from_dict(cls, data: dict):
+        source_keys = MatrixVector.sort_list_alphabetically(data.keys())
+        keys = OrderedDict()
+        data_as_list = list()
+        for key_counter, key in enumerate(source_keys):
+            keys[key] = key_counter
+            if data[key] == "c":
+                data_as_list.append("c")
+            else:
+                data_as_list.append(float(data[key]))
+
+        vec = super().get_new_matrix([data_as_list])
+        vec.keys = keys
+        return vec
+
     def __getitem__(self, key):
         # elements is a (1, n) matrix so is indexed (0, i)
         return self.elements[0, self.keys[key]]
+
+    def __len__(self):
+        return len(self.keys)
 
 
 def create_matrix_from_lists(row_keys, col_keys):

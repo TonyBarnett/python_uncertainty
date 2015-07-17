@@ -1,4 +1,5 @@
 import regex
+from openpyxl import load_workbook, workbook
 
 
 def _base_26_number_plus_1(number: list) -> list:
@@ -93,3 +94,6 @@ def _get_data_from_workbook(workbook, worksheet_name: str, start_cell: str, end_
         values.append(str(ws[cell].value))
     return tuple(values)
 
+
+def get_workbook(name: str) -> workbook:
+    return load_workbook(name)

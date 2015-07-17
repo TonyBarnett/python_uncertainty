@@ -1,5 +1,7 @@
+import os
 import pymongo
 from .sql import read_from_sql, build_source_query, build_import_query
+from .excel import _get_cell_in_range, _get_data_from_workbook, get_workbook
 
 
 def get_map(map_collection: str='Plain_KNN_Without_Ancestors_k_3'):
@@ -36,6 +38,25 @@ def _build_imports_query(source_region=None, target_region=None, year=None) -> s
     return build_import_query(query, source_region, target_region, year)
 
 
+def get_uk_supply(year) -> tuple:
+    """
+
+    :param year:
+    :return: (data, row_totals, col_totals), where row and column totals are dicts
+    """
+    wb = get_workbook(os.environ["dropboxRoot"] +
+                      "\\IO Model source data\\Source data\\Source data files\\UKSupply_source.xlsx")
+
+    data = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D8", "BO71")
+    row_keys = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "B8", "B71")
+    row_totals = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "BQ8", "BQ71")
+
+    column_keys = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D6", "BO6")
+    col_totals = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D73", "BO73")
+
+    return data, dict(zip(row_keys, row_totals)), dict(zip(column_keys, col_totals))
+
+
 def get_source_matrix_of_type(type_, region=None, year=None, target_region=None) -> tuple:
     if type_ == "consumption":
         return get_source_consumption(region, year)
@@ -54,7 +75,10 @@ def get_source_consumption(region=None, year=None) -> tuple:
 
 
 def get_source_production(region=None, year=None) -> tuple:
-    return read_from_sql(_build_production_query(region, year), db="IOModel")
+    if region == "UK":
+        return get_uk_supply(year)
+    else:
+        return read_from_sql(_build_production_query(region, year), db="IOModel")
 
 
 def get_source_emissions(region=None, year=None) -> tuple:

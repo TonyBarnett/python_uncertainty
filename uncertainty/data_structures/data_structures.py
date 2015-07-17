@@ -1,5 +1,7 @@
+import numpy
 from ..get_new_random_matrix import get_new_perturbed_matrix, get_new_perturbed_vector
 from ..matrix import Matrix, Vector
+from IOModel.matrix_balancing import ras, cras
 
 
 class BaseData:
@@ -96,3 +98,33 @@ class EmissionsData(BaseData):
 
     def add_data_from_tuple(self, data):
         self.source_data = Vector.create_vector_from_tuple(data)
+
+
+class TotalsOnlyData(BaseData):
+    def __init__(self, year, region, type_):
+        super().__init__(year, region, type_)
+        self.row_totals = None
+        self.column_totals = None
+        self.constraints = dict()
+
+    def get_new_perturbed_matrix(self):
+        """
+        perturb the row and column totals, then use RAS to guess at a new matrix and return that
+        :return:
+        """
+        perturbed_row_totals = get_new_perturbed_vector(self.row_totals, self.distribution)
+        perturbed_column_totals = get_new_perturbed_vector(self.column_totals, self.distribution)
+        perturbed_constraints = {key: float(value) + float(value) * self.distribution.get_observation()
+                                 for key, value in self.constraints.items()}
+
+        source_data = cras.run_cras(numpy.matrix(perturbed_row_totals.elements.A1).T,
+                                    numpy.matrix(perturbed_column_totals.elements.A1).T,
+                                    perturbed_constraints)
+        return source_data
+
+    def set_row_and_column_totals(self, row_totals: dict, column_totals: dict):
+        self.row_totals = Vector.create_vector_from_dict(row_totals)
+        self.column_totals = Vector.create_vector_from_dict(column_totals)
+
+    def set_constraints(self, constraints):
+        self.constraints = constraints

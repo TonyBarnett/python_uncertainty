@@ -66,6 +66,7 @@ def process_worker(source_data, percent_complete, input_year, pipe_end):
         write_intensities_to_sql(intensities, run_number, input_year, "Single Region")
         pipe_end.send("hit me")
 
+
 if __name__ == '__main__':
     logging.basicConfig(format='%(message)s - %(asctime)-15s', level=logging.DEBUG)
 
@@ -96,6 +97,7 @@ if __name__ == '__main__':
         percent_complete = NUMBER_OF_ITERATIONS / 100
         run_number_queue = [x for x in range(NUMBER_OF_ITERATIONS)]
         pipe_process = list()
+
         for _ in range(process_count):
             mine, theirs = multiprocessing.Pipe(duplex=True)
             process = multiprocessing.Process(target=process_worker, kwargs=dict(source_data=source_data,
