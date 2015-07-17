@@ -117,10 +117,14 @@ class TotalsOnlyData(BaseData):
         perturbed_constraints = {key: float(value) + float(value) * self.distribution.get_observation()
                                  for key, value in self.constraints.items()}
 
-        source_data = cras.run_cras(numpy.matrix(perturbed_row_totals.elements.A1).T,
-                                    numpy.matrix(perturbed_column_totals.elements.A1).T,
-                                    perturbed_constraints)
-        return source_data
+        perturbed_data = Data(self.year, self.region, self.type_)
+        perturbed_data.distribution = self.distribution
+        perturbed_data.system = self.system
+        perturbed_data.source_data = \
+            Matrix.get_new_matrix(cras.run_cras(numpy.matrix(perturbed_row_totals.elements.A1).T,
+                                                numpy.matrix(perturbed_column_totals.elements.A1).T,
+                                                perturbed_constraints))
+        return perturbed_data
 
     def set_row_and_column_totals(self, row_totals: dict, column_totals: dict):
         self.row_totals = Vector.create_vector_from_dict(row_totals)
