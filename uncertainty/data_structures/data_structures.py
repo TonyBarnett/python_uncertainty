@@ -135,3 +135,6 @@ class TotalsOnlyData(BaseData):
 
     def set_constraints(self, constraints):
         self.constraints = constraints
+
+    def add_data_from_tuple(self, data):
+        self.source_data = Matrix.create_matrix_from_tuple(data)

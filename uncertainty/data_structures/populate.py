@@ -92,18 +92,30 @@ def populate_totals_only_source_data(source_data_item: TotalsOnlyData):
                                                                         source_data_item.year)
 
     # TODO clean the row and column keys and update data to reflect.
+
+    #  TODO FIX ME
     data.reshape(len(row_totals), len(column_totals))
     data_as_dict = {row: {column: data[i * len(row_totals) + j]
                           for j, column in enumerate(column_totals.keys())}
                     for i, row in enumerate(row_totals.keys())}
 
-    clean_data_as_dict = OrderedDict()
-
     clean_data = list()
-    for row, columns in data_as_dict.items():
-        clean_row = clean_value(system, row)
-        for column, value in columns.items():
-            clean_column = clean_value(system, column)
+    for row in row_totals:
+        clean_rows = clean_value(system, row)
+        len_rows = len(clean_rows)
+
+        for column, in column_totals:
+            clean_columns = clean_value(system, column)
+            len_columns = len(clean_columns)
+            if data_as_dict[row][column] == "c":
+                # make all values confidential.
+                for clean_row in clean_rows:
+                    for clean_col in clean_columns:
+                        clean_data.append((clean_row, clean_col, "c"
+                        if data_as_dict[row][column] == "c"
+                        else data_as_dict[row][column] / (len_rows * len_columns)))
+    source_data_item.add_data_from_tuple(tuple(data))
+
             
 
     # this is horrible and hacky but it's the only way I can think of without increasing the number of db hits
