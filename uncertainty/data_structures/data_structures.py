@@ -119,6 +119,8 @@ class TotalsOnlyData(BaseData):
         """
         perturbed_row_totals = get_new_perturbed_vector(self.row_totals, self.distribution)
         perturbed_column_totals = get_new_perturbed_vector(self.column_totals, self.distribution)
+        # perturbed_row_totals = get_new_perturbed_vector(Vector.create_vector_from_dict(self.row_totals), self.distribution)
+        # perturbed_column_totals = get_new_perturbed_vector(Vector.create_vector_from_dict(self.column_totals), self.distribution)
         perturbed_constraints = {key: float(value) + float(value) * self.distribution.get_observation()
                                  for key, value in self.constraints.items()}
 

@@ -93,37 +93,38 @@ def populate_totals_only_source_data(source_data_item: TotalsOnlyData):
 
     # TODO clean the row and column keys and update data to reflect.
 
-    #  TODO FIX ME
-    data.reshape(len(row_totals), len(column_totals))
     data_as_dict = {row: {column: data[i * len(row_totals) + j]
                           for j, column in enumerate(column_totals.keys())}
                     for i, row in enumerate(row_totals.keys())}
 
+    clean_column_totals = {clean_column: float(total) / len(clean_value(system, column))
+                           for column, total in column_totals.items()
+                           for clean_column in clean_value(system, column)
+                           }
+
+    clean_row_totals = {clean_row: float(total) / len(clean_value(system, row))
+                        for row, total in row_totals.items()
+                        for clean_row in clean_value(system, row)
+                        }
+
     clean_data = list()
-    for row in row_totals:
+    for row in row_totals.keys():
         clean_rows = clean_value(system, row)
         len_rows = len(clean_rows)
 
-        for column, in column_totals:
+        for column in column_totals.keys():
             clean_columns = clean_value(system, column)
             len_columns = len(clean_columns)
-            if data_as_dict[row][column] == "c":
-                # make all values confidential.
-                for clean_row in clean_rows:
-                    for clean_col in clean_columns:
-                        clean_data.append((clean_row, clean_col, "c"
-                        if data_as_dict[row][column] == "c"
-                        else data_as_dict[row][column] / (len_rows * len_columns)))
-    source_data_item.add_data_from_tuple(tuple(data))
 
-            
-
-    # this is horrible and hacky but it's the only way I can think of without increasing the number of db hits
-    # check there's only one classification system per input table, then assign it to the source_data_item
+            for clean_rows in clean_rows:
+                for clean_col in clean_columns:
+                    clean_data.append((clean_rows, clean_col, "c"
+                    if data_as_dict[row][column] == "c"
+                    else float(data_as_dict[row][column]) / (len_rows * len_columns)))
+    source_data_item.add_data_from_tuple(tuple(clean_data))
     source_data_item.system = system
-
     constraints = make_constraints(data)
-    source_data_item.set_row_and_column_totals(row_totals, column_totals)
+    source_data_item.set_row_and_column_totals(clean_row_totals, clean_column_totals)
     source_data_item.set_constraints(constraints)
 
 
