@@ -82,7 +82,7 @@ if __name__ == '__main__':
     #     make a new perturbed matrix
     #     map the perturbed matrix
     #   run two cf models
-    process_count = 3
+    process_count = 1
 
     for input_year in INPUT_YEARS:
         logging.debug("year: {0}".format(input_year))

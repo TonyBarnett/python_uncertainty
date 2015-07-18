@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from utility_functions.data_sanitation import clean_value
 from .data_structures import Data, ImportData, EmissionsData, BaseData, TotalsOnlyData
 from ..data_sources.model_data_sources import get_source_matrix_of_type
@@ -54,8 +55,7 @@ def populate_import_source_data(source_data_item: ImportData):
 def populate_emissions_source_data(source_data_item: EmissionsData):
     source_data = get_source_matrix_of_type(source_data_item.type_,
                                             source_data_item.region,
-                                            source_data_item.year
-                                            )
+                                            source_data_item.year)
 
     # this is horrible and hacky but it's the only way I can think of without increasing the number of db hits
     # check there's only one classification system per input table, then assign it to the source_data_item
@@ -87,9 +87,29 @@ def make_constraints(data) -> dict:
 
 
 def populate_totals_only_source_data(source_data_item: TotalsOnlyData):
-    data, row_totals, column_totals = get_source_matrix_of_type(source_data_item.type_,
-                                                                source_data_item.region,
-                                                                source_data_item.year)
+    data, row_totals, column_totals, system = get_source_matrix_of_type(source_data_item.type_,
+                                                                        source_data_item.region,
+                                                                        source_data_item.year)
+
+    # TODO clean the row and column keys and update data to reflect.
+    data.reshape(len(row_totals), len(column_totals))
+    data_as_dict = {row: {column: data[i * len(row_totals) + j]
+                          for j, column in enumerate(column_totals.keys())}
+                    for i, row in enumerate(row_totals.keys())}
+
+    clean_data_as_dict = OrderedDict()
+
+    clean_data = list()
+    for row, columns in data_as_dict.items():
+        clean_row = clean_value(system, row)
+        for column, value in columns.items():
+            clean_column = clean_value(system, column)
+            
+
+    # this is horrible and hacky but it's the only way I can think of without increasing the number of db hits
+    # check there's only one classification system per input table, then assign it to the source_data_item
+    source_data_item.system = system
+
     constraints = make_constraints(data)
     source_data_item.set_row_and_column_totals(row_totals, column_totals)
     source_data_item.set_constraints(constraints)

@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import os
 import pymongo
 from .sql import read_from_sql, build_source_query, build_import_query
@@ -54,7 +55,7 @@ def get_uk_supply(year) -> tuple:
     column_keys = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D6", "BO6")
     col_totals = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D73", "BO73")
 
-    return data, dict(zip(row_keys, row_totals)), dict(zip(column_keys, col_totals))
+    return data, OrderedDict(zip(row_keys, row_totals)), OrderedDict(zip(column_keys, col_totals)), "SIC4"
 
 
 def get_source_matrix_of_type(type_, region=None, year=None, target_region=None) -> tuple:

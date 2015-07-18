@@ -101,11 +101,16 @@ class EmissionsData(BaseData):
 
 
 class TotalsOnlyData(BaseData):
-    def __init__(self, year, region, type_):
-        super().__init__(year, region, type_)
+    def __init__(self, year, region, type_, system=None):
+        super().__init__(year, region, type_, system)
         self.row_totals = None
         self.column_totals = None
         self.constraints = dict()
+        self.data_source = None
+
+    def set_row_and_column_totals(self, row_totals: dict, column_totals: dict):
+        self.row_totals = Vector.create_vector_from_dict(row_totals)
+        self.column_totals = Vector.create_vector_from_dict(column_totals)
 
     def get_new_perturbed_matrix(self):
         """
@@ -124,11 +129,9 @@ class TotalsOnlyData(BaseData):
             Matrix.get_new_matrix(cras.run_cras(numpy.matrix(perturbed_row_totals.elements.A1).T,
                                                 numpy.matrix(perturbed_column_totals.elements.A1).T,
                                                 perturbed_constraints))
+        perturbed_data.source_data.column_keys = self.column_totals.keys
+        perturbed_data.source_data.row_keys = self.row_totals.keys
         return perturbed_data
-
-    def set_row_and_column_totals(self, row_totals: dict, column_totals: dict):
-        self.row_totals = Vector.create_vector_from_dict(row_totals)
-        self.column_totals = Vector.create_vector_from_dict(column_totals)
 
     def set_constraints(self, constraints):
         self.constraints = constraints
