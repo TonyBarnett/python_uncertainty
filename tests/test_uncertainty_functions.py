@@ -1,4 +1,5 @@
 import unittest
+from uncertainty.data_sources.uncertainty_data_sources import _is_number, _clean_uk_supply_error_value
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_mean, get_ancestors_and_self
 
 
@@ -48,3 +49,65 @@ class GetAncestorsAndSelf(unittest.TestCase):
     def test_underscore(self):
         foo = get_ancestors_and_self("22_11")
         self.assertListEqual(foo, ["22_11", "22_1", "22", "2"])
+
+
+class IsNumber(unittest.TestCase):
+    def test_type(self):
+        is_it = _is_number("2")
+        self.assertIs(type(is_it), bool)
+
+    def test_simple_case(self):
+        is_it = _is_number("1")
+        self.assertTrue(is_it)
+
+    def test_none(self):
+        is_it = _is_number(None)
+        self.assertFalse(is_it)
+
+    def test_nan(self):
+        is_it = _is_number("Not a number")
+        self.assertFalse(is_it)
+
+    def test_alphanum(self):
+        is_it = _is_number("1 number")
+        self.assertFalse(is_it)
+
+    def test_zero(self):
+        is_it = _is_number("0")
+        self.assertTrue(is_it)
+
+    def test_float(self):
+        is_it = _is_number("0.12")
+        self.assertTrue(is_it)
+
+    def test_too_many_dots(self):
+        is_it = _is_number("0.5.1")
+        self.assertFalse(is_it)
+
+    def test_underscored(self):
+        is_it = _is_number("0_5")
+        self.assertTrue(is_it)
+
+    def test_too_many_underscores(self):
+        is_it = _is_number("0_5_4")
+        self.assertFalse(is_it)
+
+    def test_mixed_dot_underscore(self):
+        is_it = _is_number("0.5_1")
+        self.assertFalse(is_it)
+
+
+class CleanUkSupplErrorValue(unittest.TestCase):
+    def test_number(self):
+        is_it = _clean_uk_supply_error_value(0.5)
+        self.assertEqual(is_it, 0.5)
+
+    def test_star(self):
+        is_it = _clean_uk_supply_error_value("*")
+        self.assertEqual(is_it, 0)
+
+    def test_confidential_value(self):
+        is_it = _clean_uk_supply_error_value("-")
+        self.assertEqual(is_it, "c")
+
+
