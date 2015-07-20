@@ -112,21 +112,43 @@ class TotalsOnlyData(BaseData):
         self.row_totals = Vector.create_vector_from_dict(row_totals)
         self.column_totals = Vector.create_vector_from_dict(column_totals)
 
+    @staticmethod
+    def _make_vector_sums_equal(vector1: Vector, vector2: Vector) -> tuple:
+        sum_vector1 = sum(x for x in vector1.elements.A1)
+        sum_vector2 = sum(x for x in vector2.elements.A1)
+
+        half_difference = (sum_vector1 - sum_vector2) / 2
+
+        new_vector1 = Vector([x - (half_difference/len(vector1.elements.A1)) for x in vector1.elements.A1])
+        new_vector2 = Vector([x + (half_difference/len(vector2.elements.A1)) for x in vector2.elements.A1])
+
+        return new_vector1, new_vector2
+
+    def _get_new_totals_vector(self):
+        perturbed_row_totals = get_new_perturbed_vector(self.row_totals, self.distribution)
+        perturbed_column_totals = get_new_perturbed_vector(self.column_totals, self.distribution)
+        # TODO does one need to adjust the known elements of the matrix to the new totals?
+        #  I'm assuming not
+        return TotalsOnlyData._make_vector_sums_equal(perturbed_row_totals, perturbed_column_totals)
+
+    def _create_data_with_same_internals_as_self(self):
+        perturbed_data = Data(self.year, self.region, self.type_)
+        perturbed_data.distribution = self.distribution
+        perturbed_data.system = self.system
+        return perturbed_data
+
     def get_new_perturbed_matrix(self):
         """
         perturb the row and column totals, then use RAS to guess at a new matrix and return that
         :return:
         """
-        perturbed_row_totals = get_new_perturbed_vector(self.row_totals, self.distribution)
-        perturbed_column_totals = get_new_perturbed_vector(self.column_totals, self.distribution)
-        # perturbed_row_totals = get_new_perturbed_vector(Vector.create_vector_from_dict(self.row_totals), self.distribution)
-        # perturbed_column_totals = get_new_perturbed_vector(Vector.create_vector_from_dict(self.column_totals), self.distribution)
+        perturbed_row_totals, perturbed_column_totals = self._get_new_totals_vector()
+
         perturbed_constraints = {key: float(value) + float(value) * self.distribution.get_observation()
                                  for key, value in self.constraints.items()}
 
-        perturbed_data = Data(self.year, self.region, self.type_)
-        perturbed_data.distribution = self.distribution
-        perturbed_data.system = self.system
+        perturbed_data = self._create_data_with_same_internals_as_self()
+
         perturbed_data.source_data = \
             Matrix.get_new_matrix(cras.run_cras(numpy.matrix(perturbed_row_totals.elements.A1).T,
                                                 numpy.matrix(perturbed_column_totals.elements.A1).T,
