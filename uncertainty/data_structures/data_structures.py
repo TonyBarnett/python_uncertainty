@@ -208,8 +208,8 @@ class TotalsOnlyDataSource(BaseDataSource):
         perturbed_data = self._create_data_with_same_internals_as_self()
 
         perturbed_data.source_data = \
-            Matrix.get_new_matrix(cras.run_cras(numpy.matrix(perturbed_row_totals.elements.A1).T,
-                                                numpy.matrix(perturbed_column_totals.elements.A1).T,
+            Matrix.get_new_matrix(cras.run_cras(numpy.matrix(perturbed_row_totals.elements.A).T,
+                                                numpy.matrix(perturbed_column_totals.elements.A).T,
                                                 perturbed_constraints))
         perturbed_data.source_data.column_keys = self.column_totals.keys
         perturbed_data.source_data.row_keys = self.row_totals.keys
