@@ -1,3 +1,4 @@
+from IOModel import matrix_functions
 import numpy
 from ..get_new_random_matrix import get_new_perturbed_matrix, get_new_perturbed_vector
 from ..matrix import Matrix, Vector
@@ -124,11 +125,20 @@ class TotalsOnlyDataSource(BaseDataSource):
 
         return new_vector1, new_vector2
 
-    def _get_new_totals_vector(self):
-        perturbed_row_totals = get_new_perturbed_vector(self.row_totals, self.distribution)
-        perturbed_column_totals = get_new_perturbed_vector(self.column_totals, self.distribution)
-        # TODO does one need to adjust the known elements of the matrix to the new totals?
-        #  I'm assuming not
+    def _perturb_certain_elements(self, vector: Vector, elements_to_perturb: list) -> Vector:
+        perturbations = list()
+        for row, value in vector:
+            t = value
+            if row in elements_to_perturb:
+                t += self.row_totals * self.distribution.get_observation()
+            perturbations.append((row, self.row_totals[row] * t))
+        return Vector.create_vector_from_tuple(tuple(perturbations))
+
+    def _get_new_totals_vector(self, row_sum_perturbations, rows_to_perturb, col_sum_perturbations, columns_to_perturb):
+
+        perturbed_row_totals = self._perturb_certain_elements(row_sum_perturbations, rows_to_perturb)
+        perturbed_column_totals = self._perturb_certain_elements(col_sum_perturbations, columns_to_perturb)
+
         return TotalsOnlyDataSource._make_vector_sums_equal(perturbed_row_totals, perturbed_column_totals)
 
     def _create_data_with_same_internals_as_self(self):
@@ -137,12 +147,60 @@ class TotalsOnlyDataSource(BaseDataSource):
         perturbed_data.system = self.system
         return perturbed_data
 
+    def _get_matrix_of_perturbations(self) -> Matrix:
+        """
+        make a matrix of perturbations, of the same properties as "self.source_data", unknowns will be zero
+        :return:
+        """
+        data = list()
+        for row, col, value in numpy.nditer(self.source_data.elements.A):
+            if str(value) == "c":
+                data.append((row, col, 0))
+            else:
+                data.append((row, col, float(value) * self.distribution.get_observation()))
+        return Matrix.create_matrix_from_tuple(tuple(data))
+
+    @staticmethod
+    def _find_cs_in_matrix(m: numpy.matrix):
+        """
+        get a list of rows and a list of columns containing unknowns
+        :param m:
+        :return:
+        """
+        rows = list()
+        columns = list()
+        for row, col, value in numpy.nditer(m.A):
+            if str(value) == "c":
+                rows.append(row)
+                columns.append(col)
+
+        return list(set(rows)), list(set(columns))
+
     def get_new_perturbed_matrix(self):
         """
         perturb the row and column totals, then use RAS to guess at a new matrix and return that
         :return:
         """
-        perturbed_row_totals, perturbed_column_totals = self._get_new_totals_vector()
+        # TODO perturb each known value, fix col and row sums, perturb row and col sums for rows/ cols with unknowns,
+        #  add the sum of a rows perturbations to the row sum and likewise column sum,
+        #  for each row and column with unknowns, add a random observations
+
+        # get matrix of perturbations,
+        # get row_sums and column_sums and add to original row and column sums
+        # work out which rows have unknowns
+        #   add random observation to each of these
+        perturbation_matrix = self._get_matrix_of_perturbations()
+
+        row_sum_perturbations = matrix_functions.get_row_sum(self.source_data.elements)
+        column_sum_perturbations = matrix_functions.get_col_sum(self.source_data.elements)
+
+        rows_to_perturb, columns_to_perturb = TotalsOnlyDataSource._find_cs_in_matrix(self.source_data)
+
+        perturbed_row_totals, perturbed_column_totals = self._get_new_totals_vector(row_sum_perturbations,
+                                                                                    rows_to_perturb,
+                                                                                    column_sum_perturbations,
+                                                                                    columns_to_perturb
+                                                                                    )
 
         perturbed_constraints = {key: float(value) + float(value) * self.distribution.get_observation()
                                  for key, value in self.constraints.items()}
