@@ -4,7 +4,7 @@ from ..matrix import Matrix, Vector
 from IOModel.matrix_balancing import ras, cras
 
 
-class BaseData:
+class BaseDataSource:
     def __init__(self, year, region, type_, system=None):
         self.year = year
         self.region = region
@@ -19,13 +19,13 @@ class BaseData:
     def get_new_empty_source_data_item(cls, source_data_item):
         """
         :param source_data_item:
-        :type source_data_item: BaseData
+        :type source_data_item: BaseDataSource
         :return:
         """
         return cls(source_data_item.year, source_data_item.region, source_data_item.type_)
 
 
-class Data(BaseData):
+class DataSource(BaseDataSource):
     def __init__(self, year, region, type_):
         super().__init__(year, region, type_)
         self.source_data = None
@@ -35,7 +35,7 @@ class Data(BaseData):
             self.source_data.set_element(row_key=source_value, col_key=target_value, value=value)
 
     def get_new_perturbed_matrix(self):
-        perturbed_data = Data(self.year, self.region, self.type_)
+        perturbed_data = DataSource(self.year, self.region, self.type_)
         perturbed_data.distribution = self.distribution
         perturbed_data.system = self.system
         perturbed_data.source_data = get_new_perturbed_matrix(self.source_data, self.distribution)
@@ -55,7 +55,7 @@ class Data(BaseData):
         self.source_data = Matrix.create_matrix_from_tuple(data)
 
 
-class ImportData(Data):
+class ImportDataSource(DataSource):
     def __init__(self, year, source_region, target_region, type_):
         super().__init__(year, None, type_)
         self.source_region = source_region
@@ -65,7 +65,7 @@ class ImportData(Data):
     def get_new_empty_source_data_item(cls, source_data_item):
         """
         :param source_data_item:
-        :type source_data_item: ImportData
+        :type source_data_item: ImportDataSource
         :return:
         """
         return cls(source_data_item.year,
@@ -74,14 +74,14 @@ class ImportData(Data):
                    source_data_item.type_)
 
 
-class EmissionsData(BaseData):
+class EmissionsDataSource(BaseDataSource):
     def __init__(self, year, region, type_):
         super().__init__(year, region, type_)
         self.source_data = None
 
     # OK this is named wrong but it makes things a lot easier to deal with and a vector is a 1D matrix anyway, right?!
     def get_new_perturbed_matrix(self):
-        perturbed_data = EmissionsData(self.year, self.region, self.type_)
+        perturbed_data = EmissionsDataSource(self.year, self.region, self.type_)
         perturbed_data.distribution = self.distribution
         perturbed_data.system = self.system
         perturbed_data.source_data = get_new_perturbed_vector(self.source_data, self.distribution)
@@ -100,13 +100,13 @@ class EmissionsData(BaseData):
         self.source_data = Vector.create_vector_from_tuple(data)
 
 
-class TotalsOnlyData(BaseData):
+class TotalsOnlyDataSource(BaseDataSource):
     def __init__(self, year, region, type_, system=None):
         super().__init__(year, region, type_, system)
         self.row_totals = None
         self.column_totals = None
         self.constraints = dict()
-        self.data_source = None
+        self.source_data = None
 
     def set_row_and_column_totals(self, row_totals: dict, column_totals: dict):
         self.row_totals = Vector.create_vector_from_dict(row_totals)
@@ -129,10 +129,10 @@ class TotalsOnlyData(BaseData):
         perturbed_column_totals = get_new_perturbed_vector(self.column_totals, self.distribution)
         # TODO does one need to adjust the known elements of the matrix to the new totals?
         #  I'm assuming not
-        return TotalsOnlyData._make_vector_sums_equal(perturbed_row_totals, perturbed_column_totals)
+        return TotalsOnlyDataSource._make_vector_sums_equal(perturbed_row_totals, perturbed_column_totals)
 
     def _create_data_with_same_internals_as_self(self):
-        perturbed_data = Data(self.year, self.region, self.type_)
+        perturbed_data = DataSource(self.year, self.region, self.type_)
         perturbed_data.distribution = self.distribution
         perturbed_data.system = self.system
         return perturbed_data

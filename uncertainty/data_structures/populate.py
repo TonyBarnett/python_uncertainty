@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from utility_functions.data_sanitation import clean_value
-from .data_structures import Data, ImportData, EmissionsData, BaseData, TotalsOnlyData
+from .data_structures import DataSource, ImportDataSource, EmissionsDataSource, BaseDataSource, TotalsOnlyDataSource
 from ..data_sources.model_data_sources import get_source_matrix_of_type
 from utility_functions.data_sanitation import _is_number
 
@@ -10,7 +10,7 @@ def check_only_one_classification_system(system: list):
         raise ValueError("{0} systems in file where there should exactly be one".format(len(set(system))))
 
 
-def populate_source_data(source_data_item: Data):
+def populate_source_data(source_data_item: DataSource):
     source_data = get_source_matrix_of_type(source_data_item.type_, source_data_item.region, source_data_item.year)
 
     # this is horrible and hacky but it's the only way I can think of without increasing the number of db hits
@@ -29,7 +29,7 @@ def populate_source_data(source_data_item: Data):
     source_data_item.add_data_from_tuple(tuple(data))
 
 
-def populate_import_source_data(source_data_item: ImportData):
+def populate_import_source_data(source_data_item: ImportDataSource):
     source_data = get_source_matrix_of_type(source_data_item.type_,
                                             source_data_item.region,
                                             source_data_item.year,
@@ -52,7 +52,7 @@ def populate_import_source_data(source_data_item: ImportData):
     source_data_item.add_data_from_tuple(tuple(data))
 
 
-def populate_emissions_source_data(source_data_item: EmissionsData):
+def populate_emissions_source_data(source_data_item: EmissionsDataSource):
     source_data = get_source_matrix_of_type(source_data_item.type_,
                                             source_data_item.region,
                                             source_data_item.year)
@@ -86,7 +86,7 @@ def make_constraints(data) -> dict:
     return conditions
 
 
-def populate_totals_only_source_data(source_data_item: TotalsOnlyData):
+def populate_totals_only_source_data(source_data_item: TotalsOnlyDataSource):
     data, row_totals, column_totals, system = get_source_matrix_of_type(source_data_item.type_,
                                                                         source_data_item.region,
                                                                         source_data_item.year)
@@ -128,7 +128,7 @@ def populate_totals_only_source_data(source_data_item: TotalsOnlyData):
     source_data_item.set_constraints(constraints)
 
 
-def populate_source_data_of_type(source_data_item: BaseData):
+def populate_source_data_of_type(source_data_item: BaseDataSource):
     if source_data_item.type_ == "production" and source_data_item.region == "UK":
         populate_totals_only_source_data(source_data_item)
     elif source_data_item.type_ == "emissions":

@@ -3,7 +3,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 import numpy
-from uncertainty.data_structures.populate import TotalsOnlyData, populate_totals_only_source_data
+from uncertainty.data_structures.populate import TotalsOnlyDataSource, populate_totals_only_source_data
 from uncertainty.matrix import Vector
 from uncertainty.source_uncertainty_distribution.distribution import NormalDistribution
 import uncertainty.source_uncertainty_distribution.distribution
@@ -13,7 +13,7 @@ class TotalsOnlyGetNewPerturbedMatrix(unittest.TestCase):
     def setUp(self):
         row_totals = OrderedDict((("1", 2), ("2", 5), ("3", 10)))
         column_totals = OrderedDict((("1", 1), ("2", 3), ("3", 5)))
-        self.matrix = TotalsOnlyData(2008, "UK", "production")
+        self.matrix = TotalsOnlyDataSource(2008, "UK", "production")
         self.matrix.add_data_from_tuple((
             ("1", "1", 1), ("1", "2", 2), ("1", "3", 1),
             ("2", "1", "c"), ("2", "2", 1), ("2", "3", "c"),
@@ -39,16 +39,16 @@ class TotalsOnlyMakeVectorSumsEqual(unittest.TestCase):
         self.vector2 = Vector([3, 6, 12])
 
     def test_type(self):
-        vector1, vector2 = TotalsOnlyData._make_vector_sums_equal(self.vector1, self.vector2)
+        vector1, vector2 = TotalsOnlyDataSource._make_vector_sums_equal(self.vector1, self.vector2)
         self.assertIs(type(vector1), Vector)
         self.assertIs(type(vector2), Vector)
 
     def test_sums_match(self):
-        vector1, vector2 = TotalsOnlyData._make_vector_sums_equal(self.vector1, self.vector2)
+        vector1, vector2 = TotalsOnlyDataSource._make_vector_sums_equal(self.vector1, self.vector2)
         # Arbitrary number of places to get around floating point precision
         self.assertAlmostEqual(sum(x for x in vector1.elements.A1), sum(x for x in vector2.elements.A1), places=5)
 
     def test_different_length_vectors(self):
         self.vector2 = Vector([3, 6, 12, 18])
-        vector1, vector2 = TotalsOnlyData._make_vector_sums_equal(self.vector1, self.vector2)
+        vector1, vector2 = TotalsOnlyDataSource._make_vector_sums_equal(self.vector1, self.vector2)
         self.assertAlmostEqual(sum(x for x in vector1.elements.A1), sum(x for x in vector2.elements.A1), places=5)

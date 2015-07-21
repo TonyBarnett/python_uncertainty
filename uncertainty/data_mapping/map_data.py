@@ -1,5 +1,5 @@
 from ..data_sources.model_data_sources import get_map
-from ..data_structures.data_structures import Data, EmissionsData, ImportData, TotalsOnlyData
+from ..data_structures.data_structures import DataSource, EmissionsDataSource, ImportDataSource, TotalsOnlyDataSource
 
 _MAP = get_map(map_collection="Other_NB_Without_Ancestors_multinomial_10")
 
@@ -8,7 +8,7 @@ def map_value(system: str, value: str) -> list:
     return _MAP[system][value]
 
 
-def map_emissions_data(source: EmissionsData, target: EmissionsData):
+def map_emissions_data(source: EmissionsDataSource, target: EmissionsDataSource):
     # Hard-code Censa 123 values
     totals = {str(i): 0 for i in range(1, 124)}
 
@@ -36,7 +36,7 @@ def get_maps_and_map_len_from_list(source: list, system_id: str) -> tuple:
     return map_, map_len
 
 
-def map_data(source: Data, target: Data):
+def map_data(source: DataSource, target: DataSource):
 
     # Hard-code Censa 123 values
     totals = {str(i): {str(j): 0 for j in range(1, 124)} for i in range(1, 124)}
@@ -60,11 +60,11 @@ def map_data(source: Data, target: Data):
     target.add_data_from_tuple(data)
 
 
-def map_imports_data(source: ImportData, target: ImportData):
+def map_imports_data(source: ImportDataSource, target: ImportDataSource):
     map_data(source, target)
 
 
-def map_uk_production_data(source: TotalsOnlyData, target: Data):
+def map_uk_production_data(source: TotalsOnlyDataSource, target: DataSource):
     # Hard-code Censa 123 values
     totals = {str(i): {str(j): 0 for j in range(1, 124)} for i in range(1, 124)}
 
