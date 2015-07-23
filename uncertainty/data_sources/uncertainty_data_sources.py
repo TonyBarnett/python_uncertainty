@@ -80,7 +80,7 @@ def get_eu_emissions_error_from_file(file_name: str,
     return data
 
 
-def get_eu_emissions_error() -> tuple:
+def get_uk_emissions_and_error() -> tuple:
     data = list()
     file_name = UNCERTAINTY_DIR + "UK_emissions_source_2004.xlsx"
     data += get_eu_emissions_error_from_file(file_name, "B2", "B73", "E2", "E73")
