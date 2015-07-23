@@ -1,13 +1,15 @@
-from collections import OrderedDict
 import logging
+from math import log as ln
+
 from matplotlib import pyplot
 from numpy import mean, std as stdev
 from utility_functions import clean_value, float_range
-from uncertainty.data_sources.model_data_sources import get_source_matrix_of_type
+
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply_error, get_uk_supply
 from uncertainty.data_structures.data_structures import DataSource
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_ancestors_and_self, linear_regression
-from math import log as ln
+from useful_scripts.plot_functions import plot, add_regression_line_to_graph
+from useful_scripts.regression_functions import get_upper_and_lower_stdev_regression_coefficients, get_stdev_y
 
 
 def get_cleaned_thing(system: str, dictionary_of_thing: dict) -> dict:
@@ -40,12 +42,18 @@ def map_things_together(thing1: dict, thing2: dict) -> list:
     return sorted(x_y)
 
 
-def add_regression_line_to_graph(a: float, b: float, x: list, colour: str="x"):
-    pyplot.hold(True)
-    sorted_x = [i for i in float_range(0.001, max(x))]
-    y = [a * ln(x_i) + b for x_i in sorted_x]
-    y = [y_i if y_i > 0.001 else 0.001 for y_i in y]
-    pyplot.plot(sorted_x, y, colour)
+def plot_x_y(x_y: list):
+    pyplot.figure()
+    x = list()
+    y = list()
+    for x_i, y_i in x_y:
+        x.append(x_i)
+        y.append((y_i + x_i) / x_i)
+
+    pyplot.plot(x, y, "kx")
+    pyplot.xlabel("UK supply")
+    pyplot.ylabel("(\Delta x + x) / x")
+    pyplot.tight_layout(pad=0.5)
 
 
 if __name__ == '__main__':
@@ -61,6 +69,8 @@ if __name__ == '__main__':
 
     x_y = map_things_together(clean_supply, clean_error)
 
+    plot_x_y(x_y)
+
     x_y_counter = dict()
     for x, y in x_y:
         if x not in x_y_counter:
@@ -72,28 +82,30 @@ if __name__ == '__main__':
 
     x = list()
     y1 = list()
-    y2 = list()
-    y3 = list()
     st_dev = list()
     for a in x_y_counter.keys():
         x.append(a)
         y1.append(ln(x_mean[a]))
-        y2.append(ln(x_mean[a] + x_stdev[a]))
-        y3.append(ln(x_mean[a] - x_stdev[a]))
         st_dev.append(x_stdev[a])
 
+    stdev_upper_a, stdev_upper_b, stdev_lower_a, stdev_lower_b = \
+        get_upper_and_lower_stdev_regression_coefficients(x_y_counter, x_mean, x_stdev)
+
+    st_dev_upper_y = get_stdev_y(x_y_counter, x_mean, x_stdev, 1.96)
+    st_dev_lower_y = get_stdev_y(x_y_counter, x_mean, x_stdev, -1.96)
+
     mean_a, mean_b = linear_regression([ln(x_i) for x_i in x], y1)
-    stdev_upper_a, stdev_upper_b = linear_regression([ln(x_i) for x_i in x], y2)
-    stdev_lower_a, stdev_lower_b = linear_regression([ln(x_i) for x_i in x], y3)
-    pyplot.plot(x, y1, "kx", x, y2, "r_", x, y3, "g_")
+
+    plot((x, x, x),
+         (y1, st_dev_upper_y, st_dev_lower_y),
+         ("kx", "r_", "g_"),
+         "supply value",
+         "ln((x + delta x) / x)",
+         True
+         )
+
     add_regression_line_to_graph(mean_a, mean_b, x, colour="b")
     add_regression_line_to_graph(stdev_upper_a, stdev_upper_b, x, colour="r")
     add_regression_line_to_graph(stdev_lower_a, stdev_lower_b, x, colour="g")
-    pyplot.ylabel("ln((x + delta x) / x)")
-    pyplot.xlabel("supply value")
+
     pyplot.show()
-    pyplot.tight_layout()
-    # if "c" in x or "c" in y:
-    #     raise ValueError("c")
-    # pyplot.scatter(x, y, marker="x")
-    # pyplot.show()
