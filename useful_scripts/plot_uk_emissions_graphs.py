@@ -19,7 +19,7 @@ if __name__ == '__main__':
         if x_i > 0 and y_i > 0:
             if x_i not in x_y_counter:
                 x_y_counter[x_i] = list()
-            x_y_counter[x_i].append(1 +y_i)
+            x_y_counter[x_i].append(1 + y_i)
 
     x_mean = {x: mean(y) for x, y in x_y_counter.items()}
     x_stdev = {x: stdev(y) for x, y in x_y_counter.items()}
