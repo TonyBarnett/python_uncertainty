@@ -52,4 +52,4 @@ def plot_x_y(x_y: list, x_label: str="UK supply", y_label: str="(\Delta x + x) /
     for x_i, y_i in x_y:
         x.append(x_i)
         y.append((y_i + x_i) / x_i)
-    plot((x, ), (y,), ("kx", ), True, x_label, y_label)
+    plot((x, ), (y, ), ("kx", ), True, x_label, y_label)
