@@ -85,8 +85,20 @@ def get_uk_emissions_and_error() -> tuple:
     file_name = UNCERTAINTY_DIR + "UK_emissions_source_2004.xlsx"
     data += get_eu_emissions_error_from_file(file_name, "B2", "B73", "E2", "E73")
 
+    file_name = UNCERTAINTY_DIR + "UK_emissions_source_2006.xlsx"
+    data += get_eu_emissions_error_from_file(file_name, "B2", "B61", "E2", "E61")
+
+    file_name = UNCERTAINTY_DIR + "UK_emissions_source_2007.xlsx"
+    data += get_eu_emissions_error_from_file(file_name, "B2", "B61", "E2", "E61")
+
+    file_name = UNCERTAINTY_DIR + "UK_emissions_source_2008.xlsx"
+    data += get_eu_emissions_error_from_file(file_name, "B2", "B61", "E2", "E61")
+
+    file_name = UNCERTAINTY_DIR + "UK_emissions_source_2009.xlsx"
+    data += get_eu_emissions_error_from_file(file_name, "B2", "B62", "E2", "E62")
+
     file_name = UNCERTAINTY_DIR + "UK_emissions_source_2010.xlsx"
-    data += get_eu_emissions_error_from_file(file_name, "D2", "D63", "G2", "G63")
+    data += get_eu_emissions_error_from_file(file_name, "D2", "D60", "G2", "G60")
 
     file_name = UNCERTAINTY_DIR + "UK_emissions_source_2011.xlsx"
     data += get_eu_emissions_error_from_file(file_name, "D2", "D62", "G2", "G62")
