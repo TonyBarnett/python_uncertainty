@@ -11,8 +11,7 @@ from utility_functions import clean_value
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply_error, get_uk_supply
 from uncertainty.data_structures.data_structures import DataSource
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import linear_regression
-from useful_scripts.useful_functions.plot_functions import plot, add_regression_line_to_graph, plot_x_y, \
-    add_regression_lines_to_graph
+from useful_scripts.useful_functions.plot_functions import plot, plot_x_y, add_regression_lines_to_graph
 from useful_scripts.useful_functions.regression_functions import \
     get_upper_and_lower_stdev_regression_coefficients, \
     get_stdev_ln_y
