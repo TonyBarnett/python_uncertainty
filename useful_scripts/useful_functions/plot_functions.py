@@ -3,7 +3,7 @@ from matplotlib import pyplot
 from utility_functions import float_range
 
 
-def plot(xs: tuple, ys: tuple, styles: tuple, hold: bool, xlabel: str="", ylabel: str=""):
+def plot(xs: tuple, ys: tuple, styles: tuple, hold: bool=False, xlabel: str="", ylabel: str=""):
     pyplot.figure()
     for i, x in enumerate(xs):
         pyplot.plot(x, ys[i], styles[i])
@@ -17,12 +17,26 @@ def plot(xs: tuple, ys: tuple, styles: tuple, hold: bool, xlabel: str="", ylabel
         pyplot.show()
 
 
-def add_regression_line_to_graph(a: float, b: float, x: list, colour: str="x", min_y: float=0.001):
+def add_regression_lines_to_graph(a: float,
+                                  b: float,
+                                  x: list,
+                                  colour: tuple=("x", "r", "g"),
+                                  min_y: float=0.001,
+                                  multiplier: float=1):
     pyplot.hold(True)
     sorted_x = [i for i in float_range(min_y, max(x))]
-    y = [a * ln(x_i) + b for x_i in sorted_x]
-    y = [y_i if y_i > min_y else min_y for y_i in y]
-    pyplot.plot(sorted_x, y, colour)
+    mean_y = list()
+    stdev_lower = list()
+    stdev_upper = list()
+    for x_i in sorted_x:
+        y_i = a * ln(x_i) + b
+        if y_i < min_y:
+            y_i = min_y
+        mean_y.append(y_i)
+        stdev_lower = y_i - multiplier * y_i
+        stdev_upper = y_i + multiplier * y_i
+
+    plot((sorted_x,sorted_x,sorted_x), (mean_y, stdev_lower, stdev_upper), colour)
 
 
 def plot_x_y(x_y: list, x_label: str="UK supply", y_label: str="(\Delta x + x) / x"):
