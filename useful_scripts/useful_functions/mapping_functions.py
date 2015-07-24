@@ -1,7 +1,7 @@
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_ancestors_and_self
 
 
-def map_things_together(thing1: dict, thing2: dict) -> list:
+def map_thing2_to_thing1_together(thing1: dict, thing2: dict) -> list:
     """
     thing1's keys must be ancestor or selfs of thing2's keys
     :param thing1:
