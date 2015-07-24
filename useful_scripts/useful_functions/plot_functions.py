@@ -1,6 +1,8 @@
 from math import log as ln
 from matplotlib import pyplot
 from utility_functions import float_range
+from useful_scripts.useful_functions.regression_functions import get_stdev_ln_y, \
+    get_ln_line_from_regression_coefficients
 
 
 def _add_to_plot(xs: tuple, ys: tuple, styles: tuple, hold: bool=False, xlabel: str="", ylabel: str=""):
@@ -29,14 +31,10 @@ def add_regression_lines_to_graph(a: float,
                                   multiplier: float=1):
     pyplot.hold(True)
     sorted_x = [i for i in float_range(min_y, max(x))]
-    mean_y = list()
     stdev_lower = list()
     stdev_upper = list()
-    for x_i in sorted_x:
-        y_i = a * ln(x_i) + b
-        if y_i < min_y:
-            y_i = min_y
-        mean_y.append(y_i)
+    mean_y = get_ln_line_from_regression_coefficients(a, b, sorted_x, min_y)
+    for y_i in mean_y:
         stdev_lower.append(y_i - multiplier * y_i)
         stdev_upper.append(y_i + multiplier * y_i)
 
