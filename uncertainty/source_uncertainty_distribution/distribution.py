@@ -2,7 +2,6 @@ from numpy import std as stdev, mean
 import numpy
 import random
 from math import log as ln
-from numpy.polynomial.polynomial import polyfit
 
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_mean, get_standard_deviation, \
     linear_regression
