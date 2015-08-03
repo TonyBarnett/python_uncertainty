@@ -1,8 +1,13 @@
 from math import log as ln
+import os
 from matplotlib import pyplot
 from utility_functions import float_range
 from useful_scripts.useful_functions.regression_functions import get_stdev_ln_y, \
     get_ln_line_from_regression_coefficients
+
+
+PRESENTATION_LOCATION = os.environ["dropboxRoot"] + r"\Meeting notes\Presentation files\resources" + "\\"
+THESIS_LOCATION = os.environ["dropboxRoot"] + r"\Thesis\Images" + "\\"
 
 
 def _add_labels_to_graph(xlabel: str="", ylabel: str="", title: str=""):
@@ -21,7 +26,7 @@ def _add_to_plot(xs: tuple, ys: tuple, styles: tuple, hold: bool=False, xlabel: 
         pyplot.hold(True)
 
     _add_labels_to_graph(xlabel, ylabel, title)
-    pyplot.tight_layout(pad=1.0)
+    pyplot.tight_layout(pad=0.5)
     if not hold:
         pyplot.hold(False)
         pyplot.show()
