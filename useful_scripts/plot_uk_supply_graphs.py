@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     x_y = map_thing2_to_thing1_together(clean_supply, clean_error)
 
-    plot_x_y(x_y)
+    # plot_x_y(x_y)
 
     x_y_counter = dict()
     for x, y in x_y:
@@ -72,13 +72,22 @@ if __name__ == '__main__':
 
     mean_a, mean_b = linear_regression([ln(x_i) for x_i in x], y)
 
-    plot((x, x, x),
-         (y, st_dev_upper_y, st_dev_lower_y),
-         ("kx", "r_", "g_"),
-         True,
-         "supply value",
-         "ln((x + delta x) / x)"
-         )
+    plot((x, ),
+         (y, ),
+         ("kx", ),
+         hold=True,
+         xlabel="supply value",
+         ylabel="ln((x + delta x) / x)",
+         title="UK supply"
+          )
+    # plot((x, x, x),
+    #      (y, st_dev_upper_y, st_dev_lower_y),
+    #      ("kx", "r_", "g_"),
+    #      hold=True,
+    #      xlabel="supply value",
+    #      ylabel="ln((x + delta x) / x)",
+    #      title="UK supply"
+    #      )
 
     add_regression_lines_to_graph(mean_a, mean_b, x, multiplier=1.96)
 

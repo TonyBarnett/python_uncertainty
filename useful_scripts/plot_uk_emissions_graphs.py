@@ -11,7 +11,7 @@ if __name__ == '__main__':
     emissions_error = get_uk_emissions_and_error()
     x_y_counter = dict()
     x_y = [(float(x), float(y)) for x, y in emissions_error]
-    plot_x_y(x_y)
+    # plot_x_y(x_y)
 
     for e_i, f_i in emissions_error:
         x_i = float(e_i)
@@ -40,13 +40,23 @@ if __name__ == '__main__':
 
     mean_a, mean_b = linear_regression([ln(x_i) for x_i in x], y)
 
-    plot((x, x, x),
-         (y, st_dev_upper_y, st_dev_lower_y),
-         ("kx", "r_", "g_"),
-         True,
-         "supply value",
-         "ln((x + delta x) / x)"
+    plot((x, ),
+         (y, ),
+         ("kx", ),
+         hold=True,
+         xlabel="supply value",
+         ylabel="ln((x + delta x) / x)",
+         title="UK Emissions"
          )
+    #
+    # plot((x, x, x),
+    #      (y, st_dev_upper_y, st_dev_lower_y),
+    #      ("kx", "r_", "g_"),
+    #      hold=True,
+    #      xlabel="supply value",
+    #      ylabel="ln((x + delta x) / x)",
+    #      title="UK Emissions"
+    #      )
 
     add_regression_lines_to_graph(mean_a, mean_b, x, min_y=10**-10, multiplier=1.96)
 
