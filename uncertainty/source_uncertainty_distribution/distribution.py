@@ -101,13 +101,16 @@ class NormalDistributionFunction:
                 y_std.append(st_dev[t])
         return x_, y_, y_std
 
-    def set_regression_coefficients(self, x, y):
-        x_y_counter = self._convert_x_y_to_counter(x, y)
+    @classmethod
+    def set_regression_coefficients(cls, x, y):
+        x_y_counter = NormalDistributionFunction._convert_x_y_to_counter(x, y)
         st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
         mean_ = {x: mean(y) for x, y in x_y_counter.items()}
-        x_, y_, y_std = self._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
-        self.mean_a, self.mean_b = linear_regression(x_, y_)
-        self.stdev_a, self.stdev_b = linear_regression(x_, y_std)
+        x_, y_, y_std = NormalDistributionFunction._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
+        mean_a, mean_b = linear_regression(x_, y_)
+        stdev_a, stdev_b = linear_regression(x_, y_std)
+
+        return cls(mean_a, mean_b, stdev_a, stdev_b)
 
     def _get_mean_value(self, value):
         return self.mean_a * value + self.mean_b
@@ -123,8 +126,9 @@ class NormalDistributionFunction:
 
 
 class LogNormalDistributionFunction(NormalDistributionFunction):
-    def set_regression_coefficients(self, x, y):
-        super().set_regression_coefficients([ln(x_i) for x_i in x], y)
+    @classmethod
+    def set_regression_coefficients(cls, x, y):
+        return super().set_regression_coefficients([ln(x_i) for x_i in x], y)
 
     def __getitem__(self, item: float) -> float:
         mean_x = self._get_mean_value(item)
