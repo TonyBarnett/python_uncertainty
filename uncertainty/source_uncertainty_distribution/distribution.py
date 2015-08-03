@@ -1,8 +1,11 @@
+from numpy import std as stdev, mean
 import numpy
 import random
 from math import log as ln
+from numpy.polynomial.polynomial import polyfit
 
-from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_mean, get_standard_deviation
+from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_mean, get_standard_deviation, \
+    linear_regression
 
 
 class Distribution:
@@ -69,3 +72,63 @@ class NormalDistribution(Distribution):
         mu = get_mean(x)
         sigma = get_standard_deviation(x)
         return super(NormalDistribution, cls).get_distribution(mu, sigma)
+
+
+class NormalDistributionFunction:
+    def __init__(self, mean_a: float=None, mean_b: float=None, stdev_a: float=None, stdev_b: float=None):
+        self.mean_a = mean_a
+        self.mean_b = mean_b
+        self.stdev_a = stdev_a
+        self.stdev_b = stdev_b
+
+    @staticmethod
+    def _convert_x_y_to_counter(x, y)-> dict:
+        x_y_counter = dict()
+        for x, y in zip(x, y):
+            if x not in x_y_counter:
+                x_y_counter[x] = list()
+            x_y_counter[x].append((y + x) / x)
+        return x_y_counter
+
+    @staticmethod
+    def _get_mean_stdev_for_x(x_y_counter, st_dev, mean_):
+        x_ = list()
+        y_ = list()
+        y_std = list()
+        for t in x_y_counter.keys():
+            if t > 0:
+                x_.append(t)
+                y_.append(mean_[t])
+                y_std.append(st_dev[t])
+        return x_, y_, y_std
+
+    def set_regression_coefficients(self, x, y):
+        x_y_counter = self._convert_x_y_to_counter(x, y)
+        st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
+        mean_ = {x: mean(y) for x, y in x_y_counter.items()}
+        x_, y_, y_std = self._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
+        self.mean_a, self.mean_b = linear_regression(x_, y_)
+        self.stdev_a, self.stdev_b = linear_regression(x_, y_std)
+
+    def _get_mean_value(self, value):
+        return self.mean_a * value + self.mean_b
+
+    def _get_stdev_value(self, value):
+        return self.stdev_a * value + self.mean_b
+
+    def __getitem__(self, item: float) -> float:
+        mean_x = self._get_mean_value(item)
+        stdev_x = self._get_stdev_value(item)
+        d = NormalDistribution(mean_x, stdev_x)
+        return d.get_observation()
+
+
+class LogNormalDistributionFunction(NormalDistributionFunction):
+    def set_regression_coefficients(self, x, y):
+        super().set_regression_coefficients([ln(x_i) for x_i in x], y)
+
+    def __getitem__(self, item: float) -> float:
+        mean_x = self._get_mean_value(item)
+        stdev_x = self._get_stdev_value(item)
+        d = LogNormalDistribution(mean_x, stdev_x)
+        return d.get_observation()
