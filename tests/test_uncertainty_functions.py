@@ -109,5 +109,3 @@ class CleanUkSupplErrorValue(unittest.TestCase):
     def test_confidential_value(self):
         is_it = _clean_uk_supply_error_value("-")
         self.assertEqual(is_it, "c")
-
-

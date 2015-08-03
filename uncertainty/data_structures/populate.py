@@ -1,8 +1,8 @@
-from collections import OrderedDict
 from utility_functions.data_sanitation import clean_value
+from utility_functions.data_sanitation import _is_number
+
 from .data_structures import DataSource, ImportDataSource, EmissionsDataSource, BaseDataSource, TotalsOnlyDataSource
 from ..data_sources.model_data_sources import get_source_matrix_of_type
-from utility_functions.data_sanitation import _is_number
 
 
 def check_only_one_classification_system(system: list):
@@ -118,9 +118,11 @@ def populate_totals_only_source_data(source_data_item: TotalsOnlyDataSource):
 
             for clean_rows in clean_rows:
                 for clean_col in clean_columns:
-                    clean_data.append((clean_rows, clean_col, "c"
-                    if data_as_dict[row][column] == "c"
-                    else float(data_as_dict[row][column]) / (len_rows * len_columns)))
+                    clean_data.append((clean_rows,
+                                       clean_col,
+                                       "c"
+                                       if data_as_dict[row][column] == "c"
+                                       else float(data_as_dict[row][column]) / (len_rows * len_columns)))
     source_data_item.add_data_from_tuple(tuple(clean_data))
     source_data_item.system = system
     constraints = make_constraints(data)

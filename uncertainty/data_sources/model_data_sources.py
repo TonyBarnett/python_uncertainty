@@ -1,8 +1,10 @@
 from collections import OrderedDict
 import os
+
 import pymongo
+
 from .sql import read_from_sql, build_source_query, build_import_query
-from .excel import _get_cell_in_range, _get_data_from_workbook, get_workbook
+from .excel import _get_data_from_workbook, get_workbook
 
 
 def get_map(map_collection: str='Plain_KNN_Without_Ancestors_k_3'):

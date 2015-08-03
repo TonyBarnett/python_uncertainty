@@ -20,7 +20,7 @@ class TotalsOnlyGetNewPerturbedMatrix(unittest.TestCase):
             ("3", "1", "c"), ("3", "2", "c"), ("3", "3", 2))
         )
         self.matrix.set_row_and_column_totals(row_totals, column_totals)
-        self.matrix.distribution = NormalDistribution (0, 0)
+        self.matrix.distribution = NormalDistribution(0, 0)
 
     def _mock_observation(self):
         return 0

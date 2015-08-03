@@ -1,8 +1,9 @@
 from IOModel import matrix_functions
 import numpy
+from IOModel.matrix_balancing import cras
+
 from ..get_new_random_matrix import get_new_perturbed_matrix, get_new_perturbed_vector
 from ..matrix import Matrix, Vector
-from IOModel.matrix_balancing import ras, cras
 
 
 class BaseDataSource:

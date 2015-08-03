@@ -1,12 +1,13 @@
 from math import log as ln
+
 from matplotlib import pyplot
 from numpy import mean, std as stdev
+
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_emissions_and_error
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import linear_regression
-from useful_scripts.useful_functions.plot_functions import plot_x_y, plot, add_regression_lines_to_graph, \
+from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
     PRESENTATION_LOCATION
-from useful_scripts.useful_functions.regression_functions import get_upper_and_lower_stdev_regression_coefficients, \
-    get_stdev_ln_y
+from useful_scripts.useful_functions.regression_functions import get_upper_and_lower_stdev_regression_coefficients
 
 if __name__ == '__main__':
     emissions_error = get_uk_emissions_and_error()
@@ -35,9 +36,6 @@ if __name__ == '__main__':
 
     stdev_upper_a, stdev_upper_b, stdev_lower_a, stdev_lower_b = \
         get_upper_and_lower_stdev_regression_coefficients(x_y_counter, x_mean, x_stdev)
-
-    st_dev_upper_y = get_stdev_ln_y(x_y_counter.keys(), x_mean, x_stdev, 1.96)
-    st_dev_lower_y = get_stdev_ln_y(x_y_counter.keys(), x_mean, x_stdev, -1.96)
 
     mean_a, mean_b = linear_regression([ln(x_i) for x_i in x], y)
 

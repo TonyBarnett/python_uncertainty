@@ -1,10 +1,9 @@
-from math import log as ln
 import os
+
 from matplotlib import pyplot
 from utility_functions import float_range
-from useful_scripts.useful_functions.regression_functions import get_stdev_ln_y, \
-    get_ln_line_from_regression_coefficients
 
+from useful_scripts.useful_functions.regression_functions import get_ln_line_from_regression_coefficients
 
 PRESENTATION_LOCATION = os.environ["dropboxRoot"] + r"\Meeting notes\Presentation files\resources" + "\\"
 THESIS_LOCATION = os.environ["dropboxRoot"] + r"\Thesis\Images" + "\\"
@@ -45,7 +44,6 @@ def add_regression_lines_to_graph(a: float,
                                   multiplier: float=1):
     pyplot.hold(True)
     sorted_x = [i for i in float_range(min_y, max(x) + 1)]
-    mean_y = list()
     stdev_lower = list()
     stdev_upper = list()
     mean_y = get_ln_line_from_regression_coefficients(a, b, sorted_x, min_y)

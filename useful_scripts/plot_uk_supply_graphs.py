@@ -1,21 +1,17 @@
 import logging
-
 from math import log as ln
 
 from matplotlib import pyplot
-
 from numpy import mean, std as stdev
-
 from utility_functions import clean_value
 
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply_error, get_uk_supply
 from uncertainty.data_structures.data_structures import DataSource
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import linear_regression
-from useful_scripts.useful_functions.plot_functions import plot, plot_x_y, add_regression_lines_to_graph, \
+from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
     PRESENTATION_LOCATION
 from useful_scripts.useful_functions.regression_functions import \
-    get_upper_and_lower_stdev_regression_coefficients, \
-    get_stdev_ln_y
+    get_upper_and_lower_stdev_regression_coefficients
 from useful_scripts.useful_functions.mapping_functions import map_thing2_to_thing1_together
 
 
@@ -68,19 +64,16 @@ if __name__ == '__main__':
     stdev_upper_a, stdev_upper_b, stdev_lower_a, stdev_lower_b = \
         get_upper_and_lower_stdev_regression_coefficients(x_y_counter, x_mean, x_stdev)
 
-    st_dev_upper_y = get_stdev_ln_y(x_y_counter.keys(), x_mean, x_stdev, 1.96)
-    st_dev_lower_y = get_stdev_ln_y(x_y_counter.keys(), x_mean, x_stdev, -1.96)
-
     mean_a, mean_b = linear_regression([ln(x_i) for x_i in x], y)
 
-    plot((x, ),
-         (y, ),
-         ("kx", ),
+    plot((x,),
+         (y,),
+         ("kx",),
          hold=True,
          xlabel="supply value",
          ylabel="ln((x + delta x) / x)",
          title="UK supply"
-          )
+         )
     # plot((x, x, x),
     #      (y, st_dev_upper_y, st_dev_lower_y),
     #      ("kx", "r_", "g_"),
