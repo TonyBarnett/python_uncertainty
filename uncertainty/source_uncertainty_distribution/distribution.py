@@ -131,7 +131,7 @@ class LogNormalDistributionFunction(NormalDistributionFunction):
         return super().set_regression_coefficients([ln(x_i) for x_i in x], y)
 
     def __getitem__(self, item: float) -> float:
-        mean_x = self._get_mean_value(item)
-        stdev_x = self._get_stdev_value(item)
+        mean_x = self._get_mean_value(ln(item))
+        stdev_x = self._get_stdev_value(ln(item))
         d = LogNormalDistribution(mean_x, stdev_x)
         return d.get_observation()
