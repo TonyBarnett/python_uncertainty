@@ -39,6 +39,23 @@ def _build_imports_query(source_region=None, target_region=None, year=None) -> s
     return build_import_query(query, source_region, target_region, year)
 
 
+def _transpose_tuple(data: tuple) -> tuple:
+    transposed = dict()
+    for j, rows in enumerate(data):
+        for i, value in enumerate(rows):
+            if i not in transposed:
+                transposed[i] = dict()
+            transposed[i][j] = value
+
+    output = list()
+    for i in sorted(transposed.keys()):
+        row = list()
+        for j in sorted(transposed[i].keys()):
+            row.append(transposed[i][j])
+        output.append(tuple(row))
+    return tuple(output)
+
+
 def get_uk_supply(year) -> tuple:
     """
 
@@ -55,7 +72,9 @@ def get_uk_supply(year) -> tuple:
     column_keys = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D6", "BO6")
     col_totals = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D73", "BO73")
 
-    return data, OrderedDict(zip(row_keys, row_totals)), OrderedDict(zip(column_keys, col_totals)), "SIC4"
+    return _transpose_tuple(data), \
+        OrderedDict(zip(column_keys, col_totals)), OrderedDict(zip(row_keys, row_totals)), \
+        "SIC4"
 
 
 def get_source_matrix_of_type(type_, region=None, year=None, target_region=None) -> tuple:
