@@ -11,7 +11,8 @@ from utility_functions import clean_value
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply_error, get_uk_supply
 from uncertainty.data_structures.data_structures import DataSource
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import linear_regression
-from useful_scripts.useful_functions.plot_functions import plot, plot_x_y, add_regression_lines_to_graph
+from useful_scripts.useful_functions.plot_functions import plot, plot_x_y, add_regression_lines_to_graph, \
+    PRESENTATION_LOCATION
 from useful_scripts.useful_functions.regression_functions import \
     get_upper_and_lower_stdev_regression_coefficients, \
     get_stdev_ln_y
@@ -91,4 +92,4 @@ if __name__ == '__main__':
 
     add_regression_lines_to_graph(mean_a, mean_b, x, multiplier=1.96)
 
-    pyplot.show()
+    pyplot.savefig(PRESENTATION_LOCATION + "uk_supply.pdf")
