@@ -121,8 +121,8 @@ class TotalsOnlyDataSource(BaseDataSource):
 
         half_difference = (sum_vector1 - sum_vector2) / 2
 
-        new_vector1 = Vector([x - (half_difference/len(vector1.elements.A1)) for x in vector1.elements.A1])
-        new_vector2 = Vector([x + (half_difference/len(vector2.elements.A1)) for x in vector2.elements.A1])
+        new_vector1 = Vector([x - (half_difference / len(vector1.elements.A1)) for x in vector1.elements.A1])
+        new_vector2 = Vector([x + (half_difference / len(vector2.elements.A1)) for x in vector2.elements.A1])
 
         return new_vector1, new_vector2
 

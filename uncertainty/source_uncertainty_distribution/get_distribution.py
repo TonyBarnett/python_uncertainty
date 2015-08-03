@@ -11,7 +11,6 @@ from uncertainty.source_uncertainty_distribution.get_uk_consumption_uncertainty_
 from uncertainty.source_uncertainty_distribution.get_uk_emissions_uncertainty_distribution \
     import get_uk_emissions_distribution
 
-
 _distribution_region_type_functions = {
     "consumption": {
         "EU": get_eu_consumption_uncertainty_distribution,
@@ -25,7 +24,7 @@ _distribution_region_type_functions = {
         "EU": None,
         "UK": get_uk_emissions_distribution
     },
-    "import":  {
+    "import": {
         # Slight hack to get around the weird regioned imports thing
         None: get_imports_uncertainty_distribution
     },
