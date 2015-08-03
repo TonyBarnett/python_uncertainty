@@ -5,22 +5,31 @@ from useful_scripts.useful_functions.regression_functions import get_stdev_ln_y,
     get_ln_line_from_regression_coefficients
 
 
-def _add_to_plot(xs: tuple, ys: tuple, styles: tuple, hold: bool=False, xlabel: str="", ylabel: str=""):
+def _add_labels_to_graph(xlabel: str="", ylabel: str="", title: str=""):
+    # it could be the case that you've already added these labels so don't override them with empty values
+    if xlabel:
+        pyplot.xlabel(xlabel)
+    if ylabel:
+        pyplot.ylabel(ylabel)
+    if title:
+        pyplot.title(title)
+
+
+def _add_to_plot(xs: tuple, ys: tuple, styles: tuple, hold: bool=False, xlabel: str="", ylabel: str="", title: str=""):
     for i, x in enumerate(xs):
         pyplot.plot(x, ys[i], styles[i])
         pyplot.hold(True)
 
-    pyplot.tight_layout(pad=0.5)
-    pyplot.xlabel(xlabel)
-    pyplot.ylabel(ylabel)
+    _add_labels_to_graph(xlabel, ylabel, title)
+    pyplot.tight_layout(pad=1.0)
     if not hold:
         pyplot.hold(False)
         pyplot.show()
 
 
-def plot(xs: tuple, ys: tuple, styles: tuple, hold: bool=False, xlabel: str="", ylabel: str=""):
+def plot(xs: tuple, ys: tuple, styles: tuple, hold: bool=False, xlabel: str="", ylabel: str="", title: str=""):
     pyplot.figure()
-    _add_to_plot(xs, ys, styles, hold, xlabel, ylabel)
+    _add_to_plot(xs, ys, styles, hold, xlabel, ylabel, title)
 
 
 def add_regression_lines_to_graph(a: float,
@@ -30,7 +39,8 @@ def add_regression_lines_to_graph(a: float,
                                   min_y: float=0.001,
                                   multiplier: float=1):
     pyplot.hold(True)
-    sorted_x = [i for i in float_range(min_y, max(x))]
+    sorted_x = [i for i in float_range(min_y, max(x) + 1)]
+    mean_y = list()
     stdev_lower = list()
     stdev_upper = list()
     mean_y = get_ln_line_from_regression_coefficients(a, b, sorted_x, min_y)
