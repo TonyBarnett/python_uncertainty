@@ -1,9 +1,12 @@
 from IOModel import matrix_functions
 import numpy
 from IOModel.matrix_balancing import cras
+from utility_functions import clean_value
 
 from ..get_new_random_matrix import get_new_perturbed_matrix, get_new_perturbed_vector
 from ..matrix import Matrix, Vector
+from uncertainty.data_sources.model_data_sources import get_source_matrix_of_type
+from uncertainty.data_structures.populate import check_only_one_classification_system, make_constraints
 
 
 class BaseDataSource:
@@ -25,6 +28,9 @@ class BaseDataSource:
         :return:
         """
         return cls(source_data_item.year, source_data_item.region, source_data_item.type_)
+
+    def populate(self):
+        raise NotImplementedError()
 
 
 class DataSource(BaseDataSource):
@@ -56,6 +62,23 @@ class DataSource(BaseDataSource):
     def add_data_from_tuple(self, data):
         self.source_data = Matrix.create_matrix_from_tuple(data)
 
+    def populate(self):
+        source_data = get_source_matrix_of_type(self.type_, self.region, self.year)
+        # this is horrible and hacky but it's the only way I can think of without increasing the number of db hits
+        # check there's only one classification system per input table, then assign it to the source_data_item
+        check_only_one_classification_system([x[2] for x in source_data])
+        self.system = source_data[0][2]
+        data = list()
+        for _, _, system, source_value, target_value, total in source_data:
+            clean_source_values = clean_value(system, source_value)
+            clean_target_values = clean_value(system, target_value)
+
+            split_total = total / (len(clean_target_values) * len(clean_source_values))
+            for source in clean_source_values:
+                for target in clean_target_values:
+                    data.append((source, target, split_total))
+        self.add_data_from_tuple(tuple(data))
+
 
 class ImportDataSource(DataSource):
     def __init__(self, year, source_region, target_region, type_):
@@ -74,6 +97,28 @@ class ImportDataSource(DataSource):
                    source_data_item.source_region,
                    source_data_item.target_region,
                    source_data_item.type_)
+
+    def populate(self):
+        source_data = get_source_matrix_of_type(self.type_,
+                                                self.region,
+                                                self.year,
+                                                target_region=self.target_region
+                                                )
+
+        # this is horrible and hacky but it's the only way I can think of without increasing the number of db hits
+        # check there's only one classification system per input table, then assign it to the source_data_item
+        check_only_one_classification_system([x[3] for x in source_data])
+        self.system = source_data[0][3]
+        data = list()
+        for _, _, _, system, source_value, target_value, total in source_data:
+            clean_source_values = clean_value(system, source_value)
+            clean_target_values = clean_value(system, target_value)
+
+            split_total = total / (len(clean_target_values) + len(clean_source_values))
+            for source in clean_source_values:
+                for target in clean_target_values:
+                    data.append((source, target, split_total))
+        self.add_data_from_tuple(tuple(data))
 
 
 class EmissionsDataSource(BaseDataSource):
@@ -100,6 +145,25 @@ class EmissionsDataSource(BaseDataSource):
 
     def add_data_from_tuple(self, data):
         self.source_data = Vector.create_vector_from_tuple(data)
+
+    def populate(self):
+        source_data = get_source_matrix_of_type(self.type_,
+                                                self.region,
+                                                self.year)
+
+        # this is horrible and hacky but it's the only way I can think of without increasing the number of db hits
+        # check there's only one classification system per input table, then assign it to the source_data_item
+        check_only_one_classification_system([x[2] for x in source_data])
+        self.system = source_data[0][2]
+        data = list()
+        for _, _, system, value, total in source_data:
+            clean_source_values = clean_value(system, value)
+
+            split_total = total / len(clean_source_values)
+
+            for source in clean_source_values:
+                data.append((source, split_total))
+        self.add_data_from_tuple(data)
 
 
 class TotalsOnlyDataSource(BaseDataSource):
@@ -221,3 +285,46 @@ class TotalsOnlyDataSource(BaseDataSource):
 
     def add_data_from_tuple(self, data):
         self.source_data = Matrix.create_matrix_from_tuple(data)
+
+    def populate(self):
+        data, row_totals, column_totals, system = get_source_matrix_of_type(self.type_,
+                                                                            self.region,
+                                                                            self.year)
+
+        # TODO clean the row and column keys and update data to reflect.
+
+        data_as_dict = {row: {column: data[i * len(row_totals) + j]
+                              for j, column in enumerate(column_totals.keys())}
+                        for i, row in enumerate(row_totals.keys())}
+
+        clean_column_totals = {clean_column: float(total) / len(clean_value(system, column))
+                               for column, total in column_totals.items()
+                               for clean_column in clean_value(system, column)
+                               }
+
+        clean_row_totals = {clean_row: float(total) / len(clean_value(system, row))
+                            for row, total in row_totals.items()
+                            for clean_row in clean_value(system, row)
+                            }
+
+        clean_data = list()
+        for row in row_totals.keys():
+            clean_rows = clean_value(system, row)
+            len_rows = len(clean_rows)
+
+            for column in column_totals.keys():
+                clean_columns = clean_value(system, column)
+                len_columns = len(clean_columns)
+
+                for clean_rows in clean_rows:
+                    for clean_col in clean_columns:
+                        clean_data.append((clean_rows,
+                                           clean_col,
+                                           "c"
+                                           if data_as_dict[row][column] == "c"
+                                           else float(data_as_dict[row][column]) / (len_rows * len_columns)))
+        self.add_data_from_tuple(tuple(clean_data))
+        self.system = system
+        constraints = make_constraints(data)
+        self.set_row_and_column_totals(clean_row_totals, clean_column_totals)
+        self.set_constraints(constraints)

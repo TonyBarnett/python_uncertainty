@@ -3,7 +3,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 import numpy
-from uncertainty.data_structures.populate import TotalsOnlyDataSource, populate_totals_only_source_data
+from uncertainty.data_structures.data_structures import TotalsOnlyDataSource
 from uncertainty.matrix import Vector
 from uncertainty.source_uncertainty_distribution.distribution import NormalDistribution
 import uncertainty.source_uncertainty_distribution.distribution

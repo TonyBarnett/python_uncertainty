@@ -3,7 +3,6 @@ import multiprocessing
 import time
 
 from uncertainty.data_structures.get import get_data_source_of_type
-from uncertainty.data_structures.populate import populate_source_data_of_type
 from uncertainty.data_mapping.map_data import map_source_data_matrix
 from uncertainty.source_uncertainty_distribution import get_distribution_of_type_and_region
 from uncertainty.Monte_Carlo.single_region_model import run_single_region_model
@@ -23,7 +22,7 @@ def create_and_populate_source_data(year) -> list:
             if not (type_ == "emissions" and region == "EU"):
                 source_data_item = get_data_source_of_type(year=year, region=region, type_=type_)
                 source_data.append(source_data_item)
-                populate_source_data_of_type(source_data_item)
+                source_data_item.populate()
     # now do imports, we only care about EU importing into UK for now.
     # TODO uncomment the next 3 lines, you will need to work out why IOModel.sor.Exports is empty...
     # source_data_item = get_data_source_of_type(year=year, region="EU", type_="import", target_region="UK")
