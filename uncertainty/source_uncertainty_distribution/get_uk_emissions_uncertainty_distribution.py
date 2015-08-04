@@ -26,7 +26,7 @@ def get_uk_emissions_distribution(plot=None) -> LogNormalDistribution:
     return LogNormalDistribution(mu, sigma)
 
 
-def get_uk_emissions_uncertainty_distribution_function() -> LogNormalDistributionFunction:
+def get_uk_emissions_distribution_function() -> LogNormalDistributionFunction:
     x = list()
     y = list()
     emissions_error = get_uk_emissions_and_error()

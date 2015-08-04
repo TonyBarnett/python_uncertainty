@@ -73,15 +73,17 @@ class NormalDistribution(Distribution):
         return super(NormalDistribution, cls).get_distribution(mu, sigma)
 
 
-class NormalDistributionFunction:
+class DistributionFunction:
     def __init__(self, mean_a: float=None, mean_b: float=None, stdev_a: float=None, stdev_b: float=None):
         self.mean_a = mean_a
         self.mean_b = mean_b
         self.stdev_a = stdev_a
         self.stdev_b = stdev_b
 
+
+class NormalDistributionFunction(DistributionFunction):
     @staticmethod
-    def _convert_x_y_to_counter(x, y)-> dict:
+    def _convert_x_y_to_counter(x, y) -> dict:
         x_y_counter = dict()
         for x, y in zip(x, y):
             if x not in x_y_counter:

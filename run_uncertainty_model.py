@@ -5,7 +5,7 @@ import time
 from uncertainty.data_structures.get import get_data_source_of_type
 from uncertainty.data_structures.populate import populate_source_data_of_type
 from uncertainty.data_mapping.map_data import map_source_data_matrix
-from uncertainty.source_uncertainty_distribution import get_distribution_of_type_and_region
+from uncertainty.source_uncertainty_distribution import get_distribution_function_of_type_and_region
 from uncertainty.Monte_Carlo.single_region_model import run_single_region_model
 from uncertainty.data_sources.sql import write_intensities_to_sql
 
@@ -34,9 +34,9 @@ def create_and_populate_source_data(year) -> list:
 
 def get_source_data_distribution(source_data):
     for source_data_item in source_data:
-        source_data_item.distribution = get_distribution_of_type_and_region(type_=source_data_item.type_,
-                                                                            region=source_data_item.region
-                                                                            )
+        source_data_item.distribution = get_distribution_function_of_type_and_region(type_=source_data_item.type_,
+                                                                                     region=source_data_item.region
+                                                                                     )
 
 
 def get_perturb_source_data(source_data):
@@ -121,7 +121,7 @@ if __name__ == '__main__':
                     else:
                         pp["pipe"].send(None)
 
-                    # pp["pipe"].send(message)
+                        # pp["pipe"].send(message)
             time.sleep(1)
             pipe_process = [x for x in pipe_process if x["process"].is_alive()]
 

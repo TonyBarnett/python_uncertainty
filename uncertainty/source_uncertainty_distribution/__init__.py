@@ -1,2 +1,2 @@
 from .distribution import LogNormalDistribution, NormalDistribution
-from .get_distribution import get_distribution_of_type_and_region
+from .get_distribution import get_distribution_function_of_type_and_region

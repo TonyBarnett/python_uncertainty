@@ -1,5 +1,4 @@
 from collections import Counter
-from numpy import mean, std as stdev
 
 from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution, \
     LogNormalDistributionFunction
@@ -62,7 +61,7 @@ def get_uk_supply_uncertainty_distribution() -> LogNormalDistribution:
     return distribution
 
 
-def get_uk_supply_uncertainty_distribution_function() -> LogNormalDistributionFunction:
+def get_uk_supply_distribution_function() -> LogNormalDistributionFunction:
     x = list()
     y = list()
     for year in YEAR_RANGE:
