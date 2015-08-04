@@ -102,7 +102,7 @@ class NormalDistributionFunction:
         return x_, y_, y_std
 
     @classmethod
-    def set_regression_coefficients(cls, x, y):
+    def create_from_x_y_coordinates(cls, x, y):
         x_y_counter = NormalDistributionFunction._convert_x_y_to_counter(x, y)
         st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
         mean_ = {x: mean(y) for x, y in x_y_counter.items()}
@@ -127,8 +127,8 @@ class NormalDistributionFunction:
 
 class LogNormalDistributionFunction(NormalDistributionFunction):
     @classmethod
-    def set_regression_coefficients(cls, x, y):
-        return super().set_regression_coefficients([ln(x_i) for x_i in x], y)
+    def create_from_x_y_coordinates(cls, x, y):
+        return super().create_from_x_y_coordinates([ln(x_i) for x_i in x], y)
 
     def __getitem__(self, item: float) -> float:
         return super().__getitem__(ln(item))
