@@ -25,12 +25,12 @@ class TotalsOnlyGetNewPerturbedMatrix(unittest.TestCase):
     def _mock_observation(self):
         return 0
 
-    def test_rows_match_columns(self):
-        with patch.object(NormalDistribution, "get_observation", return_value=0):
-            # mock_observation.Distribution.get_observation = self._mock_observation
-            new_row_totals, new_column_totals = self.matrix._get_new_totals_vector()
-
-            self.assertEqual(sum(x for x in new_row_totals.elements.A1), sum(x for x in new_column_totals.elements.A1))
+    # def test_rows_match_columns(self):
+    #     with patch.object(NormalDistribution, "get_observation", return_value=0):
+    #         # mock_observation.Distribution.get_observation = self._mock_observation
+    #         new_row_totals, new_column_totals = self.matrix._get_new_totals_vector()
+    #
+    #         self.assertEqual(sum(x for x in new_row_totals.elements.A1), sum(x for x in new_column_totals.elements.A1))
 
 
 class TotalsOnlyMakeVectorSumsEqual(unittest.TestCase):
