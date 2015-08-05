@@ -39,15 +39,16 @@ class NormalFunctionFactoryTest(unittest.TestCase):
         m = NormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
         self.assertIs(type(m), NormalDistributionFunction)
 
-    @patch("uncertainty.source_uncertainty_distribution.distribution.linear_regression")
-    def test_simple_case(self, mock_linear_regression):
-        mock_linear_regression.return_value = (1, 2)
-        m = NormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
-        self.assertTrue(mock_linear_regression.called)
-        self.assertEqual(m.mean_a, 1)
-        self.assertEqual(m.mean_b, 2)
-        self.assertEqual(m.stdev_a, 1)
-        self.assertEqual(m.stdev_b, 2)
+
+    def test_simple_case(self):
+        with patch("uncertainty.source_uncertainty_distribution.distribution.linear_regression", return_value=(1, 2)) \
+                as mock_linear_regression:
+            m = NormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
+            self.assertTrue(mock_linear_regression.called)
+            self.assertEqual(m.mean_a, 1)
+            self.assertEqual(m.mean_b, 2)
+            self.assertEqual(m.stdev_a, 1)
+            self.assertEqual(m.stdev_b, 2)
 
 
 class XYCounterNormalDistributionFunction(unittest.TestCase):

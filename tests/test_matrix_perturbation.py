@@ -22,11 +22,11 @@ class PerturbMatrix(unittest.TestCase):
         m = get_new_perturbed_matrix(self.matrix, self.distribution)
         self.assertIs(type(m), Matrix)
 
-    @patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution")
-    def test_simple_case(self, mock_get_perturbation_from_distribution):
-        mock_get_perturbation_from_distribution.return_value = 1
-        m = get_new_perturbed_matrix(self.matrix, self.distribution)
-        self.assertTrue((m.elements == self.output_matrix.elements).all())
+    def test_simple_case(self):
+        with patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution", return_value = 1) as \
+                mock_get_perturbation_from_distribution:
+            m = get_new_perturbed_matrix(self.matrix, self.distribution)
+            self.assertTrue((m.elements == self.output_matrix.elements).all())
 
 
 class PerturbVector(unittest.TestCase):
@@ -44,8 +44,8 @@ class PerturbVector(unittest.TestCase):
         m = get_new_perturbed_vector(self.matrix, self.distribution)
         self.assertIs(type(m), Vector)
 
-    @patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution")
-    def test_simple_case(self, mock_get_perturbation_from_distribution):
-        mock_get_perturbation_from_distribution.return_value = 1
-        m = get_new_perturbed_vector(self.matrix, self.distribution)
-        self.assertTrue((m.elements == self.output_matrix.elements).all())
+    def test_simple_case(self):
+        with patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution", return_value=1) as \
+                mock_get_perturbation_from_distribution:
+            m = get_new_perturbed_vector(self.matrix, self.distribution)
+            self.assertTrue((m.elements == self.output_matrix.elements).all())
