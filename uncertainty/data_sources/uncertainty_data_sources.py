@@ -1,6 +1,5 @@
 import os
-from openpyxl import load_workbook
-from .excel import _get_data_from_workbook
+from .excel import get_data_from_excel
 
 DROPBOX_ROOT = os.getenv("dropboxRoot") + "\\"
 UNCERTAINTY_DIR = DROPBOX_ROOT + "IO Model source data\\Source data\\Uncertainty_files\\"
@@ -31,10 +30,9 @@ def _clean_uk_supply_error_value(value):
 
 def get_uk_supply(year) -> dict:
     totals_file = SOURCE_FILE_DIR + "UKSupply_source.xlsx"
-    wb = load_workbook(totals_file, read_only=True)
 
-    keys = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D6", "BN6")
-    data = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D73", "BN73")
+    keys = get_data_from_excel(totals_file, "sup{0}".format(str(year)[-2:]), "D6", "BN6")
+    data = get_data_from_excel(totals_file, "sup{0}".format(str(year)[-2:]), "D73", "BN73")
     values = dict()
 
     for i, key in enumerate(keys):
@@ -46,10 +44,9 @@ def get_uk_supply(year) -> dict:
 def get_uk_supply_error(year=None) -> dict:
     file_name = UNCERTAINTY_DIR + "Annual Business Survey_2008-2013.xlsx"
 
-    wb = load_workbook(file_name)
-    labels = _get_data_from_workbook(wb, "Quality Measures", "B14", "B5332")
-    years = _get_data_from_workbook(wb, "Quality Measures", "D14", "D5332")
-    raw_data = _get_data_from_workbook(wb, "Quality Measures", "G14", "G5332")
+    labels = get_data_from_excel(file_name, "Quality Measures", "B14", "B5332")
+    years = get_data_from_excel(file_name, "Quality Measures", "D14", "D5332")
+    raw_data = get_data_from_excel(file_name, "Quality Measures", "G14", "G5332")
 
     data = dict()
     label = ""
@@ -68,10 +65,9 @@ def get_eu_emissions_error_from_file(file_name: str,
                                      data_end_cell: str,
                                      error_start_cell: str,
                                      error_end_cell: str) -> list:
-    wb = load_workbook(file_name)
 
-    raw_data = _get_data_from_workbook(wb, "Data", data_start_cell, data_end_cell)
-    error_data = _get_data_from_workbook(wb, "Data", error_start_cell, error_end_cell)
+    raw_data = get_data_from_excel(file_name, "Data", data_start_cell, data_end_cell)
+    error_data = get_data_from_excel(file_name, "Data", error_start_cell, error_end_cell)
     data = list()
 
     for i, item in enumerate(raw_data):

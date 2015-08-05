@@ -4,7 +4,7 @@ import os
 import pymongo
 
 from .sql import read_from_sql, build_source_query, build_import_query
-from .excel import _get_data_from_workbook, get_workbook
+from .excel import get_data_from_excel
 
 
 def get_map(map_collection: str='Plain_KNN_Without_Ancestors_k_3'):
@@ -64,19 +64,19 @@ def get_uk_supply(year) -> tuple:
     :param year:
     :return: (data, row_totals, col_totals), where row and column totals are dicts
     """
-    wb = get_workbook(os.environ["dropboxRoot"] +
-                      "\\IO Model source data\\Source data\\Source data files\\UKSupply_source.xlsx")
+    worksheet_name = "{0}\\IO Model source data\\Source data\\Source data files\\UKSupply_source.xlsx".format(
+        os.environ["dropboxRoot"])
 
     # TODO data needs to be Transposed
-    # this is problematic because it's a 1xn tuple, maybe shape it, transpose it, then flatten it?
-    data = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D8", "BO71")
-    row_keys = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "B8", "B71")
-    row_totals = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "BQ8", "BQ71")
+    # this is problematic because it's a 1xn^2 tuple, maybe shape it, transpose it, then flatten it?
+    data = get_data_from_excel(worksheet_name, "sup{0}".format(str(year)[-2:]), "D8", "BO71")
+    row_keys = get_data_from_excel(worksheet_name, "sup{0}".format(str(year)[-2:]), "B8", "B71")
+    row_totals = get_data_from_excel(worksheet_name, "sup{0}".format(str(year)[-2:]), "BQ8", "BQ71")
 
-    column_keys = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D6", "BO6")
-    col_totals = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D73", "BO73")
+    column_keys = get_data_from_excel(worksheet_name, "sup{0}".format(str(year)[-2:]), "D6", "BO6")
+    col_totals = get_data_from_excel(worksheet_name, "sup{0}".format(str(year)[-2:]), "D73", "BO73")
 
-    return data, \
+    return _transpose_tuple(data), \
         OrderedDict(zip(column_keys, col_totals)), OrderedDict(zip(row_keys, row_totals)), \
         "SIC4"
 

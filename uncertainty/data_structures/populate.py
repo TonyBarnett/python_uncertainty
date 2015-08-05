@@ -93,7 +93,7 @@ def populate_totals_only_source_data(source_data_item: TotalsOnlyDataSource):
 
     # TODO clean the row and column keys and update data to reflect.
 
-    data_as_dict = {row: {column: data[i * len(row_totals) + j]
+    data_as_dict = {row: {column: data[i][j]
                           for j, column in enumerate(column_totals.keys())}
                     for i, row in enumerate(row_totals.keys())}
 

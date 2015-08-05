@@ -1,3 +1,4 @@
+from openpyxl.worksheet import Worksheet
 import regex
 from openpyxl import load_workbook, workbook
 
@@ -71,14 +72,18 @@ Returns all characters between start, and end in an excel type manner (so Y Z AA
     return range_builder
 
 
-def _get_cell_in_range(start, end) -> iter:
+def _get_char_and_num_from_cell_label(label: str) -> tuple:
     cell_regex = regex.compile("([A-Z]+)([0-9]+)")
-    start_match = cell_regex.match(start)
-    end_match = cell_regex.match(end)
-    start_char = start_match.group(1)
-    start_num = int(start_match.group(2))
-    end_char = end_match.group(1)
-    end_num = int(end_match.group(2))
+    m = cell_regex.match(label)
+    return m.group(1), int(m.group(2))
+
+
+def _get_cell_in_range(start, end) -> iter:
+    start_char, start_num = _get_char_and_num_from_cell_label(start)
+    end_char, end_num = _get_char_and_num_from_cell_label(end)
+
+    if start_num > end_num:
+        raise ValueError("{0} needs to come before {1}".format(start_num, end_num))
 
     chars = _get_excel_column_labels(start_char, end_char)
     nums = range(start_num, end_num + 1)
@@ -86,14 +91,26 @@ def _get_cell_in_range(start, end) -> iter:
     return (c + str(n) for c in chars for n in nums)
 
 
-def _get_data_from_workbook(workbook, worksheet_name: str, start_cell: str, end_cell: str) -> tuple:
-    ws = workbook.get_sheet_by_name(worksheet_name)
-    cell_range = _get_cell_in_range(start_cell, end_cell)
+def _get_data_from_worksheet(worksheet: Worksheet, start_cell: str, end_cell: str) -> tuple:
+    # cell_range = _get_cell_in_range(start_cell, end_cell)
+    start_char, start_num = _get_char_and_num_from_cell_label(start_cell)
+    end_char, end_num = _get_char_and_num_from_cell_label(end_cell)
     values = list()
-    for cell in cell_range:
-        values.append(str(ws[cell].value))
+
+    for r in range(start_num, end_num + 1):
+        row = list()
+        for c in _get_excel_column_labels(start_char, end_char):
+            row.append(str(worksheet[c + str(r)].value))
+        values.append(tuple(row))
+
+    # if we want a row or a column, then flatten it to return a tuple of values,
+    # otherwise return a tuple of tuples of valeus
+    if start_num == end_num or start_char == end_char:
+        return tuple([y for x in values for y in x])
     return tuple(values)
 
 
-def get_workbook(name: str) -> workbook:
-    return load_workbook(name)
+def get_data_from_excel(workbook_name: str, worksheet_name: str, start_cell: str, end_cell: str) -> tuple:
+    wb = load_workbook(workbook_name)
+    ws = wb.get_sheet_by_name(worksheet_name)
+    return _get_data_from_worksheet(ws, start_cell, end_cell)
