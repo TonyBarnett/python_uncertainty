@@ -80,6 +80,9 @@ class DistributionFunction:
         self.stdev_a = stdev_a
         self.stdev_b = stdev_b
 
+    def __getitem__(self, item):
+        raise NotImplementedError()
+
 
 class NormalDistributionFunction(DistributionFunction):
     @staticmethod
