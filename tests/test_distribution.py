@@ -1,6 +1,8 @@
 import unittest
+from unittest.mock import patch
 
-from uncertainty.source_uncertainty_distribution.distribution import Distribution, LogNormalDistribution
+from uncertainty.source_uncertainty_distribution.distribution import Distribution, LogNormalDistribution, \
+    NormalDistributionFunction
 
 
 class FactoryTest(unittest.TestCase):
@@ -26,3 +28,37 @@ class FactoryTest(unittest.TestCase):
         m = Distribution(1, 1)
         with self.assertRaises(NotImplementedError):
             m.get_observation()
+
+
+class NormalFunctionFactoryTest(unittest.TestCase):
+    def setUp(self):
+        self.x = [1, 1, 2]
+        self.y = [3, 5, 6]
+
+    def test_type(self):
+        m = NormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
+        self.assertIs(type(m), NormalDistributionFunction)
+
+    @patch("uncertainty.source_uncertainty_distribution.distribution.linear_regression")
+    def test_simple_case(self, mock_linear_regression):
+        mock_linear_regression.return_value = (1, 2)
+        m = NormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
+        self.assertTrue(mock_linear_regression.called)
+        self.assertEqual(m.mean_a, 1)
+        self.assertEqual(m.mean_b, 2)
+        self.assertEqual(m.stdev_a, 1)
+        self.assertEqual(m.stdev_b, 2)
+
+
+class XYCounterNormalDistributionFunction(unittest.TestCase):
+    def setUp(self):
+        self.x = [0, 0, 1, 1, 1, 2, 2, 3, 4]
+        self.y = [20, 20, 1, 2, 3, 10, 20, 9, 0]
+
+    def test_type(self):
+        m = NormalDistributionFunction._convert_x_y_to_counter(self.x, self.y)
+        self.assertIs(type(m), dict)
+
+    def test_simple_case(self):
+        m = NormalDistributionFunction._convert_x_y_to_counter(self.x, self.y)
+        self.assertDictEqual(m, {1: [2, 3, 4], 2: [6, 11], 3: [4], 4: [1]})
