@@ -83,12 +83,13 @@ class DistributionFunction:
 
 class NormalDistributionFunction(DistributionFunction):
     @staticmethod
-    def _convert_x_y_to_counter(x, y) -> dict:
+    def _convert_x_y_to_counter(x: list, y: list) -> dict:
         x_y_counter = dict()
         for x, y in zip(x, y):
-            if x not in x_y_counter:
-                x_y_counter[x] = list()
-            x_y_counter[x].append((y + x) / x)
+            if x:
+                if x not in x_y_counter:
+                    x_y_counter[x] = list()
+                x_y_counter[x].append((y + x) / x)
         return x_y_counter
 
     @staticmethod
@@ -133,4 +134,7 @@ class LogNormalDistributionFunction(NormalDistributionFunction):
         return super().create_from_x_y_coordinates([ln(x_i) for x_i in x], y)
 
     def __getitem__(self, item: float) -> float:
+        # we assume that if something has a value of 0 then it has an error of 0 as well
+        if item <= 0:
+            return item
         return super().__getitem__(ln(item))

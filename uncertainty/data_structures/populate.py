@@ -116,10 +116,10 @@ def populate_totals_only_source_data(source_data_item: TotalsOnlyDataSource):
             clean_columns = clean_value(system, column)
             len_columns = len(clean_columns)
 
-            for clean_rows in clean_rows:
-                for clean_col in clean_columns:
-                    clean_data.append((clean_rows,
-                                       clean_col,
+            for clean_row in clean_rows:
+                for clean_column in clean_columns:
+                    clean_data.append((clean_row,
+                                       clean_column,
                                        "c"
                                        if data_as_dict[row][column] == "c"
                                        else float(data_as_dict[row][column]) / (len_rows * len_columns)))

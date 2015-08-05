@@ -128,17 +128,18 @@ class TotalsOnlyDataSource(BaseDataSource):
 
     def _perturb_certain_elements(self, vector: Vector, elements_to_perturb: list) -> Vector:
         perturbations = list()
-        for row, value in vector:
+        for row in range(vector.shape[0]):
+            value = vector[row, 0]
             t = value
             if row in elements_to_perturb:
-                t += self.row_totals * self.distribution.get_observation()
-            perturbations.append((row, self.row_totals[row] * t))
+                t += vector[row, 0] * self.distribution[t]
+            perturbations.append((row, t))
         return Vector.create_vector_from_tuple(tuple(perturbations))
 
     def _get_new_totals_vector(self, row_sum_perturbations, rows_to_perturb, col_sum_perturbations, columns_to_perturb):
 
         perturbed_row_totals = self._perturb_certain_elements(row_sum_perturbations, rows_to_perturb)
-        perturbed_column_totals = self._perturb_certain_elements(col_sum_perturbations, columns_to_perturb)
+        perturbed_column_totals = self._perturb_certain_elements(col_sum_perturbations.T, columns_to_perturb)
 
         return TotalsOnlyDataSource._make_vector_sums_equal(perturbed_row_totals, perturbed_column_totals)
 
@@ -158,7 +159,7 @@ class TotalsOnlyDataSource(BaseDataSource):
             if str(value) == "c":
                 data.append((row, col, 0))
             else:
-                data.append((row, col, float(value) * self.distribution.get_observation()))
+                data.append((row, col, float(value) * self.distribution[float(value)]))
         return Matrix.create_matrix_from_tuple(tuple(data))
 
     @staticmethod
@@ -170,10 +171,11 @@ class TotalsOnlyDataSource(BaseDataSource):
         """
         rows = list()
         columns = list()
-        for row, col, value in numpy.nditer(m.A):
-            if str(value) == "c":
-                rows.append(row)
-                columns.append(col)
+        for row in range(m.shape[0]):
+            for column in range(m.shape[1]):
+                if m[(row, column)] == "c":
+                    rows.append(row)
+                    columns.append(column)
 
         return list(set(rows)), list(set(columns))
 
@@ -190,12 +192,19 @@ class TotalsOnlyDataSource(BaseDataSource):
         # get row_sums and column_sums and add to original row and column sums
         # work out which rows have unknowns
         #   add random observation to each of these
-        perturbation_matrix = self._get_matrix_of_perturbations()
 
-        row_sum_perturbations = matrix_functions.get_row_sum(self.source_data.elements)
-        column_sum_perturbations = matrix_functions.get_col_sum(self.source_data.elements)
+        # perturbation_matrix = self._get_matrix_of_perturbations()
+        blah = self.source_data.elements.copy()
+        for i in range(self.source_data.elements.shape[0]):
+            for j in range(self.source_data.elements.shape[1]):
+                self.source_data.elements[(i, j)] = 0 \
+                    if self.source_data.elements[(i, j)] == "c" \
+                    else float(self.source_data.elements[(i, j)])
 
-        rows_to_perturb, columns_to_perturb = TotalsOnlyDataSource._find_cs_in_matrix(self.source_data)
+        row_sum_perturbations = matrix_functions.get_row_sum(self.source_data.elements.astype(float))
+        column_sum_perturbations = matrix_functions.get_col_sum(self.source_data.elements.astype(float))
+
+        rows_to_perturb, columns_to_perturb = TotalsOnlyDataSource._find_cs_in_matrix(blah)
 
         perturbed_row_totals, perturbed_column_totals = self._get_new_totals_vector(row_sum_perturbations,
                                                                                     rows_to_perturb,
@@ -203,7 +212,7 @@ class TotalsOnlyDataSource(BaseDataSource):
                                                                                     columns_to_perturb
                                                                                     )
 
-        perturbed_constraints = {key: float(value) + float(value) * self.distribution.get_observation()
+        perturbed_constraints = {key: float(value) + float(value) * self.distribution[float(value)]
                                  for key, value in self.constraints.items()}
 
         perturbed_data = self._create_data_with_same_internals_as_self()

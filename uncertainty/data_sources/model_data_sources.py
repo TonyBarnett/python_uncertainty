@@ -67,6 +67,8 @@ def get_uk_supply(year) -> tuple:
     wb = get_workbook(os.environ["dropboxRoot"] +
                       "\\IO Model source data\\Source data\\Source data files\\UKSupply_source.xlsx")
 
+    # TODO data needs to be Transposed
+    # this is problematic because it's a 1xn tuple, maybe shape it, transpose it, then flatten it?
     data = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D8", "BO71")
     row_keys = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "B8", "B71")
     row_totals = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "BQ8", "BQ71")
@@ -74,7 +76,7 @@ def get_uk_supply(year) -> tuple:
     column_keys = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D6", "BO6")
     col_totals = _get_data_from_workbook(wb, "sup{0}".format(str(year)[-2:]), "D73", "BO73")
 
-    return _transpose_tuple(data), \
+    return data, \
         OrderedDict(zip(column_keys, col_totals)), OrderedDict(zip(row_keys, row_totals)), \
         "SIC4"
 
