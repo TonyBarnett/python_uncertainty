@@ -21,19 +21,6 @@ def map_supply_to_error(supply_totals: dict, error_totals: dict) -> dict:
     return map_
 
 
-def _plot(line_x, line_y, scatter_x, scatter_y):
-    linear_line = LinePlot(line_x, line_y)
-    scatter = ScatterPlot(scatter_x, scatter_y)
-    builder = PlotBuilder()
-    builder.add_plot_type(linear_line)
-    builder.add_plot_type(scatter)
-    builder.plot()
-
-
-def get_pdf_from_points(y: list):
-    return Counter(y)
-
-
 def get_uk_supply_uncertainty_distribution() -> LogNormalDistribution:
     x_y = list()
     for year in YEAR_RANGE:
