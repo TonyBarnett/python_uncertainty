@@ -1,6 +1,6 @@
 from ..data_sources import get_uk_emissions_and_error
 from .uncertainty_functions import get_mean, get_standard_deviation, ln, get_relative_errors
-from . import LogNormalDistribution, LogNormalDistributionFunction
+from .distribution import LogNormalDistribution, LogNormalDistributionFunction
 
 
 def get_uk_emissions_distribution() -> LogNormalDistribution:

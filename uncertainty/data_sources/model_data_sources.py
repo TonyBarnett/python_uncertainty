@@ -3,7 +3,7 @@ import os
 
 import pymongo
 
-from . import read_from_sql, build_source_query, build_import_query
+from .sql import read_from_sql, build_source_query, build_import_query
 from .excel import get_data_from_excel
 
 

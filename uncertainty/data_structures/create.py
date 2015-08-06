@@ -1,4 +1,4 @@
-from . import DataSource, ImportDataSource, EmissionsDataSource, TotalsOnlyDataSource
+from .data_structures import DataSource, ImportDataSource, EmissionsDataSource, TotalsOnlyDataSource
 
 
 def create_source_class(year: int, region: str, type_: str) -> DataSource:

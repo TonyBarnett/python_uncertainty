@@ -1,4 +1,4 @@
-from . import LogNormalDistribution, LogNormalDistributionFunction
+from .distribution import LogNormalDistribution, LogNormalDistributionFunction
 
 
 def get_imports_distribution() -> LogNormalDistribution:

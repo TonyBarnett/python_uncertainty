@@ -1,6 +1,6 @@
 from collections import Counter
 
-from . import LogNormalDistribution, LogNormalDistributionFunction
+from .distribution import LogNormalDistribution, LogNormalDistributionFunction
 from ..data_sources import get_uk_supply, get_uk_supply_error
 from .uncertainty_functions import get_ancestors_and_self, clean_totals, get_relative_errors
 
