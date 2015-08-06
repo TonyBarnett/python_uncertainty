@@ -6,7 +6,7 @@ def read_from_sql(query: str, params: tuple=None, db: str=None, server='localhos
     with pymssql.connect(server, uid, pw, db) as conn:
         with conn.cursor() as cursor:
             # The star says you want a list of parameters for the format.
-            cursor.execute(query if not params else query.format(*params))
+            cursor.execute(query if not params else query.format(params))
             return make_query_result_tuple(cursor.fetchall())
 
 

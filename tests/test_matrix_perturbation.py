@@ -23,7 +23,7 @@ class PerturbMatrix(unittest.TestCase):
         self.assertIs(type(m), Matrix)
 
     def test_simple_case(self):
-        with patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution", return_value = 1) as \
+        with patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution", return_value=1) as \
                 mock_get_perturbation_from_distribution:
             m = get_new_perturbed_matrix(self.matrix, self.distribution)
             self.assertTrue((m.elements == self.output_matrix.elements).all())
@@ -32,8 +32,8 @@ class PerturbMatrix(unittest.TestCase):
 class PerturbVector(unittest.TestCase):
     def setUp(self):
         self.matrix = Vector.create_vector_from_tuple((("1", 1),
-                                                      ("2", 2.2),
-                                                      ("3", 4.5)))
+                                                       ("2", 2.2),
+                                                       ("3", 4.5)))
 
         self.output_matrix = Vector.create_vector_from_tuple((("1", 2),
                                                               ("2", 3.2),
