@@ -128,7 +128,7 @@ class TotalsOnlyDataSource(BaseDataSource):
 
     def _perturb_certain_elements(self, vector: Vector, elements_to_perturb: list) -> Vector:
         perturbations = list()
-        for row in range(vector.shape[0]):
+        for row in range(len(vector)):
             value = vector[row, 0]
             t = value
             if row in elements_to_perturb:

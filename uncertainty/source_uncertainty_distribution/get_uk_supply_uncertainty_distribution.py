@@ -1,10 +1,8 @@
 from collections import Counter
 
-from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution, \
-    LogNormalDistributionFunction
-from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply, get_uk_supply_error
-from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_ancestors_and_self, clean_totals, \
-    get_relative_errors
+from . import LogNormalDistribution, LogNormalDistributionFunction
+from ..data_sources import get_uk_supply, get_uk_supply_error
+from .uncertainty_functions import get_ancestors_and_self, clean_totals, get_relative_errors
 
 # plot, \
 from uncertainty.plot_builder import PlotBuilder, ScatterPlot, LinePlot

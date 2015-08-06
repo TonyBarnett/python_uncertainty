@@ -1,15 +1,9 @@
-from uncertainty.source_uncertainty_distribution.get_eu_consumption_uncertainty_distribution \
-    import get_eu_consumption_distribution_function
-from uncertainty.source_uncertainty_distribution.get_eu_supply_uncertainty_distribution \
-    import get_eu_supply_distribution_function
-from uncertainty.source_uncertainty_distribution.get_imports_uncertainty_distribution \
-    import get_imports_distribution_function
-from uncertainty.source_uncertainty_distribution.get_uk_supply_uncertainty_distribution \
-    import get_uk_supply_distribution_function
-from uncertainty.source_uncertainty_distribution.get_uk_consumption_uncertainty_distribution \
-    import get_uk_consumption_distribution_function
-from uncertainty.source_uncertainty_distribution.get_uk_emissions_uncertainty_distribution \
-    import get_uk_emissions_distribution_function
+from . import get_eu_consumption_distribution_function, \
+    get_eu_supply_distribution_function, \
+    get_imports_distribution_function, \
+    get_uk_supply_distribution_function, \
+    get_uk_consumption_distribution_function, \
+    get_uk_emissions_distribution_function
 
 _distribution_region_type_functions = {
     "consumption": {

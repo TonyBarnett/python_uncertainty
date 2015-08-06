@@ -1,4 +1,4 @@
-from .distribution import LogNormalDistribution, LogNormalDistributionFunction
+from . import LogNormalDistribution, LogNormalDistributionFunction
 
 
 def get_eu_consumption_distribution() -> LogNormalDistribution:

@@ -1,5 +1,4 @@
-from uncertainty.source_uncertainty_distribution.distribution import LogNormalDistribution, \
-    LogNormalDistributionFunction
+from . import LogNormalDistribution, LogNormalDistributionFunction
 
 
 def get_eu_supply_distribution() -> LogNormalDistribution:

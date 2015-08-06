@@ -1,5 +1,5 @@
-from ..data_sources.model_data_sources import get_map
-from ..data_structures.data_structures import DataSource, EmissionsDataSource, ImportDataSource, TotalsOnlyDataSource
+from ..data_sources import get_map
+from ..data_structures import DataSource, EmissionsDataSource, ImportDataSource, TotalsOnlyDataSource
 
 _MAP = get_map(map_collection="Other_NB_Without_Ancestors_multinomial_10")
 

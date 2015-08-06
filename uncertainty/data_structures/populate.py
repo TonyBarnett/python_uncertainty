@@ -2,7 +2,7 @@ from utility_functions.data_sanitation import clean_value
 from utility_functions.data_sanitation import _is_number
 
 from .data_structures import DataSource, ImportDataSource, EmissionsDataSource, BaseDataSource, TotalsOnlyDataSource
-from ..data_sources.model_data_sources import get_source_matrix_of_type
+from ..data_sources import get_source_matrix_of_type
 
 
 def check_only_one_classification_system(system: list):

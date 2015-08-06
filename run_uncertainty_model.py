@@ -2,12 +2,11 @@ import logging
 import multiprocessing
 import time
 
-from uncertainty.data_structures.get import get_data_source_of_type
-from uncertainty.data_structures.populate import populate_source_data_of_type
-from uncertainty.data_mapping.map_data import map_source_data_matrix
+from uncertainty.data_structures import get_data_source_of_type, populate_source_data_of_type
+from uncertainty.data_mapping import map_source_data_matrix
 from uncertainty.source_uncertainty_distribution import get_distribution_function_of_type_and_region
-from uncertainty.Monte_Carlo.single_region_model import run_single_region_model
-from uncertainty.data_sources.sql import write_intensities_to_sql
+from uncertainty.Monte_Carlo import run_single_region_model
+from uncertainty.data_sources import write_intensities_to_sql
 
 INPUT_YEARS = (2008,)
 INPUT_MATRICES = ("consumption", "production", "emissions")

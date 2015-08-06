@@ -1,4 +1,4 @@
-from .sql import build_clas_value_query, read_from_sql
+from . import build_clas_value_query, read_from_sql
 
 
 def get_classification_systems_data(system_id: str=None, value_id: str=None, used: bool=None):

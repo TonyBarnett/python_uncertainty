@@ -3,8 +3,7 @@ import numpy
 import random
 from math import log as ln
 
-from uncertainty.source_uncertainty_distribution.uncertainty_functions import get_mean, get_standard_deviation, \
-    linear_regression
+from .uncertainty_functions import get_mean, get_standard_deviation, linear_regression
 
 
 class Distribution:
