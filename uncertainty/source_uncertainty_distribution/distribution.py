@@ -91,7 +91,7 @@ class NormalDistributionFunction(DistributionFunction):
             if x:
                 if x not in x_y_counter:
                     x_y_counter[x] = list()
-                x_y_counter[x].append((y + x) / x)
+                x_y_counter[x].append(ln((y + x) / x))
         return x_y_counter
 
     @staticmethod
