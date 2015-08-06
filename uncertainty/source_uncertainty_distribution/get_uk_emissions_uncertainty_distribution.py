@@ -7,7 +7,7 @@ from uncertainty.source_uncertainty_distribution.distribution import LogNormalDi
     LogNormalDistributionFunction
 
 
-def get_uk_emissions_distribution(plot=None) -> LogNormalDistribution:
+def get_uk_emissions_distribution() -> LogNormalDistribution:
     emissions = get_uk_emissions_and_error()
     x = list()
     y = list()
@@ -38,7 +38,3 @@ def get_uk_emissions_distribution_function() -> LogNormalDistributionFunction:
         y.append(float(error))
 
     return LogNormalDistributionFunction.create_from_x_y_coordinates(x, y)
-
-
-if __name__ == '__main__':
-    get_uk_emissions_distribution(plot=True)

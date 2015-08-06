@@ -6,10 +6,6 @@ def get_perturbation_from_distribution(distribution: DistributionFunction, value
     return distribution[value]
 
 
-def _get_log_normal_distribution(a, b):
-    pass
-
-
 def get_new_perturbed_vector(vec: Vector, distribution):
     data = list()
     for row_key in vec.keys:
