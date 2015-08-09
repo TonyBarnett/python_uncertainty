@@ -28,6 +28,24 @@ class PerturbMatrix(unittest.TestCase):
             m = get_new_perturbed_matrix(self.matrix, self.distribution)
             self.assertTrue((m.elements == self.output_matrix.elements).all())
 
+    def test_matrix_contains_zero(self):
+        with patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution", return_value=1) as \
+                mock_get_perturbation_from_distribution:
+            self.matrix = create_matrix_from_list_of_tuple((("1", "1", 1),
+                                                            ("2", "2", 0),
+                                                            ("1", "2", 3),
+                                                            ("2", "1", 4)))
+
+            self.output_matrix = create_matrix_from_list_of_tuple((("1", "1", 2),
+                                                                   ("2", "2", 0),
+                                                                   ("1", "2", 4),
+                                                                   ("2", "1", 5)))
+
+
+            m = get_new_perturbed_matrix(self.matrix, self.distribution)
+
+            self.assertTrue((m.elements == self.output_matrix.elements).all())
+
 
 class PerturbVector(unittest.TestCase):
     def setUp(self):

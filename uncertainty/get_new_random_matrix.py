@@ -29,7 +29,13 @@ def get_new_perturbed_matrix(mat: Matrix, distribution) -> Matrix:
     values = list()
     for row_key in mat.row_keys:
         for column_key in mat.column_keys:
-            perturbation = get_perturbation_from_distribution(distribution, mat[(row_key, column_key)])
+            if mat[(row_key, column_key)]:
+                perturbation = get_perturbation_from_distribution(distribution, mat[(row_key, column_key)])
+            elif mat[(row_key, column_key)] == 0:
+                perturbation = 0
+            else:
+                raise ValueError("Element shouldn't be null.")
+
             perturbed_value = get_perturbed_value(mat[(row_key, column_key)], perturbation)
             values.append((row_key, column_key, perturbed_value))
 
