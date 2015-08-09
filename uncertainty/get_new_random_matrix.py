@@ -14,6 +14,12 @@ def get_perturbed_value(value: float, perturbation: float) -> float:
 def get_new_perturbed_vector(vec: Vector, distribution):
     data = list()
     for row_key in vec.keys:
+        if vec[row_key]:
+            perturbation = get_perturbation_from_distribution(distribution, vec[row_key])
+        elif vec[row_key] == 0:
+            perturbation = 0
+        else:
+            raise ValueError("Element shouldn't be null.")
         perturbation = get_perturbation_from_distribution(distribution, vec[row_key])
         perturbed_value = get_perturbed_value(vec[row_key], perturbation)
         data.append((row_key, perturbed_value))
