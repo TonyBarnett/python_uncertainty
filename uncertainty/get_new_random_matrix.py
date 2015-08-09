@@ -7,12 +7,15 @@ def get_perturbation_from_distribution(distribution: DistributionFunction, value
     return distribution[value]
 
 
+def get_perturbed_value(value: float, perturbation: float) -> float:
+    return value + perturbation
+
+
 def get_new_perturbed_vector(vec: Vector, distribution):
     data = list()
     for row_key in vec.keys:
-
         perturbation = get_perturbation_from_distribution(distribution, vec[row_key])
-        perturbed_value = exp(perturbation) * vec[row_key]
+        perturbed_value = get_perturbed_value(vec[row_key], perturbation)
         data.append((row_key, perturbed_value))
 
     perturbed_vector = Vector.create_vector_from_tuple(tuple(data))
@@ -27,7 +30,7 @@ def get_new_perturbed_matrix(mat: Matrix, distribution) -> Matrix:
     for row_key in mat.row_keys:
         for column_key in mat.column_keys:
             perturbation = get_perturbation_from_distribution(distribution, mat[(row_key, column_key)])
-            perturbed_value = mat[(row_key, column_key)] * exp(perturbation)
+            perturbed_value = get_perturbed_value(mat[(row_key, column_key)], perturbation)
             values.append((row_key, column_key, perturbed_value))
 
     perturbed_matrix = Matrix.create_matrix_from_tuple(tuple(values))
