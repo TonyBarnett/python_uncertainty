@@ -1,13 +1,15 @@
 import unittest
 from unittest.mock import patch
-from uncertainty.data_mapping.map_data import get_maps_from_list
+import numpy
+from uncertainty.data_mapping.map_data import get_maps_from_list, map_data
+from uncertainty.data_structures import DataSource
 
-_map = {"SIC4": {"1": ["A"], "2": ["B"], "3": ["D", "C"], "4": ["C"]}}
+_map = {"SIC4": {"1": ["5"], "2": ["6"], "3": ["7", "8"], "4": ["8"]}}
 
 class TestGetMapFromList(unittest.TestCase):
     def setUp(self):
         self.source = ["1", "2-3", "4"]
-        self.target_map = {"1": ["A"], "2-3": ["B", "C", "D"], "4": ["C"]}
+        self.target_map = {"1": ["5"], "2-3": ["6", "8", "7"], "4": ["8"]}
 
     def test_simple_case(self):
         with patch("uncertainty.data_mapping.map_data.map_.load") as mock_load:
@@ -15,6 +17,35 @@ class TestGetMapFromList(unittest.TestCase):
             m = get_maps_from_list(self.source, "SIC4")
             # self.assertDictEqual(m, self.target_map)
 
+            # FIXME assert that a dict of lists is equal properly.
             for key, value in m.items():
                 self.assertIn(key, self.target_map)
                 self.assertListEqual(list(sorted(value)), list(sorted(self.target_map[key])))
+
+
+class TestMapData(unittest.TestCase):
+    def setUp(self):
+        self.source = DataSource(2008, "UK", "consumption")
+        self.source.system = "SIC4"
+        self.source.add_data_from_tuple((("1", "1", 1), ("1", "2-3", 7), ("1", "4", 4),
+                                         ("2-3", "1", 2), ("2-3", "4", 8), ("2-3", "2-3", 8),
+                                         ("4", "1", 3), ("4", "2-3", 9), ("4", "4", 4)
+                                         ))
+        self.target = DataSource.get_new_empty_source_data_item(self.source)
+        self.expected_output = numpy.matrix([[1, 7/3, 7/3, 19/3],
+                                             [2/3, 8/9, 8/9, 32/9],
+                                             [2/3, 8/9, 8/9, 32/9],
+                                             [11/3, 35/9, 35/9, 95/9]])
+
+    def test_simple_case(self):
+        with patch("uncertainty.data_mapping.map_data.map_.load") as mock_load:
+            mock_load.return_value = _map
+
+            with patch("uncertainty.data_mapping.map_data.get_dict_of_dict_of_censa123") as mock_censa123:
+                mock_censa123.return_value = {str(a): {str(b): 0 for b in range(5, 9)} for a in range(5, 9)}
+
+                map_data(self.source, self.target)
+                for i in range(0, 4):
+                    for j in range(0, 4):
+                        self.assertAlmostEqual(self.target.source_data.elements[i, j], self.expected_output[i, j])
+                # self.assertTrue((self.target.source_data == self.expected_output).all())

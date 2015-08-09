@@ -3,6 +3,10 @@ from ..data_sources import get_map
 from ..data_structures import DataSource, EmissionsDataSource, ImportDataSource, TotalsOnlyDataSource
 
 
+def get_dict_of_dict_of_censa123():
+    # Hard-code Censa 123 values
+    return {str(i): {str(j): 0 for j in range(1, 124)} for i in range(1, 124)}
+
 class map_:
     def __init__(self):
         self.m = None
@@ -57,8 +61,7 @@ def get_maps_and_map_len_from_list(source: list, system_id: str) -> tuple:
 
 def map_data(source: DataSource, target: DataSource):
 
-    # Hard-code Censa 123 values
-    totals = {str(i): {str(j): 0 for j in range(1, 124)} for i in range(1, 124)}
+    totals = get_dict_of_dict_of_censa123()
 
     row_map = get_maps_from_list(source.source_data.row_keys, source.system)
     row_map_len = get_map_len_from_map(row_map)
@@ -72,8 +75,8 @@ def map_data(source: DataSource, target: DataSource):
         for col_key in source.source_data.column_keys:
             for row_target in row_map[row_key]:
                 for col_target in col_map[col_key]:
-                    totals[row_target][col_target] += \
-                        source[(row_key, col_key)] / (row_map_len[row_key] * col_map_len[col_key])
+                    totals[row_target][col_target] += source[(row_key, col_key)] / \
+                                                      (row_map_len[row_key] * col_map_len[col_key])
 
     data = [(row_key, col_key, total) for row_key, columns in totals.items() for col_key, total in columns.items()]
     target.add_data_from_tuple(data)
