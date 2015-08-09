@@ -88,10 +88,9 @@ class NormalDistributionFunction(DistributionFunction):
     def _convert_x_y_to_counter(x: list, y: list) -> dict:
         x_y_counter = dict()
         for x, y in zip(x, y):
-            if x:
-                if x not in x_y_counter:
-                    x_y_counter[x] = list()
-                x_y_counter[x].append(ln((y + x) / x))
+            if x not in x_y_counter:
+                x_y_counter[x] = list()
+            x_y_counter[x].append(y)
         return x_y_counter
 
     @staticmethod
@@ -100,10 +99,9 @@ class NormalDistributionFunction(DistributionFunction):
         y_ = list()
         y_std = list()
         for t in x_y_counter.keys():
-            if t > 0:
-                x_.append(t)
-                y_.append(mean_[t])
-                y_std.append(st_dev[t])
+            x_.append(t)
+            y_.append(mean_[t])
+            y_std.append(st_dev[t])
         return x_, y_, y_std
 
     @classmethod
@@ -111,8 +109,8 @@ class NormalDistributionFunction(DistributionFunction):
         x_y_counter = NormalDistributionFunction._convert_x_y_to_counter(x, y)
         st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
         mean_ = {x: mean(y) for x, y in x_y_counter.items()}
-        x_, y_, y_std = NormalDistributionFunction._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
-        mean_a, mean_b = linear_regression(x_, y_)
+        x_, y_mean, y_std = NormalDistributionFunction._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
+        mean_a, mean_b = linear_regression(x_, y_mean)
         stdev_a, stdev_b = linear_regression(x_, y_std)
 
         return cls(mean_a, mean_b, stdev_a, stdev_b)
@@ -121,7 +119,7 @@ class NormalDistributionFunction(DistributionFunction):
         return self.mean_a * value + self.mean_b
 
     def _get_stdev_value(self, value):
-        return self.stdev_a * value + self.mean_b
+        return self.stdev_a * value + self.stdev_b
 
     def __getitem__(self, item: float) -> float:
         mean_x = self._get_mean_value(item)
