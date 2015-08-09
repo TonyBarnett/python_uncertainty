@@ -1,7 +1,22 @@
+from utility_functions import clean_value
 from ..data_sources import get_map
 from ..data_structures import DataSource, EmissionsDataSource, ImportDataSource, TotalsOnlyDataSource
 
-_MAP = get_map(map_collection="Other_NB_Without_Ancestors_multinomial_10")
+
+class map_:
+    def __init__(self):
+        self.m = None
+
+    def load(self):
+        return get_map(map_collection="Other_NB_Without_Ancestors_multinomial_10")
+
+
+    def __getitem__(self, item):
+        if not self.m:
+            self.m = self.load()
+        return self.m[item]
+
+_MAP = map_()
 
 
 def map_value(system: str, value: str) -> list:
@@ -23,7 +38,11 @@ def map_emissions_data(source: EmissionsDataSource, target: EmissionsDataSource)
 
 
 def get_maps_from_list(source: list, system_id: str) -> dict:
-    return {row_key: map_value(system_id, row_key) for row_key in source}
+    sanitised_data = {row_key: clean_value(system_id, row_key) for row_key in source}
+    return {row_key: [map_
+                      for key in sanitised_data[row_key]
+                      for map_ in list(set(map_value(system_id, key)))]
+            for row_key in source}
 
 
 def get_map_len_from_map(map_: dict) -> dict:
