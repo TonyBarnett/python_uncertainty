@@ -24,7 +24,12 @@ class BaseDataSource:
         :type source_data_item: BaseDataSource
         :return:
         """
-        return cls(source_data_item.year, source_data_item.region, source_data_item.type_)
+        x = cls(source_data_item.year, source_data_item.region, source_data_item.type_)
+        x.system = source_data_item.system
+        return x
+
+    def __str__(self):
+        return str(self.source_data.elements)
 
 
 class DataSource(BaseDataSource):
