@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from uncertainty.source_uncertainty_distribution.distribution import Distribution, LogNormalDistribution, \
     NormalDistributionFunction, LogNormalDistributionFunction
+from math import log as ln, exp
 
 
 class FactoryTest(unittest.TestCase):
@@ -60,14 +61,14 @@ class NormalFunctionFactoryTest(unittest.TestCase):
 
 class LogNormalFunctionFactorTest(unittest.TestCase):
     def setUp(self):
-        self.x = [1, 1, 2]
-        self.y = [3, 5, 6]
+        self.x = [1, 1, 1, 2, 2, 2, 4, 4, 5]
+        self.y = [3, 5, 6, 4, 0, 5, 10, 1, 2]
 
     def test_linear_regression(self):
         m = LogNormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
-
-        self.assertAlmostEqual(m.mean_a, 2.8853, places=3)
-        self.assertAlmostEqual(m.mean_b, 4, places=3)
+        # y is converted to y_i/x_i \forall i \in y
+        self.assertAlmostEqual(m.mean_a, -0.35207701, places=3)
+        self.assertAlmostEqual(m.mean_b, 4.25277049, places=3)
         self.assertAlmostEqual(m.stdev_a, -1.4427, places=3)
         self.assertAlmostEqual(m.stdev_b, 1, places=3)
 
@@ -76,6 +77,7 @@ class XYCounterNormalDistributionFunction(unittest.TestCase):
     def setUp(self):
         self.x = [0, 0, 1, 1, 1, 2, 2, 3, 4]
         self.y = [20, 20, 1, 2, 3, 10, 20, 9, 0]
+        self.expected_result = {0: [20, 20], 1: [1, 2, 3], 2: [10, 20], 3: [9], 4: [0]}
 
     def test_type(self):
         m = NormalDistributionFunction._convert_x_y_to_counter(self.x, self.y)
@@ -83,7 +85,8 @@ class XYCounterNormalDistributionFunction(unittest.TestCase):
 
     def test_simple_case(self):
         m = NormalDistributionFunction._convert_x_y_to_counter(self.x, self.y)
-        self.assertDictEqual(m, {1: [2, 3, 4], 2: [6, 11], 3: [4], 4: [1]})
+        # self.assertDictEqual(m, {1: [2, 3, 4], 2: [6, 11], 3: [4], 4: [1]})
+        self.assertDictEqual(m, self.expected_result)
 
 
 class NormalFunctionTest(unittest.TestCase):
@@ -98,9 +101,20 @@ class NormalFunctionTest(unittest.TestCase):
 
 class LogNormalFunctionTest(unittest.TestCase):
     def setUp(self):
-        self.distribution_function = LogNormalDistributionFunction(2.8853, 4, -1.4427, 1)
+        self.distribution_function = LogNormalDistributionFunction(-0.00370761, 0.04383424,
+                                                                   -0.0029355627894458156, 0.0350757971517967)
+        self.input_value = 2132
 
     def test_simple_case(self):
+        self.distribution_function = LogNormalDistributionFunction(1, 2, 3, 4)
         with patch("random.normalvariate") as mock_normalvariate:
             _ = self.distribution_function[1]
-            mock_normalvariate.assert_called_with(4, 1)
+            mock_normalvariate.assert_called_with(3, 7)
+
+    def test_get_mean(self):
+        m = self.distribution_function._get_mean_value(ln(self.input_value))
+        self.assertAlmostEqual(m, 0.015115, 3)
+
+    def test_get_stdev(self):
+        m = self.distribution_function._get_stdev_value(ln(self.input_value))
+        self.assertAlmostEqual(m, 0.012337315, 3)

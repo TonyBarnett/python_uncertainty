@@ -7,20 +7,22 @@ def get_dict_of_dict_of_censa123():
     # Hard-code Censa 123 values
     return {str(i): {str(j): 0 for j in range(1, 124)} for i in range(1, 124)}
 
-class map_:
+
+class Map:
     def __init__(self):
         self.m = None
 
-    def load(self):
+    @staticmethod
+    def load():
         return get_map(map_collection="Other_NB_Without_Ancestors_multinomial_10")
-
 
     def __getitem__(self, item):
         if not self.m:
             self.m = self.load()
         return self.m[item]
 
-_MAP = map_()
+
+_MAP = Map()
 
 
 def map_value(system: str, value: str) -> list:
@@ -60,6 +62,15 @@ def get_maps_and_map_len_from_list(source: list, system_id: str) -> tuple:
 
 
 def map_data(source: DataSource, target: DataSource):
+    for row_key in source.source_data.row_keys:
+        for col_key in source.source_data.column_keys:
+            if source[(row_key, col_key)] < 0:
+                raise ValueError("at the beginning of the fn for matrix {0}, row {1}, column: {2} value was {3}".format(
+                    source.type_,
+                    row_key,
+                    col_key,
+                    source[(row_key, col_key)]
+                ))
 
     totals = get_dict_of_dict_of_censa123()
 
@@ -69,14 +80,33 @@ def map_data(source: DataSource, target: DataSource):
     col_map = get_maps_from_list(source.source_data.column_keys, source.system)
     col_map_len = get_map_len_from_map(col_map)
 
+    for map_len in col_map_len.values():
+        if map_len < 0:
+            raise ValueError("col_map_len is less than zero")
+
+    for map_len in row_map_len.values():
+        if map_len < 0:
+            raise ValueError("col_map_len is less than zero")
+
     # this probably needs tidying, row_map[key] is a list, as is col_map[key] so loop over each of these lists and
     # assign totals, split the totals row_map_len[key] * col_map_len[key] times
     for row_key in source.source_data.row_keys:
         for col_key in source.source_data.column_keys:
             for row_target in row_map[row_key]:
                 for col_target in col_map[col_key]:
-                    totals[row_target][col_target] += source[(row_key, col_key)] / \
-                                                      (row_map_len[row_key] * col_map_len[col_key])
+
+                    if source[(row_key, col_key)] / (row_map_len[row_key] * col_map_len[col_key]) < 0:
+                        print("matrix value: {0}".format(source[(row_key, col_key)]))
+                        print("row_map_len : {0}".format(row_map_len[row_key]))
+                        print("col_map_len : {0}".format(col_map_len[row_key]))
+                        raise ValueError("for matrix {0}, {1}: {2} was {3}".format(
+                            source.type_,
+                            row_key,
+                            col_key,
+                            source[(row_key, col_key)] / (row_map_len[row_key] * col_map_len[col_key])))
+
+                    totals[row_target][col_target] += \
+                        source[(row_key, col_key)] / (row_map_len[row_key] * col_map_len[col_key])
 
     data = [(row_key, col_key, total) for row_key, columns in totals.items() for col_key, total in columns.items()]
     target.add_data_from_tuple(data)
@@ -123,7 +153,7 @@ def add_item_to_mapped_data(data, mapped_data):
     mapped_data[type_][region] = data
 
 
-def map_data_of_type(source_data_item, mapped):
+def map_data_of_type(source_data_item: DataSource, mapped: DataSource):
     """
     Determine which type of item source_data_item is, then map it
     :param source_data_item:

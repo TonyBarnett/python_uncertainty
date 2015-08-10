@@ -131,10 +131,32 @@ class NormalDistributionFunction(DistributionFunction):
 class LogNormalDistributionFunction(NormalDistributionFunction):
     @classmethod
     def create_from_x_y_coordinates(cls, x, y):
-        return super().create_from_x_y_coordinates([ln(x_i) for x_i in x], y)
+        # return super().create_from_x_y_coordinates(x, [y_i / x[i] for i, y_i in enumerate(y)])
+        return super().create_from_x_y_coordinates([ln(x_i) for x_i in x], [y_i / x[i] for i, y_i in enumerate(y)])
 
     def __getitem__(self, item: float) -> float:
         # we assume that if something has a value of 0 then it has an error of 0 as well
         if item <= 0:
             return item
-        return super().__getitem__(ln(item))
+        mean_x = self._get_mean_value(ln(item))
+        stdev_x = self._get_stdev_value(ln(item))
+        # mean_x = self._get_mean_value(ln(item))
+        # stdev_x = self._get_stdev_value(ln(item))
+
+        if mean_x > 1:
+            print("for value: {0}".format(item))
+            print("a: {0}".format(self.mean_a))
+            print("b: {0}".format(self.mean_b))
+            # raise ValueError("mean value of {0}".format(mean_x))
+            print("mean: {0}".format(mean_x))
+        if stdev_x > 1:
+            print("for value: {0}".format(item))
+            print("a: {0}".format(self.stdev_a))
+            print("b: {0}".format(self.stdev_b))
+            print("stdev: {0}".format(stdev_x))
+            # raise ValueError("standard deviation value of {0}".format(stdev_x))
+
+        if stdev_x < 0.01:
+            stdev_x = 0.01
+        d = NormalDistribution(mean_x, stdev_x)
+        return d.get_observation()

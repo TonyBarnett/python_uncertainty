@@ -41,7 +41,6 @@ class PerturbMatrix(unittest.TestCase):
                                                                    ("1", "2", 4),
                                                                    ("2", "1", 5)))
 
-
             m = get_new_perturbed_matrix(self.matrix, self.distribution)
 
             self.assertTrue((m.elements == self.output_matrix.elements).all())

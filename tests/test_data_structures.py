@@ -3,6 +3,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 import numpy
+from uncertainty.data_structures import DataSource
 from uncertainty.data_structures.populate import TotalsOnlyDataSource, populate_totals_only_source_data
 from uncertainty.matrix import Vector
 from uncertainty.source_uncertainty_distribution.distribution import NormalDistribution
@@ -52,3 +53,21 @@ class TotalsOnlyMakeVectorSumsEqual(unittest.TestCase):
         self.vector2 = Vector([3, 6, 12, 18])
         vector1, vector2 = TotalsOnlyDataSource._make_vector_sums_equal(self.vector1, self.vector2)
         self.assertAlmostEqual(sum(x for x in vector1.elements.A1), sum(x for x in vector2.elements.A1), places=5)
+
+
+class BaseDataGetNewEmptySourceDataItem(unittest.TestCase):
+    def setUp(self):
+        self.source = DataSource(2008, "UK", "consumption")
+        self.source.system = "SIC4"
+        self.source.add_data_from_tuple((("1", "1", 1), ("1", "2-3", 7), ("1", "4", 4),
+                                         ("2-3", "1", 2), ("2-3", "4", 8), ("2-3", "2-3", 8),
+                                         ("4", "1", 3), ("4", "2-3", 9), ("4", "4", 4)
+                                         ))
+
+    def test_simple_case(self):
+        target = DataSource.get_new_empty_source_data_item(self.source)
+        self.assertEqual(target.type_, self.source.type_)
+        self.assertEqual(target.region, self.source.region)
+        self.assertEqual(target.system, self.source.system)
+        self.assertEqual(target.year, self.source.year)
+
