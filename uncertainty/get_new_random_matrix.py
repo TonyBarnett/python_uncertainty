@@ -32,8 +32,6 @@ def get_new_perturbed_matrix(mat: Matrix, distribution) -> Matrix:
     # work out logNormal distribution from y = a ln(x) + b,
     # then use it to add a random float to each element in Matrix
     values = list()
-    print("mean = {0} ln(x) + {1}".format(distribution.mean_a, distribution.mean_b))
-    print("std = {0} ln(x) + {1}".format(distribution.stdev_a, distribution.stdev_b))
     for row_key in mat.row_keys:
         for column_key in mat.column_keys:
             if mat[(row_key, column_key)]:

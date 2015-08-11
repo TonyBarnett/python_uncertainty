@@ -54,7 +54,8 @@ def get_perturb_source_data(source_data):
         perturbed_data_item = source_data_item.get_new_perturbed_matrix()
         perturbed_data.append(perturbed_data_item)
         if source_data_item.type_ == "production":
-            print_negatives_of_matrix(perturbed_data_item)
+            # print_negatives_of_matrix(perturbed_data_item)
+            pass
             # logging.debug(str(source_data_item))
     return perturbed_data
 
@@ -77,7 +78,8 @@ def process_worker(source_data, percent_complete, input_year, pipe_end):
         uk_production = mapped_data["production"]["UK"]
         uk_emissions = mapped_data["emissions"]["UK"]
         # logging.debug(str(uk_production))
-        logging.debug(str(uk_consumption))
+        # logging.debug(str(uk_consumption))
+        # logging.debug(str(uk_emissions))
 
         intensities = run_single_region_model(uk_production, uk_consumption, uk_emissions)
         write_intensities_to_sql(intensities, run_number, input_year, "Single Region")
@@ -99,7 +101,7 @@ if __name__ == '__main__':
     #     make a new perturbed matrix
     #     map the perturbed matrix
     #   run two cf models
-    process_count = 1
+    process_count = 3
 
     for input_year in INPUT_YEARS:
         logging.debug("year: {0}".format(input_year))

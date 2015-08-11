@@ -81,7 +81,7 @@ def make_constraints(data) -> dict:
     conditions = dict()
     for row_index, row_data in enumerate(data):
         for col_index, value in enumerate(row_data):
-            if value and _is_number(value):
+            if _is_number(value):
                 conditions[(row_index, col_index)] = value
     return conditions
 

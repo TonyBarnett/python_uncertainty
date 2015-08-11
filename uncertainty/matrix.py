@@ -23,6 +23,18 @@ class MatrixVector:
     def __get__(self, instance, owner):
         return instance.elements
 
+    @classmethod
+    def deep_copy(cls, matrix):
+        """
+
+        :param matrix: type(MatrixVector)
+        :return:
+        """
+        m = cls(matrix.elements)
+        m.row_keys = matrix.row_keys
+        m.column_keys = matrix.column_keys
+        return m
+
 
 class Matrix(MatrixVector):
     @staticmethod
