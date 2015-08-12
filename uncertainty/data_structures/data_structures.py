@@ -297,3 +297,10 @@ class TotalsOnlyDataSource(BaseDataSource):
 
     def add_data_from_tuple(self, data):
         self.source_data = Matrix.create_matrix_from_tuple(data)
+
+    def __getitem__(self, item: tuple) -> float:
+        (row, column) = item
+        try:
+            return float(self.source_data[(row, column)])
+        except ValueError:
+            return self.source_data[(row, column)]
