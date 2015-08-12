@@ -45,7 +45,7 @@ if __name__ == '__main__':
          ("kx",),
          hold=True,
          xlabel="supply value",
-         ylabel="(x + delta x) / x",
+         ylabel="delta x / x",
          title="UK Emissions"
          )
 

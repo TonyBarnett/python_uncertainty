@@ -71,7 +71,7 @@ if __name__ == '__main__':
          ("kx",),
          hold=True,
          xlabel="supply value",
-         ylabel="ln((x + delta x) / x)",
+         ylabel="\delta x / x",
          title="UK supply"
          )
     # plot((x, x, x),
