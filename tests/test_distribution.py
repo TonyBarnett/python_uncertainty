@@ -109,7 +109,7 @@ class LogNormalFunctionTest(unittest.TestCase):
         self.distribution_function = LogNormalDistributionFunction(1, 2, 3, 4)
         with patch("random.normalvariate") as mock_normalvariate:
             _ = self.distribution_function[1]
-            mock_normalvariate.assert_called_with(3, 7)
+            mock_normalvariate.assert_called_with(2, 4)
 
     def test_get_mean(self):
         m = self.distribution_function._get_mean_value(ln(self.input_value))

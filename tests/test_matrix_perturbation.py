@@ -13,14 +13,15 @@ class PerturbMatrix(unittest.TestCase):
                                                         ("2", "1", 4)))
 
         self.output_matrix = create_matrix_from_list_of_tuple((("1", "1", 2),
-                                                               ("2", "2", 3),
-                                                               ("1", "2", 4),
-                                                               ("2", "1", 5)))
+                                                               ("2", "2", 4),
+                                                               ("1", "2", 6),
+                                                               ("2", "1", 8)))
         self.distribution = NormalDistributionFunction(1, 1, 1, 1)
 
     def test_type(self):
-        m = get_new_perturbed_matrix(self.matrix, self.distribution)
-        self.assertIs(type(m), Matrix)
+        with patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution", return_value=1):
+            m = get_new_perturbed_matrix(self.matrix, self.distribution)
+            self.assertIs(type(m), Matrix)
 
     def test_simple_case(self):
         with patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution", return_value=1) as \
@@ -38,8 +39,8 @@ class PerturbMatrix(unittest.TestCase):
 
             self.output_matrix = create_matrix_from_list_of_tuple((("1", "1", 2),
                                                                    ("2", "2", 0),
-                                                                   ("1", "2", 4),
-                                                                   ("2", "1", 5)))
+                                                                   ("1", "2", 6),
+                                                                   ("2", "1", 8)))
 
             m = get_new_perturbed_matrix(self.matrix, self.distribution)
 
@@ -53,8 +54,8 @@ class PerturbVector(unittest.TestCase):
                                                        ("3", 4.5)))
 
         self.output_matrix = Vector.create_vector_from_tuple((("1", 2),
-                                                              ("2", 3.2),
-                                                              ("3", 5.5)))
+                                                              ("2", 4.4),
+                                                              ("3", 9)))
         self.distribution = NormalDistributionFunction(1, 1, 1, 1)
 
     def test_type(self):
