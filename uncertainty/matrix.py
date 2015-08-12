@@ -1,3 +1,4 @@
+from _collections_abc import Iterable
 from collections import OrderedDict
 
 from numpy.matrixlib import matrix
@@ -10,7 +11,7 @@ class MatrixVector:
         self.elements = matrix(data)  # indexed by row_key, column_key
 
     @staticmethod
-    def sort_list_alphabetically(unordered_list: list) -> list:
+    def sort_list_alphabetically(unordered_list: Iterable) -> list:
         return [x for x in sorted(unordered_list)]
 
     @classmethod
@@ -24,15 +25,15 @@ class MatrixVector:
         return instance.elements
 
     @classmethod
-    def deep_copy(cls, matrix):
+    def deep_copy(cls, m):
         """
 
-        :param matrix: type(MatrixVector)
+        :param m: type(MatrixVector)
         :return:
         """
-        m = cls(matrix.elements)
-        m.row_keys = matrix.row_keys
-        m.column_keys = matrix.column_keys
+        m = cls(m.elements)
+        m.row_keys = m.row_keys
+        m.column_keys = m.column_keys
         return m
 
 

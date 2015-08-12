@@ -216,6 +216,17 @@ class TotalsOnlyDataSource(BaseDataSource):
         column_sums = matrix_functions.get_col_sum(just_numbers.elements.astype(float))
         return row_sums, column_sums
 
+    def _perturb_row_or_column_sums(self, sums: numpy.matrix, amount_to_add: dict, key_lookup: dict) -> OrderedDict:
+        sum_ = OrderedDict()
+        for i, row_sum in enumerate(sums.A1):
+            key = [k for k, value in key_lookup.items() if value == i]
+            if len(key) != 1:
+                raise ValueError("lookup failed")
+            key = key[0]
+            value_to_add = 0 if key not in amount_to_add.keys() else amount_to_add[key]
+            sum_[key] = row_sum + value_to_add
+        return sum_
+
     def get_new_perturbed_matrix(self):
         """
         perturb the row and column totals, then use RAS to guess at a new matrix and return that
@@ -243,12 +254,11 @@ class TotalsOnlyDataSource(BaseDataSource):
                 m_column = self.source_data.column_keys[column]
                 if self.source_data[(row, column)] == 0:
                     perturbed_row.append(0)
-
                     constraints[(m_row, m_column)] = 0
 
                 elif self.source_data[(row, column)] == "c":
                     perturbed_row.append("c")
-                    perturbation = self.distribution[1]
+                    perturbation = self.distribution[0.01]
                     add_to_rows[row] += perturbation
                     add_to_columns[column] += perturbation
 
@@ -258,28 +268,12 @@ class TotalsOnlyDataSource(BaseDataSource):
                     perturbed_row.append(value + perturbation)
                     add_to_rows[row] += perturbation
                     add_to_columns[column] += perturbation
-
                     constraints[(m_row, m_column)] = value + perturbation
+
             perturbed_matrix.append(perturbed_row)
 
-        new_row_sum = OrderedDict()
-        new_column_sum = OrderedDict()
-
-        for i, row_sum in enumerate(row_sums.A1):
-            row_key = [key for key, value in self.source_data.row_keys.items() if value == i]
-            if len(row_key) != 1:
-                raise ValueError("row lookup failed")
-            row_key = row_key[0]
-            value_to_add = 0 if row_key not in add_to_rows.keys() else add_to_rows[row_key]
-            new_row_sum[row_key] = row_sum + value_to_add
-
-        for i, column_sum in enumerate(column_sums.A1):
-            column_key = [key for key, value in self.source_data.column_keys.items() if value == i]
-            if len(column_key) != 1:
-                raise ValueError("column lookup failed")
-            column_key = column_key[0]
-            value_to_add = 0 if column_key not in add_to_columns.keys() else add_to_columns[column_key]
-            new_column_sum[column_key] = column_sum + value_to_add
+        new_row_sum = self._perturb_row_or_column_sums(row_sums, add_to_rows, self.source_data.row_keys)
+        new_column_sum = self._perturb_row_or_column_sums(column_sums, add_to_columns, self.source_data.column_keys)
 
         perturbed_matrix = self._create_data_with_same_internals_as_self()
 
