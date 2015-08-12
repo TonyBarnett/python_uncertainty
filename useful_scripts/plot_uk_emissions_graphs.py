@@ -7,7 +7,7 @@ from numpy import mean, std as stdev
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_emissions_and_error
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import linear_regression
 from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
-    PRESENTATION_LOCATION
+    PRESENTATION_LOCATION, THESIS_LOCATION
 from useful_scripts.useful_functions.regression_functions import get_upper_and_lower_stdev_regression_coefficients
 
 if __name__ == '__main__':
@@ -45,19 +45,11 @@ if __name__ == '__main__':
          ("kx",),
          hold=True,
          xlabel="supply value",
-         ylabel="ln((x + delta x) / x)",
+         ylabel="(x + delta x) / x",
          title="UK Emissions"
          )
-    #
-    # plot((x, x, x),
-    #      (y, st_dev_upper_y, st_dev_lower_y),
-    #      ("kx", "r_", "g_"),
-    #      hold=True,
-    #      xlabel="supply value",
-    #      ylabel="ln((x + delta x) / x)",
-    #      title="UK Emissions"
-    #      )
 
     add_regression_lines_to_graph(mean_a, mean_b, x, min_y=10 ** -10, multiplier=1.96)
 
-    pyplot.savefig(PRESENTATION_LOCATION + "uk_emissions.pdf")
+    pyplot.savefig(THESIS_LOCATION + "uk_emissions_input_distribution.pdf")
+    pyplot.savefig(PRESENTATION_LOCATION + "uk_emissions_input_distribution.pdf")
