@@ -1,6 +1,7 @@
 import os
 
 from matplotlib import pyplot
+import matplotlib
 from utility_functions import float_range
 
 from useful_scripts.useful_functions.regression_functions import get_ln_line_from_regression_coefficients
@@ -20,6 +21,10 @@ def _add_labels_to_graph(xlabel: str="", ylabel: str="", title: str=""):
 
 
 def _add_to_plot(xs: tuple, ys: tuple, styles: tuple, hold: bool=False, xlabel: str="", ylabel: str="", title: str=""):
+
+    matplotlib.rc('font', family='serif', serif='Computer Modern Roman')
+    #  uses the TeX compiler to render the font times in the graphs
+    matplotlib.rc('text', usetex=True)
     for i, x in enumerate(xs):
         pyplot.plot(x, ys[i], styles[i])
         pyplot.hold(True)
