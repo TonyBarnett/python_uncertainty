@@ -129,10 +129,21 @@ class NormalDistributionFunction(DistributionFunction):
 
 
 class LogNormalDistributionFunction(NormalDistributionFunction):
+    @staticmethod
+    def _remove_non_positive_values(x: list, y: list) -> tuple:
+        xx = list()
+        yy = list()
+        for i, x_i in enumerate(x):
+            if x_i > 0:
+                xx.append(x_i)
+                yy.append(y[i])
+        return xx, yy
+
     @classmethod
     def create_from_x_y_coordinates(cls, x, y):
         # return super().create_from_x_y_coordinates(x, [y_i / x[i] for i, y_i in enumerate(y)])
-        return super().create_from_x_y_coordinates([ln(x_i) for x_i in x], [y_i / x[i] for i, y_i in enumerate(y)])
+        xx, yy = LogNormalDistributionFunction._remove_non_positive_values(x, y)
+        return super().create_from_x_y_coordinates([ln(x_i) for x_i in xx], [y_i / xx[i] for i, y_i in enumerate(yy)])
 
     def __getitem__(self, item: float) -> float:
         # we assume that if something has a value of 0 then it has an error of 0 as well
