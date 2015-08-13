@@ -7,6 +7,7 @@ from utility_functions import clean_value
 
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply_error, get_uk_supply
 from uncertainty.data_structures.data_structures import DataSource
+from uncertainty.source_uncertainty_distribution import LogNormalDistributionFunction
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import linear_regression
 from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
     PRESENTATION_LOCATION, THESIS_LOCATION
@@ -42,48 +43,26 @@ if __name__ == '__main__':
 
     x_y = map_thing2_to_thing1_together(clean_supply, clean_error)
 
-    # plot_x_y(x_y)
-
-    x_y_counter = dict()
-    for x, y in x_y:
-        if x not in x_y_counter:
-            x_y_counter[x] = list()
-        x_y_counter[x].append((y + x) / x)
-
-    x_mean = {x: mean(y) for x, y in x_y_counter.items()}
-    x_stdev = {x: stdev(y) for x, y in x_y_counter.items()}
-
     x = list()
     y = list()
-    st_dev = list()
-    for a in x_y_counter.keys():
-        x.append(a)
-        y.append(ln(x_mean[a]))
-        st_dev.append(x_stdev[a])
 
-    stdev_upper_a, stdev_upper_b, stdev_lower_a, stdev_lower_b = \
-        get_upper_and_lower_stdev_regression_coefficients(x_y_counter, x_mean, x_stdev)
-
-    mean_a, mean_b = linear_regression([ln(x_i) for x_i in x], y)
+    for x_i, y_i in x_y:
+        x.append(x_i)
+        y.append(y_i)
+    distribution_function = LogNormalDistributionFunction.create_from_x_y_coordinates(x, y)
 
     plot((x,),
-         (y,),
+         ([y_i / x[i] for i, y_i in enumerate(y)],),
          ("kx",),
          hold=True,
-         xlabel="supply value",
-         ylabel="\delta x / x",
+         xlabel="Supply value",
+         ylabel="$\Delta x / x$",
          title="UK supply"
          )
-    # plot((x, x, x),
-    #      (y, st_dev_upper_y, st_dev_lower_y),
-    #      ("kx", "r_", "g_"),
-    #      hold=True,
-    #      xlabel="supply value",
-    #      ylabel="ln((x + delta x) / x)",
-    #      title="UK supply"
-    #      )
 
-    add_regression_lines_to_graph(mean_a, mean_b, x, multiplier=1.96)
-
+    # add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1.96)
+    add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1)
+    print("\\mu = {0} ln(x) + {1}".format(distribution_function.mean_a, distribution_function.mean_b))
+    print("\\sigma = {0} ln(x) + {1}".format(distribution_function.stdev_a, distribution_function.stdev_b))
     pyplot.savefig(THESIS_LOCATION + "uk_supply_input_distribution.pdf")
     pyplot.savefig(PRESENTATION_LOCATION + "uk_supply_input_distribution.pdf")
