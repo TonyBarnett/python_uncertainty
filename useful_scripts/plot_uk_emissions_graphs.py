@@ -1,15 +1,9 @@
-from math import log as ln
-
 from matplotlib import pyplot
-
-from numpy import mean, std as stdev
 
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_emissions_and_error
 from uncertainty.source_uncertainty_distribution import LogNormalDistributionFunction
-from uncertainty.source_uncertainty_distribution.uncertainty_functions import linear_regression
 from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
     PRESENTATION_LOCATION, THESIS_LOCATION
-from useful_scripts.useful_functions.regression_functions import get_upper_and_lower_stdev_regression_coefficients
 
 if __name__ == '__main__':
     emissions_error = get_uk_emissions_and_error()
