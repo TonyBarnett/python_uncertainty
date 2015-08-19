@@ -2,6 +2,8 @@ import logging
 
 from matplotlib import pyplot
 from utility_functions import clean_value
+from utility_functions.cartesian_plot_functions import get_r_squared
+from math import log as ln
 
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply_error, get_uk_supply
 from uncertainty.data_structures.data_structures import DataSource
@@ -57,7 +59,13 @@ if __name__ == '__main__':
 
     # add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1.96)
     add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1)
-    print("\\mu = {0} ln(x) + {1}".format(distribution_function.mean_a, distribution_function.mean_b))
-    print("\\sigma = {0} ln(x) + {1}".format(distribution_function.stdev_a, distribution_function.stdev_b))
+    print("\\mu = {0:.4f} ln(x) + {1:.4f}".format(distribution_function.mean_a, distribution_function.mean_b))
+    print("\\sigma = {0:.4f} ln(x) + {1:.4f}".format(distribution_function.stdev_a, distribution_function.stdev_b))
+
+    print("r_squared = {0:.4f}".format(get_r_squared([ln(x_i) for x_i in x],
+                                                     [y_i / x[i] for i, y_i in enumerate(y)],
+                                                     distribution_function.mean_a,
+                                                     distribution_function.mean_b)))
+
     pyplot.savefig(THESIS_LOCATION + "uk_supply_input_distribution.pdf")
     pyplot.savefig(PRESENTATION_LOCATION + "uk_supply_input_distribution.pdf")
