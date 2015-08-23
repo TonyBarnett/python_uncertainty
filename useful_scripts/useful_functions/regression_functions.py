@@ -1,4 +1,6 @@
 from collections.abc import Iterable
+from numpy import mean, std as stdev
+from uncertainty.source_uncertainty_distribution import NormalDistributionFunction
 from uncertainty.source_uncertainty_distribution.uncertainty_functions import linear_regression
 from math import log as ln
 
@@ -28,3 +30,22 @@ def get_upper_and_lower_stdev_regression_coefficients(x_y_counter, mean_: dict, 
     stdev_lower_a, stdev_lower_b = _get_regression_coefficients(x_y_counter, mean_, st_dev, -multiplier)
 
     return stdev_upper_a, stdev_upper_b, stdev_lower_a, stdev_lower_b
+
+
+def get_mean_stdev(x: list, y: list) -> tuple:
+    x_y_counter = NormalDistributionFunction._convert_x_y_to_counter(x, y)
+    st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
+    mean_ = {x: mean(y) for x, y in x_y_counter.items()}
+    return mean_, st_dev
+
+
+def get_x_mean_stdev_y(x: list, y: list) -> tuple:
+    mean_, stdev_ = get_mean_stdev(x, y)
+    xx = list()
+    y_mean = list()
+    y_stdev = list()
+    for x_i in set(x):
+        xx.append(x_i)
+        y_mean.append(mean_[x_i])
+        y_stdev.append(stdev_[x_i])
+    return xx, y_mean, y_stdev
