@@ -1,7 +1,7 @@
 from numpy import std as stdev, mean
 import numpy
 import random
-from math import log as ln
+from math import log as ln, exp
 
 from .uncertainty_functions import get_mean, get_standard_deviation, linear_regression
 
@@ -82,8 +82,10 @@ class DistributionFunction:
     def __getitem__(self, item):
         raise NotImplementedError()
 
+    @classmethod
+    def create_from_x_y_coordinates(cls, x, y):
+        raise NotImplementedError()
 
-class NormalDistributionFunction(DistributionFunction):
     @staticmethod
     def _convert_x_y_to_counter(x: list, y: list) -> dict:
         x_y_counter = dict()
@@ -104,6 +106,14 @@ class NormalDistributionFunction(DistributionFunction):
             y_std.append(st_dev[t])
         return x_, y_, y_std
 
+    def _get_mean_value(self, item):
+        raise NotImplementedError()
+
+    def _get_stdev_value(self, item):
+        raise NotImplementedError()
+
+
+class NormalDistributionFunction(DistributionFunction):
     @classmethod
     def create_from_x_y_coordinates(cls, x, y):
         x_y_counter = NormalDistributionFunction._convert_x_y_to_counter(x, y)
@@ -169,5 +179,36 @@ class LogNormalDistributionFunction(NormalDistributionFunction):
 
         if stdev_x < 0.01:
             stdev_x = 0.01
+        d = NormalDistribution(mean_x, stdev_x)
+        return d.get_observation()
+
+
+class ExponentialDistributionFunction(DistributionFunction):
+    @classmethod
+    def create_from_x_y_coordinates(cls, x, y):
+        x_y_counter = ExponentialDistributionFunction._convert_x_y_to_counter(x, [ln(y_i) for y_i in y])
+        st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
+        mean_ = {x: mean(y) for x, y in x_y_counter.items()}
+        x_, y_mean, y_std = NormalDistributionFunction._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
+
+        mean_a, mean_b = linear_regression(x_, y_mean)
+        stdev_a, stdev_b = linear_regression(x_, y_std)
+
+        # we currently have the form ln(y) = bx + ln(a), therefore b becomes a, and exp(a) becomes b
+        return ExponentialDistributionFunction(mean_a=exp(mean_b), mean_b=mean_a, stdev_a=exp(stdev_b), stdev_b=stdev_a)
+
+    def _get_mean_value(self, value):
+        return self.mean_a * exp(self.mean_b * value)
+
+    def _get_stdev_value(self, value):
+        return self.stdev_a * exp(self.stdev_b * value)
+
+    def __getitem__(self, item):
+        if item <= 0:
+            return item
+
+        mean_x = self._get_mean_value(exp(-item))
+        stdev_x = self._get_stdev_value(exp(-item))
+
         d = NormalDistribution(mean_x, stdev_x)
         return d.get_observation()

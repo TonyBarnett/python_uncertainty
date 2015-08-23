@@ -1,8 +1,8 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, call
 
 from uncertainty.source_uncertainty_distribution.distribution import Distribution, LogNormalDistribution, \
-    NormalDistributionFunction, LogNormalDistributionFunction
+    NormalDistributionFunction, LogNormalDistributionFunction, ExponentialDistributionFunction
 from math import log as ln, exp
 
 
@@ -71,6 +71,29 @@ class LogNormalFunctionFactorTest(unittest.TestCase):
         self.assertAlmostEqual(m.mean_b, 4.25277049, places=3)
         self.assertAlmostEqual(m.stdev_a, -1.4427, places=3)
         self.assertAlmostEqual(m.stdev_b, 1, places=3)
+
+
+class ExponentialFunctionFactoryTest(unittest.TestCase):
+    def setUp(self):
+        self.x = [1, 1, 1, 2, 2, 2, 4, 4, 5]
+        self.y = [3, 5, 6, 4, 5, 5, 10, 1, 2]
+
+    def test_type(self):
+        dist = ExponentialDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
+        self.assertIs(type(dist), ExponentialDistributionFunction)
+
+    def test_simple_case(self):
+        """
+        A horrible example, but c'est la vie, the y values are supposed to be logged (hence the horrible numbers)
+        :return:
+        """
+        with patch("uncertainty.source_uncertainty_distribution.distribution.linear_regression", return_value=(1, 2)) \
+                as mock_linear_regression:
+            ExponentialDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
+            calls = [call([1, 2, 4, 5], [1.499936556776755, 1.535056728662697, 1.151292546497023, 0.6931471805599453]),
+                     call([1, 2, 4, 5], [0.29337821283302279, 0.10519087887488401, 1.151292546497023, 0.0])]
+            self.assertIs(mock_linear_regression.call_count, 2)
+            mock_linear_regression.assert_has_calls(calls=calls, any_order=False)
 
 
 class XYCounterNormalDistributionFunction(unittest.TestCase):
