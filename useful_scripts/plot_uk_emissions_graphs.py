@@ -6,6 +6,7 @@ from uncertainty.source_uncertainty_distribution import LogNormalDistributionFun
 from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
     PRESENTATION_LOCATION, THESIS_LOCATION
 from math import log as ln
+from useful_scripts.useful_functions.regression_functions import get_x_mean_stdev_y
 
 if __name__ == '__main__':
     emissions_error = get_uk_emissions_and_error()
@@ -44,6 +45,8 @@ if __name__ == '__main__':
                                   multiplier=1
                                   )
 
+    xx, y_mean, y_st_dev = get_x_mean_stdev_y(x, [y_i/x[i] for i, y_i in enumerate(y)])
+
     print("\\mu = {0:.4f} \\text{{ln }} x + {1:.4f}".format(distribution_function.mean_a, distribution_function.mean_b))
     print("\\sigma = {0:.4f} \\text{{ln }} x + {1:.4f}".format(distribution_function.stdev_a,
                                                                distribution_function.stdev_b))
@@ -52,6 +55,16 @@ if __name__ == '__main__':
                                                      [y_i / x[i] for i, y_i in enumerate(y)],
                                                      distribution_function.mean_a,
                                                      distribution_function.mean_b)))
+
+    print("mean r_squared = {0:.4f}".format(get_r_squared([ln(x_i) for x_i in xx],
+                                                          y_mean,
+                                                          distribution_function.mean_a,
+                                                          distribution_function.mean_b)))
+
+    print("stdev r_squared = {0:.4f}".format(get_r_squared([ln(x_i) for x_i in xx],
+                                                          y_st_dev,
+                                                          distribution_function.stdev_a,
+                                                          distribution_function.stdev_b)))
 
     pyplot.savefig(THESIS_LOCATION + "uk_emissions_input_distribution.pdf")
     pyplot.savefig(PRESENTATION_LOCATION + "uk_emissions_input_distribution.pdf")

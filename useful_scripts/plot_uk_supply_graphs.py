@@ -7,10 +7,12 @@ from math import log as ln
 
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply_error, get_uk_supply
 from uncertainty.data_structures.data_structures import DataSource
-from uncertainty.source_uncertainty_distribution import LogNormalDistributionFunction
+from uncertainty.source_uncertainty_distribution import LogNormalDistributionFunction, NormalDistributionFunction
+from uncertainty.source_uncertainty_distribution.distribution import ExponentialDistributionFunction
 from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
     PRESENTATION_LOCATION, THESIS_LOCATION
 from useful_scripts.useful_functions.mapping_functions import map_thing2_to_thing1_together
+from useful_scripts.useful_functions.regression_functions import get_x_mean_stdev_y
 
 
 def clean_supply_and_supply_error_keys(system: str, dictionary_of_thing: dict) -> dict:
@@ -46,7 +48,11 @@ if __name__ == '__main__':
     for x_i, y_i in x_y:
         x.append(x_i)
         y.append(y_i)
-    distribution_function = LogNormalDistributionFunction.create_from_x_y_coordinates(x, y)
+
+    distribution_functions = dict()
+    distribution_functions["LogNormal"] = LogNormalDistributionFunction.create_from_x_y_coordinates(x, y)
+    distribution_functions["Normal"] = NormalDistributionFunction.create_from_x_y_coordinates(x, y)
+    distribution_functions["Exponential"] = ExponentialDistributionFunction.create_from_x_y_coordinates(x, y)
 
     plot((x,),
          ([y_i / x[i] for i, y_i in enumerate(y)],),
@@ -57,15 +63,35 @@ if __name__ == '__main__':
          title="UK supply"
          )
 
-    # add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1.96)
-    add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1)
-    print("\\mu = {0:.4f} ln(x) + {1:.4f}".format(distribution_function.mean_a, distribution_function.mean_b))
-    print("\\sigma = {0:.4f} ln(x) + {1:.4f}".format(distribution_function.stdev_a, distribution_function.stdev_b))
+    for name, distribution_function in distribution_functions.items():
+        # add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1.96)
+        add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1)
+        print("{2} - \\mu = {0:.4f} ln(x) + {1:.4f}".format(distribution_function.mean_a,
+                                                            distribution_function.mean_b,
+                                                            name))
+        print("{2} - \\sigma = {0:.4f} ln(x) + {1:.4f}".format(distribution_function.stdev_a,
+                                                               distribution_function.stdev_b,
+                                                               name))
 
-    print("r_squared = {0:.4f}".format(get_r_squared([ln(x_i) for x_i in x],
-                                                     [y_i / x[i] for i, y_i in enumerate(y)],
-                                                     distribution_function.mean_a,
-                                                     distribution_function.mean_b)))
+        xx, y_mean, y_st_dev = get_x_mean_stdev_y(x, [y_i / x[i] for i, y_i in enumerate(y)])
 
-    pyplot.savefig(THESIS_LOCATION + "uk_supply_input_distribution.pdf")
-    pyplot.savefig(PRESENTATION_LOCATION + "uk_supply_input_distribution.pdf")
+        print("r_squared = {0:.4f}".format(get_r_squared([ln(x_i) for x_i in x],
+                                                         [y_i / x[i] for i, y_i in enumerate(y)],
+                                                         distribution_function.mean_a,
+                                                         distribution_function.mean_b),
+                                           name))
+
+        print("{1} - mean r_squared  = {0:.4f}".format(get_r_squared([ln(x_i) for x_i in xx],
+                                                              y_mean,
+                                                              distribution_function.mean_a,
+                                                              distribution_function.mean_b),
+                                                       name))
+
+        print("{1} - stdev r_squared = {0:.4f}".format(get_r_squared([ln(x_i) for x_i in xx],
+                                                               y_st_dev,
+                                                               distribution_function.stdev_a,
+                                                               distribution_function.stdev_b),
+                                                       name))
+
+        pyplot.savefig(THESIS_LOCATION + "uk_supply_input_distribution_{0}.pdf".format(name))
+        pyplot.savefig(PRESENTATION_LOCATION + "uk_supply_input_distribution_{0}.pdf".format(name))
