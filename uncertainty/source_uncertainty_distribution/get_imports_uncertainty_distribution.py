@@ -1,4 +1,4 @@
-from .distribution import LogNormalDistribution, LogNormalDistributionFunction
+from .distribution import LogNormalDistribution, LogLinearDistributionFunction
 
 
 def get_imports_distribution() -> LogNormalDistribution:
@@ -6,6 +6,6 @@ def get_imports_distribution() -> LogNormalDistribution:
     return LogNormalDistribution(1, 2)
 
 
-def get_imports_distribution_function() -> LogNormalDistributionFunction:
+def get_imports_distribution_function() -> LogLinearDistributionFunction:
     # TODO this is obviously just a placeholder, make some real numbers!
-    return LogNormalDistributionFunction(1, 2, 3, 4)
+    return LogLinearDistributionFunction(1, 2, 3, 4)

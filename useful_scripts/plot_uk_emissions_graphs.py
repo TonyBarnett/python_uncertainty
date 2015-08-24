@@ -2,7 +2,7 @@ from matplotlib import pyplot
 from utility_functions.cartesian_plot_functions import get_r_squared
 
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_emissions_and_error
-from uncertainty.source_uncertainty_distribution import LogNormalDistributionFunction
+from uncertainty.source_uncertainty_distribution import LogLinearDistributionFunction
 from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
     PRESENTATION_LOCATION, THESIS_LOCATION
 from math import log as ln
@@ -21,7 +21,7 @@ if __name__ == '__main__':
         if x_i > 0 and y_i > 0:
             x.append(x_i)
             y.append(y_i)
-    distribution_function = LogNormalDistributionFunction.create_from_x_y_coordinates(x, y)
+    distribution_function = LogLinearDistributionFunction.create_from_x_y_coordinates(x, y)
 
     plot((x,),
          ([y_i / x[i] for i, y_i in enumerate(y)],),

@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 from uncertainty.get_new_random_matrix import get_new_perturbed_matrix, get_new_perturbed_vector
 from uncertainty.matrix import Matrix, create_matrix_from_list_of_tuple, Vector
-from uncertainty.source_uncertainty_distribution.distribution import NormalDistribution, NormalDistributionFunction
+from uncertainty.source_uncertainty_distribution.distribution import NormalDistribution, LinearDistributionFunction
 
 
 class PerturbMatrix(unittest.TestCase):
@@ -16,7 +16,7 @@ class PerturbMatrix(unittest.TestCase):
                                                                ("2", "2", 4),
                                                                ("1", "2", 6),
                                                                ("2", "1", 8)))
-        self.distribution = NormalDistributionFunction(1, 1, 1, 1)
+        self.distribution = LinearDistributionFunction(1, 1, 1, 1)
 
     def test_type(self):
         with patch("uncertainty.get_new_random_matrix.get_perturbation_from_distribution", return_value=1):
@@ -56,7 +56,7 @@ class PerturbVector(unittest.TestCase):
         self.output_matrix = Vector.create_vector_from_tuple((("1", 2),
                                                               ("2", 4.4),
                                                               ("3", 9)))
-        self.distribution = NormalDistributionFunction(1, 1, 1, 1)
+        self.distribution = LinearDistributionFunction(1, 1, 1, 1)
 
     def test_type(self):
         m = get_new_perturbed_vector(self.matrix, self.distribution)

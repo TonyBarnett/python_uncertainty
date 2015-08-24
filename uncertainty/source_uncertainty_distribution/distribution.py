@@ -73,11 +73,16 @@ class NormalDistribution(Distribution):
 
 
 class DistributionFunction:
-    def __init__(self, mean_a: float=None, mean_b: float=None, stdev_a: float=None, stdev_b: float=None):
+    def __init__(self, mean_a: float=None,
+                 mean_b: float=None,
+                 stdev_a: float=None,
+                 stdev_b: float=None,
+                 distribution_type: type(Distribution)=NormalDistribution):
         self.mean_a = mean_a
         self.mean_b = mean_b
         self.stdev_a = stdev_a
         self.stdev_b = stdev_b
+        self.distribution_type = distribution_type
 
     def __getitem__(self, item):
         raise NotImplementedError()
@@ -113,13 +118,13 @@ class DistributionFunction:
         raise NotImplementedError()
 
 
-class NormalDistributionFunction(DistributionFunction):
+class LinearDistributionFunction(DistributionFunction):
     @classmethod
     def create_from_x_y_coordinates(cls, x, y):
-        x_y_counter = NormalDistributionFunction._convert_x_y_to_counter(x, y)
+        x_y_counter = LinearDistributionFunction._convert_x_y_to_counter(x, y)
         st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
         mean_ = {x: mean(y) for x, y in x_y_counter.items()}
-        x_, y_mean, y_std = NormalDistributionFunction._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
+        x_, y_mean, y_std = LinearDistributionFunction._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
         mean_a, mean_b = linear_regression(x_, y_mean)
         stdev_a, stdev_b = linear_regression(x_, y_std)
 
@@ -138,7 +143,7 @@ class NormalDistributionFunction(DistributionFunction):
         return d.get_observation()
 
 
-class LogNormalDistributionFunction(NormalDistributionFunction):
+class LogLinearDistributionFunction(LinearDistributionFunction):
     @staticmethod
     def _remove_non_positive_values(x: list, y: list) -> tuple:
         xx = list()
@@ -152,7 +157,7 @@ class LogNormalDistributionFunction(NormalDistributionFunction):
     @classmethod
     def create_from_x_y_coordinates(cls, x, y):
         # return super().create_from_x_y_coordinates(x, [y_i / x[i] for i, y_i in enumerate(y)])
-        xx, yy = LogNormalDistributionFunction._remove_non_positive_values(x, y)
+        xx, yy = LogLinearDistributionFunction._remove_non_positive_values(x, y)
         return super().create_from_x_y_coordinates([ln(x_i) for x_i in xx], [y_i / xx[i] for i, y_i in enumerate(yy)])
 
     def __getitem__(self, item: float) -> float:
@@ -189,7 +194,7 @@ class ExponentialDistributionFunction(DistributionFunction):
         x_y_counter = ExponentialDistributionFunction._convert_x_y_to_counter(x, [ln(y_i) for y_i in y])
         st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
         mean_ = {x: mean(y) for x, y in x_y_counter.items()}
-        x_, y_mean, y_std = NormalDistributionFunction._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
+        x_, y_mean, y_std = LinearDistributionFunction._get_mean_stdev_for_x(x_y_counter, st_dev, mean_)
 
         mean_a, mean_b = linear_regression(x_, y_mean)
         stdev_a, stdev_b = linear_regression(x_, y_std)

@@ -7,7 +7,7 @@ from math import log as ln
 
 from uncertainty.data_sources.uncertainty_data_sources import get_uk_supply_error, get_uk_supply
 from uncertainty.data_structures.data_structures import DataSource
-from uncertainty.source_uncertainty_distribution import LogNormalDistributionFunction, NormalDistributionFunction
+from uncertainty.source_uncertainty_distribution import LogLinearDistributionFunction, LinearDistributionFunction
 from uncertainty.source_uncertainty_distribution.distribution import ExponentialDistributionFunction
 from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
     PRESENTATION_LOCATION, THESIS_LOCATION
@@ -50,8 +50,8 @@ if __name__ == '__main__':
         y.append(y_i)
 
     distribution_functions = dict()
-    distribution_functions["LogNormal"] = LogNormalDistributionFunction.create_from_x_y_coordinates(x, y)
-    distribution_functions["Normal"] = NormalDistributionFunction.create_from_x_y_coordinates(x, y)
+    distribution_functions["LogNormal"] = LogLinearDistributionFunction.create_from_x_y_coordinates(x, y)
+    distribution_functions["Normal"] = LinearDistributionFunction.create_from_x_y_coordinates(x, y)
     distribution_functions["Exponential"] = ExponentialDistributionFunction.create_from_x_y_coordinates(x, y)
 
     plot((x,),

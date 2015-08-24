@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, call
 
 from uncertainty.source_uncertainty_distribution.distribution import Distribution, LogNormalDistribution, \
-    NormalDistributionFunction, LogNormalDistributionFunction, ExponentialDistributionFunction
+    LinearDistributionFunction, LogLinearDistributionFunction, ExponentialDistributionFunction
 from math import log as ln, exp
 
 
@@ -37,13 +37,13 @@ class NormalFunctionFactoryTest(unittest.TestCase):
         self.y = [3, 5, 6]
 
     def test_type(self):
-        m = NormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
-        self.assertIs(type(m), NormalDistributionFunction)
+        m = LinearDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
+        self.assertIs(type(m), LinearDistributionFunction)
 
     def test_simple_case(self):
         with patch("uncertainty.source_uncertainty_distribution.distribution.linear_regression", return_value=(1, 2)) \
                 as mock_linear_regression:
-            m = NormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
+            m = LinearDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
             self.assertTrue(mock_linear_regression.called)
             self.assertEqual(m.mean_a, 1)
             self.assertEqual(m.mean_b, 2)
@@ -51,7 +51,7 @@ class NormalFunctionFactoryTest(unittest.TestCase):
             self.assertEqual(m.stdev_b, 2)
 
     def test_linear_regression(self):
-        m = NormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
+        m = LinearDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
 
         self.assertAlmostEqual(m.mean_a, 2)
         self.assertAlmostEqual(m.mean_b, 2)
@@ -65,7 +65,7 @@ class LogNormalFunctionFactorTest(unittest.TestCase):
         self.y = [3, 5, 6, 4, 0, 5, 10, 1, 2]
 
     def test_linear_regression(self):
-        m = LogNormalDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
+        m = LogLinearDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
         # y is converted to y_i/x_i \forall i \in y
         self.assertAlmostEqual(m.mean_a, -0.35207701, places=3)
         self.assertAlmostEqual(m.mean_b, 4.25277049, places=3)
@@ -103,18 +103,18 @@ class XYCounterNormalDistributionFunction(unittest.TestCase):
         self.expected_result = {0: [20, 20], 1: [1, 2, 3], 2: [10, 20], 3: [9], 4: [0]}
 
     def test_type(self):
-        m = NormalDistributionFunction._convert_x_y_to_counter(self.x, self.y)
+        m = LinearDistributionFunction._convert_x_y_to_counter(self.x, self.y)
         self.assertIs(type(m), dict)
 
     def test_simple_case(self):
-        m = NormalDistributionFunction._convert_x_y_to_counter(self.x, self.y)
+        m = LinearDistributionFunction._convert_x_y_to_counter(self.x, self.y)
         # self.assertDictEqual(m, {1: [2, 3, 4], 2: [6, 11], 3: [4], 4: [1]})
         self.assertDictEqual(m, self.expected_result)
 
 
 class NormalFunctionTest(unittest.TestCase):
     def setUp(self):
-        self.distribution_function = NormalDistributionFunction(2, 2, -1, 2)
+        self.distribution_function = LinearDistributionFunction(2, 2, -1, 2)
 
     def test_simple_case(self):
         with patch("random.normalvariate") as mock_normalvariate:
@@ -124,12 +124,12 @@ class NormalFunctionTest(unittest.TestCase):
 
 class LogNormalFunctionTest(unittest.TestCase):
     def setUp(self):
-        self.distribution_function = LogNormalDistributionFunction(-0.00370761, 0.04383424,
+        self.distribution_function = LogLinearDistributionFunction(-0.00370761, 0.04383424,
                                                                    -0.0029355627894458156, 0.0350757971517967)
         self.input_value = 2132
 
     def test_simple_case(self):
-        self.distribution_function = LogNormalDistributionFunction(1, 2, 3, 4)
+        self.distribution_function = LogLinearDistributionFunction(1, 2, 3, 4)
         with patch("random.normalvariate") as mock_normalvariate:
             _ = self.distribution_function[1]
             mock_normalvariate.assert_called_with(2, 4)

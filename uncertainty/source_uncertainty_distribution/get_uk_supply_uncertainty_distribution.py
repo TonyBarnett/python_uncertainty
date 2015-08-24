@@ -1,6 +1,6 @@
 from collections import Counter
 
-from .distribution import LogNormalDistribution, LogNormalDistributionFunction
+from .distribution import LogNormalDistribution, LogLinearDistributionFunction
 from ..data_sources import get_uk_supply, get_uk_supply_error
 from .uncertainty_functions import get_ancestors_and_self, clean_totals, get_relative_errors
 
@@ -46,7 +46,7 @@ def get_uk_supply_uncertainty_distribution() -> LogNormalDistribution:
     return distribution
 
 
-def get_uk_supply_distribution_function() -> LogNormalDistributionFunction:
+def get_uk_supply_distribution_function() -> LogLinearDistributionFunction:
     x = list()
     y = list()
     for year in YEAR_RANGE:
@@ -59,7 +59,7 @@ def get_uk_supply_distribution_function() -> LogNormalDistributionFunction:
                     x.append(supply_data[supply])
                     y.append(supply_error[error])
 
-    return LogNormalDistributionFunction.create_from_x_y_coordinates(x, y)
+    return LogLinearDistributionFunction.create_from_x_y_coordinates(x, y)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-from .distribution import LogNormalDistribution, LogNormalDistributionFunction
+from .distribution import LogNormalDistribution, LogLinearDistributionFunction
 from .get_uk_supply_uncertainty_distribution import get_uk_supply_uncertainty_distribution, \
     get_uk_supply_distribution_function
 
@@ -12,7 +12,7 @@ def get_uk_consumption_uncertainty_distribution() -> LogNormalDistribution:
     return get_uk_supply_uncertainty_distribution()
 
 
-def get_uk_consumption_distribution_function() -> LogNormalDistributionFunction:
+def get_uk_consumption_distribution_function() -> LogLinearDistributionFunction:
     """
     Let's be cheeky, we assume the error in consumption is the same as that of supply
     :return:
