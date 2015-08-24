@@ -1,9 +1,10 @@
 import unittest
+
 import numpy
-from uncertainty.matrix import create_matrix_from_list_of_tuple, \
-    create_matrix_from_lists, \
-    Matrix
 from numpy.matrixlib import matrix
+
+from uncertainty.matrix import create_matrix_from_list_of_tuple, \
+    Matrix
 
 
 # import numpy.testing

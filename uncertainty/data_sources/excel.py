@@ -1,6 +1,6 @@
 from openpyxl.worksheet import Worksheet
 import regex
-from openpyxl import load_workbook, workbook
+from openpyxl import load_workbook
 
 
 def _base_26_number_plus_1(number: list) -> list:

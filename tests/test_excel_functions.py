@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import patch
 
 from uncertainty.data_sources.excel import _get_excel_column_labels, _get_cell_in_range, _get_data_from_worksheet
 
