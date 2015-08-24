@@ -1,9 +1,10 @@
 import unittest
 from unittest.mock import patch, call
+from math import log as ln
 
-from uncertainty.source_uncertainty_distribution.distribution import Distribution, LogNormalDistribution, \
-    LinearDistributionFunction, LogLinearDistributionFunction, ExponentialDistributionFunction
-from math import log as ln, exp
+from uncertainty.source_uncertainty_distribution.distribution import Distribution, LogNormalDistribution
+from uncertainty.source_uncertainty_distribution.distribution_function import ExponentialDistributionFunction
+from uncertainty.source_uncertainty_distribution import LinearDistributionFunction, LogLinearDistributionFunction
 
 
 class FactoryTest(unittest.TestCase):
@@ -41,7 +42,7 @@ class LinearFunctionFactoryTest(unittest.TestCase):
         self.assertIs(type(m), LinearDistributionFunction)
 
     def test_simple_case(self):
-        with patch("uncertainty.source_uncertainty_distribution.distribution.linear_regression", return_value=(1, 2)) \
+        with patch("uncertainty.source_uncertainty_distribution.distribution_function.linear_regression", return_value=(1, 2)) \
                 as mock_linear_regression:
             m = LinearDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
             self.assertTrue(mock_linear_regression.called)
@@ -86,7 +87,7 @@ class ExponentialFunctionFactoryTest(unittest.TestCase):
         A horrible example, but c'est la vie, the y values are supposed to be logged (hence the horrible numbers)
         :return:
         """
-        with patch("uncertainty.source_uncertainty_distribution.distribution.linear_regression", return_value=(1, 2)) \
+        with patch("uncertainty.source_uncertainty_distribution.distribution_function.linear_regression", return_value=(1, 2)) \
                 as mock_linear_regression:
             ExponentialDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
             calls = [call([1, 2, 4, 5], [1.499936556776755, 1.535056728662697, 1.151292546497023, 0.6931471805599453]),

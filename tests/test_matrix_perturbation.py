@@ -1,8 +1,9 @@
 import unittest
 from unittest.mock import patch
+
 from uncertainty.get_new_random_matrix import get_new_perturbed_matrix, get_new_perturbed_vector
 from uncertainty.matrix import Matrix, create_matrix_from_list_of_tuple, Vector
-from uncertainty.source_uncertainty_distribution.distribution import NormalDistribution, LinearDistributionFunction
+from uncertainty.source_uncertainty_distribution import LinearDistributionFunction
 
 
 class PerturbMatrix(unittest.TestCase):

@@ -1,6 +1,7 @@
 from .distribution import LogNormalDistribution, \
-    NormalDistribution, \
-    LinearDistributionFunction, \
+    NormalDistribution
+from .distribution_function import LogLinearDistributionFunction
+from uncertainty.source_uncertainty_distribution.distribution_function import LinearDistributionFunction, \
     LogLinearDistributionFunction
 from .get_distribution import get_distribution_function_of_type_and_region
 from .get_uk_supply_uncertainty_distribution import get_uk_supply_distribution_function

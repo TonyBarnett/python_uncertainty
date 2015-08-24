@@ -1,4 +1,5 @@
-from .distribution import LogNormalDistribution, LogLinearDistributionFunction
+from .distribution import LogNormalDistribution
+from uncertainty.source_uncertainty_distribution import LogLinearDistributionFunction
 
 
 def get_eu_consumption_distribution() -> LogNormalDistribution:

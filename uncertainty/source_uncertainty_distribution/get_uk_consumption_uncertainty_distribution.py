@@ -1,4 +1,5 @@
-from .distribution import LogNormalDistribution, LogLinearDistributionFunction
+from .distribution import LogNormalDistribution
+from uncertainty.source_uncertainty_distribution import LogLinearDistributionFunction
 from .get_uk_supply_uncertainty_distribution import get_uk_supply_uncertainty_distribution, \
     get_uk_supply_distribution_function
 

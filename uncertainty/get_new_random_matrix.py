@@ -1,6 +1,5 @@
 from .matrix import Matrix, Vector
-from .source_uncertainty_distribution.distribution import DistributionFunction
-from math import exp
+from uncertainty.source_uncertainty_distribution.distribution_function import DistributionFunction
 
 
 def get_perturbation_from_distribution(distribution: DistributionFunction, value) -> float:

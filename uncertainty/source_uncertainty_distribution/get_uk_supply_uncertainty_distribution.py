@@ -1,11 +1,9 @@
-from collections import Counter
-
-from .distribution import LogNormalDistribution, LogLinearDistributionFunction
+from .distribution import LogNormalDistribution
+from uncertainty.source_uncertainty_distribution import LogLinearDistributionFunction
 from ..data_sources import get_uk_supply, get_uk_supply_error
 from .uncertainty_functions import get_ancestors_and_self, clean_totals, get_relative_errors
 
 # plot, \
-from uncertainty.plot_builder import PlotBuilder, ScatterPlot, LinePlot
 
 YEAR_RANGE = (2008, 2009, 2010)
 
