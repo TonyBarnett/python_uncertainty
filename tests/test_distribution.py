@@ -31,7 +31,7 @@ class FactoryTest(unittest.TestCase):
             m.get_observation()
 
 
-class NormalFunctionFactoryTest(unittest.TestCase):
+class LinearFunctionFactoryTest(unittest.TestCase):
     def setUp(self):
         self.x = [1, 1, 2]
         self.y = [3, 5, 6]
@@ -59,18 +59,17 @@ class NormalFunctionFactoryTest(unittest.TestCase):
         self.assertAlmostEqual(m.stdev_b, 2)
 
 
-class LogNormalFunctionFactorTest(unittest.TestCase):
+class LogLinearlFunctionFactorTest(unittest.TestCase):
     def setUp(self):
         self.x = [1, 1, 1, 2, 2, 2, 4, 4, 5]
-        self.y = [3, 5, 6, 4, 0, 5, 10, 1, 2]
+        self.y = [3, 5, 6, 4, 5, 5, 10, 1, 2]
 
     def test_linear_regression(self):
         m = LogLinearDistributionFunction.create_from_x_y_coordinates(self.x, self.y)
-        # y is converted to y_i/x_i \forall i \in y
-        self.assertAlmostEqual(m.mean_a, -0.35207701, places=3)
-        self.assertAlmostEqual(m.mean_b, 4.25277049, places=3)
-        self.assertAlmostEqual(m.stdev_a, -1.4427, places=3)
-        self.assertAlmostEqual(m.stdev_b, 1, places=3)
+        self.assertAlmostEqual(m.mean_a, -2.46775556, places=3)
+        self.assertAlmostEqual(m.mean_b, 4.4695632, places=3)
+        self.assertAlmostEqual(m.stdev_a, -0.42884474, places=3)
+        self.assertAlmostEqual(m.stdev_b, 1.04746948, places=3)
 
 
 class ExponentialFunctionFactoryTest(unittest.TestCase):
@@ -96,7 +95,7 @@ class ExponentialFunctionFactoryTest(unittest.TestCase):
             mock_linear_regression.assert_has_calls(calls=calls, any_order=False)
 
 
-class XYCounterNormalDistributionFunction(unittest.TestCase):
+class XYCounterLinearDistributionFunction(unittest.TestCase):
     def setUp(self):
         self.x = [0, 0, 1, 1, 1, 2, 2, 3, 4]
         self.y = [20, 20, 1, 2, 3, 10, 20, 9, 0]
@@ -112,7 +111,7 @@ class XYCounterNormalDistributionFunction(unittest.TestCase):
         self.assertDictEqual(m, self.expected_result)
 
 
-class NormalFunctionTest(unittest.TestCase):
+class LinearFunctionTest(unittest.TestCase):
     def setUp(self):
         self.distribution_function = LinearDistributionFunction(2, 2, -1, 2)
 
@@ -122,7 +121,7 @@ class NormalFunctionTest(unittest.TestCase):
             mock_normalvariate.assert_called_with(4, 1)
 
 
-class LogNormalFunctionTest(unittest.TestCase):
+class LogLinearFunctionTest(unittest.TestCase):
     def setUp(self):
         self.distribution_function = LogLinearDistributionFunction(-0.00370761, 0.04383424,
                                                                    -0.0029355627894458156, 0.0350757971517967)
