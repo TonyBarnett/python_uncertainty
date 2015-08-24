@@ -78,7 +78,7 @@ class DistributionFunction:
 class LinearDistributionFunction(DistributionFunction):
     @classmethod
     def create_from_x_y_coordinates(cls, x, y, distribution_type: type(Distribution)=NormalDistribution):
-        x_, y_mean, y_std = LinearDistributionFunction._get_means_stdevs(x, y)
+        x_, y_mean, y_std = LinearDistributionFunction._get_means_stdevs(x, [y_i / x[i] for i, y_i in enumerate(y)])
         mean_a, mean_b = linear_regression(x_, y_mean)
         stdev_a, stdev_b = linear_regression(x_, y_std)
 
@@ -112,9 +112,11 @@ class LogLinearDistributionFunction(LinearDistributionFunction):
     @classmethod
     def create_from_x_y_coordinates(cls, x, y, distribution_type: type(Distribution)=NormalDistribution):
         xx, yy = LogLinearDistributionFunction._remove_non_positive_values(x, y)
-        return super().create_from_x_y_coordinates([ln(x_i) for x_i in xx],
-                                                   [y_i / xx[i] for i, y_i in enumerate(yy)],
-                                                   distribution_type)
+        x_, y_mean, y_std = LogLinearDistributionFunction._get_means_stdevs([ln(x_i) for x_i in xx],
+                                                                            [y_i / xx[i] for i, y_i in enumerate(yy)])
+        mean_a, mean_b = linear_regression(x_, y_mean)
+        stdev_a, stdev_b = linear_regression(x_, y_std)
+        return cls(mean_a, mean_b, stdev_a, stdev_b)
 
     def __getitem__(self, item: float) -> float:
         # we assume that if something has a value of 0 then it has an error of 0 as well
@@ -153,7 +155,9 @@ class LogLinearDistributionFunction(LinearDistributionFunction):
 class ExponentialDistributionFunction(DistributionFunction):
     @classmethod
     def create_from_x_y_coordinates(cls, x, y, distribution_type: type(Distribution)=NormalDistribution):
-        x_y_counter = ExponentialDistributionFunction._convert_x_y_to_counter(x, [ln(y_i) for y_i in y if y_i > 0])
+        x_y_counter = ExponentialDistributionFunction._convert_x_y_to_counter(x, [ln(y_i/x[i])
+                                                                                  for i, y_i in enumerate(y)
+                                                                                  if y_i > 0])
         st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
         mean_ = {x: mean(y) for x, y in x_y_counter.items()}
         x_, y_mean, y_std = LinearDistributionFunction._get_mean_stdev_from_counter(x_y_counter, st_dev, mean_)
@@ -193,7 +197,9 @@ class ExponentialDistributionFunction(DistributionFunction):
         # remove all x,y's if y is less than or equal to 0
         yy, xx = ExponentialDistributionFunction._remove_non_positive_values(y, x)
 
-        x_, y_mean, y_std = LinearDistributionFunction._get_means_stdevs(x, [ln(y_i) for y_i in yy])
-        mu = get_r_squared(x_, y_mean, self.mean_a, self.mean_b)
-        sigma = get_r_squared(x_, y_std, self.stdev_a, self.stdev_b)
+        x_, y_mean, y_std = ExponentialDistributionFunction._get_means_stdevs(x, [ln(y_i) for y_i in yy])
+        # these have to be of the form y = c x + d, therefore we use ln(y) = b x + ln(a)
+        # which (in theory) is equivalent to y = a e^(bx)
+        mu = get_r_squared(x_, y_mean, self.mean_b, ln(self.mean_a))
+        sigma = get_r_squared(x_, y_std, self.stdev_b, ln(self.stdev_a))
         return mu, sigma
