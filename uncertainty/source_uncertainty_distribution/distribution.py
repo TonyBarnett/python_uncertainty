@@ -22,6 +22,25 @@ class Distribution:
         raise NotImplementedError()
 
 
+class NormalDistribution(Distribution):
+    def __init__(self, mu, sigma):
+        super().__init__(mu, sigma)
+
+    def get_observation(self):
+        return random.normalvariate(self.mu, self.sigma)
+
+    def get_pdf_line(self, x: list):
+        pdf = [(numpy.exp(-(x_i - self.mu) ** 2 / (2 * self.sigma ** 2))
+                / (x_i * self.sigma * numpy.sqrt(2 * numpy.pi))) for x_i in x]
+        return pdf
+
+    @classmethod
+    def get_distribution_from_coordinate_list(cls, x: list):
+        mu = get_mean(x)
+        sigma = get_standard_deviation(x)
+        return super(NormalDistribution, cls).get_distribution(mu, sigma)
+
+
 class LogNormalDistribution(Distribution):
     def __init__(self, mu, sigma):
         super().__init__(mu, sigma)
@@ -53,25 +72,6 @@ class LogNormalDistribution(Distribution):
         return pdf
 
 
-class NormalDistribution(Distribution):
-    def __init__(self, mu, sigma):
-        super().__init__(mu, sigma)
-
-    def get_observation(self):
-        return random.normalvariate(self.mu, self.sigma)
-
-    def get_pdf_line(self, x: list):
-        pdf = [(numpy.exp(-(x_i - self.mu) ** 2 / (2 * self.sigma ** 2))
-                / (x_i * self.sigma * numpy.sqrt(2 * numpy.pi))) for x_i in x]
-        return pdf
-
-    @classmethod
-    def get_distribution_from_coordinate_list(cls, x: list):
-        mu = get_mean(x)
-        sigma = get_standard_deviation(x)
-        return super(NormalDistribution, cls).get_distribution(mu, sigma)
-
-
 class DistributionFunction:
     def __init__(self, mean_a: float=None,
                  mean_b: float=None,
@@ -88,7 +88,7 @@ class DistributionFunction:
         raise NotImplementedError()
 
     @classmethod
-    def create_from_x_y_coordinates(cls, x, y):
+    def create_from_x_y_coordinates(cls, x, y, distribution_type: type(Distribution)=NormalDistribution):
         raise NotImplementedError()
 
     @staticmethod
@@ -120,7 +120,7 @@ class DistributionFunction:
 
 class LinearDistributionFunction(DistributionFunction):
     @classmethod
-    def create_from_x_y_coordinates(cls, x, y):
+    def create_from_x_y_coordinates(cls, x, y, distribution_type: type(Distribution)=NormalDistribution):
         x_y_counter = LinearDistributionFunction._convert_x_y_to_counter(x, y)
         st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
         mean_ = {x: mean(y) for x, y in x_y_counter.items()}
@@ -139,7 +139,7 @@ class LinearDistributionFunction(DistributionFunction):
     def __getitem__(self, item: float) -> float:
         mean_x = self._get_mean_value(item)
         stdev_x = self._get_stdev_value(item)
-        d = NormalDistribution(mean_x, stdev_x)
+        d = self.distribution_type(mean_x, stdev_x)
         return d.get_observation()
 
 
@@ -155,10 +155,12 @@ class LogLinearDistributionFunction(LinearDistributionFunction):
         return xx, yy
 
     @classmethod
-    def create_from_x_y_coordinates(cls, x, y):
+    def create_from_x_y_coordinates(cls, x, y, distribution_type: type(Distribution)=NormalDistribution):
         # return super().create_from_x_y_coordinates(x, [y_i / x[i] for i, y_i in enumerate(y)])
         xx, yy = LogLinearDistributionFunction._remove_non_positive_values(x, y)
-        return super().create_from_x_y_coordinates([ln(x_i) for x_i in xx], [y_i / xx[i] for i, y_i in enumerate(yy)])
+        return super().create_from_x_y_coordinates([ln(x_i) for x_i in xx],
+                                                   [y_i / xx[i] for i, y_i in enumerate(yy)],
+                                                   distribution_type)
 
     def __getitem__(self, item: float) -> float:
         # we assume that if something has a value of 0 then it has an error of 0 as well
@@ -184,13 +186,13 @@ class LogLinearDistributionFunction(LinearDistributionFunction):
 
         if stdev_x < 0.01:
             stdev_x = 0.01
-        d = NormalDistribution(mean_x, stdev_x)
+        d = self.distribution_type(mean_x, stdev_x)
         return d.get_observation()
 
 
 class ExponentialDistributionFunction(DistributionFunction):
     @classmethod
-    def create_from_x_y_coordinates(cls, x, y):
+    def create_from_x_y_coordinates(cls, x, y, distribution_type: type(Distribution)=NormalDistribution):
         x_y_counter = ExponentialDistributionFunction._convert_x_y_to_counter(x, [ln(y_i) for y_i in y])
         st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
         mean_ = {x: mean(y) for x, y in x_y_counter.items()}
@@ -200,7 +202,11 @@ class ExponentialDistributionFunction(DistributionFunction):
         stdev_a, stdev_b = linear_regression(x_, y_std)
 
         # we currently have the form ln(y) = bx + ln(a), therefore b becomes a, and exp(a) becomes b
-        return ExponentialDistributionFunction(mean_a=exp(mean_b), mean_b=mean_a, stdev_a=exp(stdev_b), stdev_b=stdev_a)
+        return ExponentialDistributionFunction(mean_a=exp(mean_b),
+                                               mean_b=mean_a,
+                                               stdev_a=exp(stdev_b),
+                                               stdev_b=stdev_a,
+                                               distribution_type=distribution_type)
 
     def _get_mean_value(self, value):
         return self.mean_a * exp(self.mean_b * value)
@@ -215,5 +221,5 @@ class ExponentialDistributionFunction(DistributionFunction):
         mean_x = self._get_mean_value(exp(-item))
         stdev_x = self._get_stdev_value(exp(-item))
 
-        d = NormalDistribution(mean_x, stdev_x)
+        d = self.distribution_type(mean_x, stdev_x)
         return d.get_observation()
