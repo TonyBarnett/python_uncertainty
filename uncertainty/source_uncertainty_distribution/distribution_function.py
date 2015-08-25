@@ -126,10 +126,11 @@ class LogLinearDistributionFunction(LinearDistributionFunction):
 
     def __getitem__(self, item: float) -> float:
         # we assume that if something has a value of 0 then it has an error of 0 as well
-        if item == 0:
+        if item <= 0:
             return item
-        mean_x = self._get_mean_value(ln(item))
-        stdev_x = self._get_stdev_value(ln(item))
+
+        mean_x = self._get_mean_value(item)
+        stdev_x = self._get_stdev_value(item)
 
         if mean_x > 1:
             print("for value: {0}".format(item))
