@@ -66,7 +66,8 @@ if __name__ == '__main__':
              hold=True,
              xlabel="Supply value",
              ylabel="$\Delta x / x$",
-             title="UK supply"
+             title="UK supply {0}".format(name),
+             y_axis=[-0.01, 0.07]
              )
         # add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1.96)
         add_regression_lines_to_graph(x, distribution_function, multiplier=1)
