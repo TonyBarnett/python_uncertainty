@@ -38,9 +38,9 @@ if __name__ == '__main__':
              ([y_i / x[i] for i, y_i in enumerate(y)],),
              ("kx",),
              hold=True,
-             xlabel="Supply value",
+             xlabel="Emissions value",
              ylabel="$\Delta x / x$",
-             title="UK supply"
+             title="UK Emissions"
              )
         # add_regression_lines_to_graph(distribution_function.mean_a, distribution_function.mean_b, x, multiplier=1.96)
         add_regression_lines_to_graph(x, distribution_function, multiplier=1)
@@ -51,5 +51,6 @@ if __name__ == '__main__':
         print("{1} - mean r_squared  = {0:.4f}".format(mu, name))
         print("{1} - stdev r_squared = {0:.4f}".format(sigma, name))
 
-        pyplot.savefig(THESIS_LOCATION + "uk_emissions_input_distribution{0}.pdf".format(name))
-        pyplot.savefig(PRESENTATION_LOCATION + "uk_emissions_input_distribution{0}.pdf".format(name))
+        pyplot.savefig(THESIS_LOCATION + "uk_emissions_input_distribution_{0}.pdf".format(name))
+        pyplot.savefig(PRESENTATION_LOCATION + "uk_emissions_input_distribution_{0}.pdf".format(name))
+    
