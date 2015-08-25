@@ -23,7 +23,6 @@ if __name__ == '__main__':
             x.append(x_i)
             y.append(y_i)
 
-
     distribution_functions = dict()
     distribution_functions["LogLinear"] = \
         LogLinearDistributionFunction.create_from_x_y_coordinates(x, y)

@@ -118,6 +118,12 @@ class LogLinearDistributionFunction(LinearDistributionFunction):
         stdev_a, stdev_b = linear_regression(x_, y_std)
         return cls(mean_a, mean_b, stdev_a, stdev_b)
 
+    def _get_mean_value(self, value):
+        return super()._get_mean_value(ln(value))
+
+    def _get_stdev_value(self, value):
+        return super()._get_stdev_value(ln(value))
+
     def __getitem__(self, item: float) -> float:
         # we assume that if something has a value of 0 then it has an error of 0 as well
         if item == 0:
@@ -154,18 +160,24 @@ class LogLinearDistributionFunction(LinearDistributionFunction):
 
 class ExponentialDistributionFunction(DistributionFunction):
     @classmethod
+    def _get_means_stdevs(cls, x, y):
+        x_y_counter_lin = cls._convert_x_y_to_counter(x, y)
+        x_y_counter = cls._convert_x_y_to_counter(x, [ln(y_i) for y_i in y])
+
+        st_dev = {x: ln(stdev(y) if stdev(y) > 0 else 1 ** -10) for x, y in x_y_counter_lin.items()}
+        mean_ = {x: mean(y) for x, y in x_y_counter.items()}
+        return cls._get_mean_stdev_from_counter(x_y_counter, st_dev, mean_)
+
+    @classmethod
     def create_from_x_y_coordinates(cls, x, y, distribution_type: type(Distribution)=NormalDistribution):
-        x_y_counter = ExponentialDistributionFunction._convert_x_y_to_counter(x, [ln(y_i/x[i])
+        x_, y_mean, y_std = ExponentialDistributionFunction._get_means_stdevs(x, [y_i / x[i]
                                                                                   for i, y_i in enumerate(y)
                                                                                   if y_i > 0])
-        st_dev = {x: stdev(y) for x, y in x_y_counter.items()}
-        mean_ = {x: mean(y) for x, y in x_y_counter.items()}
-        x_, y_mean, y_std = LinearDistributionFunction._get_mean_stdev_from_counter(x_y_counter, st_dev, mean_)
 
         mean_a, mean_b = linear_regression(x_, y_mean)
         stdev_a, stdev_b = linear_regression(x_, y_std)
 
-        # we currently have the form ln(y) = bx + ln(a), therefore b becomes a, and exp(a) becomes b
+        # we currently have the form ln(y) = bx + ln(a), therefore mean_b becomes a, and exp(mean_a) becomes b
         return ExponentialDistributionFunction(mean_a=exp(mean_b),
                                                mean_b=mean_a,
                                                stdev_a=exp(stdev_b),
@@ -197,7 +209,7 @@ class ExponentialDistributionFunction(DistributionFunction):
         # remove all x,y's if y is less than or equal to 0
         yy, xx = ExponentialDistributionFunction._remove_non_positive_values(y, x)
 
-        x_, y_mean, y_std = ExponentialDistributionFunction._get_means_stdevs(x, [ln(y_i) for y_i in yy])
+        x_, y_mean, y_std = ExponentialDistributionFunction._get_means_stdevs(x, [y_i for y_i in yy])
         # these have to be of the form y = c x + d, therefore we use ln(y) = b x + ln(a)
         # which (in theory) is equivalent to y = a e^(bx)
         mu = get_r_squared(x_, y_mean, self.mean_b, ln(self.mean_a))
