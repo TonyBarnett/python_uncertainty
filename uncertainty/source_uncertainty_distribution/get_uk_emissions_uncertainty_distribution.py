@@ -1,4 +1,5 @@
 from ..data_sources import get_uk_emissions_and_error
+from uncertainty.source_uncertainty_distribution.distribution_function import ExponentialDistributionFunction
 from .uncertainty_functions import get_mean, get_standard_deviation, ln, get_relative_errors
 from .distribution import LogNormalDistribution
 from uncertainty.source_uncertainty_distribution import LogLinearDistributionFunction
@@ -34,4 +35,4 @@ def get_uk_emissions_distribution_function() -> LogLinearDistributionFunction:
         x.append(float(value))
         y.append(float(error))
 
-    return LogLinearDistributionFunction.create_from_x_y_coordinates(x, y)
+    return ExponentialDistributionFunction.create_from_x_y_coordinates(x, y)
