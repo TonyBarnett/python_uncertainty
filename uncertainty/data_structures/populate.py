@@ -87,12 +87,12 @@ def make_constraints(data) -> dict:
 
 
 def populate_totals_only_source_data(source_data_item: TotalsOnlyDataSource):
-    data, row_totals, column_totals, system = get_source_matrix_of_type(source_data_item.type_,
+    data, column_totals, row_totals, system = get_source_matrix_of_type(source_data_item.type_,
                                                                         source_data_item.region,
                                                                         source_data_item.year)
 
     # TODO clean the row and column keys and update data to reflect.
-
+    # by this we mean split keys such that "22-24" becomes "22", "23", and "24" etc.
     data_as_dict = {row: {column: data[i][j]
                           for j, column in enumerate(column_totals.keys())}
                     for i, row in enumerate(row_totals.keys())}

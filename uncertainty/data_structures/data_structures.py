@@ -241,7 +241,7 @@ class TotalsOnlyDataSource(BaseDataSource):
         # get the constraints and run cRAS to get a brand spanking new matrix of perturbed values
 
         # FIXME for the love of God make this more maintainable
-        row_sums, column_sums = TotalsOnlyDataSource._get_row_and_column_sums(self.source_data)
+        # row_sums, column_sums = TotalsOnlyDataSource._get_row_and_column_sums(self.source_data)
 
         perturbed_matrix = list()
         add_to_rows = {key: 0 for key in self.source_data.row_keys.keys()}
@@ -272,8 +272,8 @@ class TotalsOnlyDataSource(BaseDataSource):
 
             perturbed_matrix.append(perturbed_row)
 
-        new_row_sum = self._perturb_row_or_column_sums(row_sums, add_to_rows, self.source_data.row_keys)
-        new_column_sum = self._perturb_row_or_column_sums(column_sums, add_to_columns, self.source_data.column_keys)
+        new_row_sum = self._perturb_row_or_column_sums(self.row_totals, add_to_rows, self.source_data.row_keys)
+        new_column_sum = self._perturb_row_or_column_sums(self.column_totals, add_to_columns, self.source_data.column_keys)
 
         perturbed_matrix = self._create_data_with_same_internals_as_self()
 
