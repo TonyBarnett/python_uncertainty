@@ -3,6 +3,7 @@ import unittest
 
 from uncertainty.data_structures import DataSource
 from uncertainty.data_structures.populate import TotalsOnlyDataSource
+from uncertainty.matrix import Vector
 from uncertainty.source_uncertainty_distribution.distribution import NormalDistribution
 
 
@@ -38,3 +39,14 @@ class BaseDataGetNewEmptySourceDataItem(unittest.TestCase):
         self.assertEqual(target.region, self.source.region)
         self.assertEqual(target.system, self.source.system)
         self.assertEqual(target.year, self.source.year)
+
+
+class TotalsOnlyPerturbRowAndColumnSums(unittest.TestCase):
+    def setUp(self):
+        self.sum = Vector.create_vector_from_dict({"1": 2, "2": 5, "3": 12})
+        self.perturbation = {"1": 1, "2": 21, "3": 4}
+        self.key_lookup = {"1": 0, "2": 1, "3": 2}
+
+    def test_simple_case(self):
+        foo = TotalsOnlyDataSource._perturb_row_or_column_sums(self.sum.elements, self.perturbation, self.key_lookup)
+        self.assertDictEqual(foo, {"1": 3, "2": 26, "3": 16})

@@ -216,7 +216,8 @@ class TotalsOnlyDataSource(BaseDataSource):
         column_sums = matrix_functions.get_col_sum(just_numbers.elements.astype(float))
         return row_sums, column_sums
 
-    def _perturb_row_or_column_sums(self, sums: numpy.matrix, amount_to_add: dict, key_lookup: dict) -> OrderedDict:
+    @staticmethod
+    def _perturb_row_or_column_sums(sums: numpy.matrix, amount_to_add: dict, key_lookup: dict) -> OrderedDict:
         sum_ = OrderedDict()
         for i, row_sum in enumerate(sums.A1):
             key = [k for k, value in key_lookup.items() if value == i]
@@ -272,8 +273,9 @@ class TotalsOnlyDataSource(BaseDataSource):
 
             perturbed_matrix.append(perturbed_row)
 
-        new_row_sum = self._perturb_row_or_column_sums(self.row_totals, add_to_rows, self.source_data.row_keys)
-        new_column_sum = self._perturb_row_or_column_sums(self.column_totals, add_to_columns, self.source_data.column_keys)
+        new_row_sum = self._perturb_row_or_column_sums(self.row_totals.elements, add_to_rows, self.source_data.row_keys)
+        new_column_sum = self._perturb_row_or_column_sums(self.column_totals.elements, add_to_columns,
+                                                          self.source_data.column_keys)
 
         perturbed_matrix = self._create_data_with_same_internals_as_self()
 
