@@ -1,7 +1,9 @@
 from decimal import Decimal
 from uncertainty.data_sources import read_from_sql
 from matplotlib import pyplot
-from useful_scripts.useful_functions.plot_functions import plot, THESIS_LOCATION, PRESENTATION_LOCATION
+from use_uncertainty_model.useful_functions import get_source_data
+from useful_scripts.useful_functions.plot_functions import plot, THESIS_LOCATION, PRESENTATION_LOCATION, \
+    save_to_usual_places
 
 
 def get_x_y(x, y, index, file_name, line_number, value):
@@ -12,21 +14,7 @@ def get_x_y(x, y, index, file_name, line_number, value):
 
 
 if __name__ == '__main__':
-    query = """
-    SELECT data.strFileName,
-        data.intFileLineNo,
-        data.MonPrice,
-        data.strEClass,
-        data.fltPAS2050Footprint,
-        data.fltAtukFootprint,
-        ce.fltWeight,
-        mc.mean,
-        mc.fltModelUncertainty
-    FROM dataPAS2050Atuk data
-        INNER JOIN God..gCensa123_eClass ce ON ce.strEClass = data.strEClass
-        INNER JOIN MonteCarlo..ModelUncertainty mc ON mc.strCensa123Key = CAST(ce.intCensa123 AS varchar(3))
-    """
-    source_data = read_from_sql(query, db="PasVsAtuk")
+    source_data = get_source_data()
     index = dict()
     # awkward time: because there's no id for a given product (other than file_name, fileLineNo) we create an id
     # lookup.
@@ -49,10 +37,10 @@ if __name__ == '__main__':
     atuk_y = list()
     new_model_x = list()
     new_model_y = list()
-    foo = Decimal(0)
-    for file_name, line_number, price, e_class, pas, atuk, weight, new_intensities, model_uncertainty in source_data:
-        weight = Decimal(weight)
-        new_intensities = Decimal(new_intensities)
+    foo = 0.0
+    # FileName, FileLineNo, EClass,  PAS2050Footprint, atukFootprint, ioFootprint, ModelUncertainty, PriceUncertainty
+    # mean + uncertainty, mean - uncertainty
+    for file_name, line_number, _, pas, atuk, new_intensities, _, _, _, _, _ in source_data:
         if index[file_name][line_number] not in pas_x:
             pas_x.append(index[file_name][line_number])
             pas_y.append(pas)
@@ -65,16 +53,17 @@ if __name__ == '__main__':
             new_model_x.append(index[file_name][line_number])
             if foo:
                 new_model_y.append(foo)
-            foo = Decimal(price * new_intensities * weight)
+            foo = Decimal(new_intensities)
         else:
-            foo += price * new_intensities * weight
+            foo += new_intensities
     new_model_y.append(foo)
     plot((pas_x, atuk_x, new_model_x),
          (pas_y, atuk_y, new_model_y),
          styles=("kx", "b.", "r*"),
          xlabel="Product",
          ylabel="Carbon footprint",
+         y_axis=(-1, 14),
          hold=True)
 
-    pyplot.savefig(THESIS_LOCATION + r"three_cf_comparison.pdf")
-    pyplot.savefig(PRESENTATION_LOCATION + r"three_cf_comparison.pdf")
+    save_to_usual_places("three_cf_comparison.pdf")
+

@@ -10,7 +10,7 @@ from uncertainty.data_structures.data_structures import DataSource
 from uncertainty.source_uncertainty_distribution import LogLinearDistributionFunction, LinearDistributionFunction
 from uncertainty.source_uncertainty_distribution.distribution_function import ExponentialDistributionFunction
 from useful_scripts.useful_functions.plot_functions import plot, add_regression_lines_to_graph, \
-    PRESENTATION_LOCATION, THESIS_LOCATION
+    PRESENTATION_LOCATION, THESIS_LOCATION, save_to_usual_places
 from useful_scripts.useful_functions.mapping_functions import map_thing2_to_thing1_together
 from useful_scripts.useful_functions.regression_functions import get_x_mean_stdev_y
 
@@ -78,5 +78,4 @@ if __name__ == '__main__':
         print("{1} - mean r_squared  = {0:.4f}".format(mu, name))
         print("{1} - stdev r_squared = {0:.4f}".format(sigma, name))
 
-        pyplot.savefig(THESIS_LOCATION + "uk_supply_input_distribution_{0}.pdf".format(name))
-        pyplot.savefig(PRESENTATION_LOCATION + "uk_supply_input_distribution_{0}.pdf".format(name))
+        save_to_usual_places("uk_supply_input_distribution_{0}.pdf".format(name))

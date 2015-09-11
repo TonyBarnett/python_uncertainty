@@ -2,7 +2,7 @@ from matplotlib import pyplot
 from uncertainty.data_sources import read_from_sql
 
 from useful_scripts.useful_functions.plot_functions import plot, THESIS_LOCATION, \
-    PRESENTATION_LOCATION
+    PRESENTATION_LOCATION, save_to_usual_places
 
 if __name__ == '__main__':
     query = """ ;
@@ -50,5 +50,4 @@ ORDER BY intQ
          price is less than $\\lambda$ times the minimum price""",
          hold=True)
     # add_regression_lines_to_graph(x)
-    pyplot.savefig(THESIS_LOCATION + r"uncertainty_unit_price_default.pdf")
-    pyplot.savefig(PRESENTATION_LOCATION + r"uncertainty_unit_price_default.pdf")
+    save_to_usual_places("uncertainty_unit_price_default.pdf")
