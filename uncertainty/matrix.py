@@ -1,7 +1,8 @@
 from collections.abc import Iterable
 from collections import OrderedDict
 
-from numpy.matrixlib import matrix
+from numpy import matrix
+import numpy
 
 
 class MatrixVector:
@@ -35,6 +36,23 @@ class MatrixVector:
         m.row_keys = m.row_keys
         m.column_keys = m.column_keys
         return m
+
+    @staticmethod
+    def sum_matrices(a, b) -> numpy.matrix:
+        try:
+            return a + b
+        except TypeError:
+            x = list()
+
+            for foo in range(a.shape[0]):
+                y = list()
+                x.append(y)
+                for bar in range(a.shape[1]):
+                    try:
+                        y.append(a[(foo, bar)].astype(float) + b[(foo, bar)])
+                    except ValueError:
+                        y.append('c')
+        return numpy.matrix(x)
 
 
 class Matrix(MatrixVector):
