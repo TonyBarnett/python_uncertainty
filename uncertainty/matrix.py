@@ -1,4 +1,4 @@
-from _collections_abc import Iterable
+from collections.abc import Iterable
 from collections import OrderedDict
 
 from numpy.matrixlib import matrix
