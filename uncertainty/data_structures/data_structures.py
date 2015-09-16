@@ -244,21 +244,17 @@ class TotalsOnlyDataSource(BaseDataSource):
         # FIXME for the love of God make this more maintainable
         # row_sums, column_sums = TotalsOnlyDataSource._get_row_and_column_sums(self.source_data)
 
-        perturbed_matrix = list()
         add_to_rows = {key: 0 for key in self.source_data.row_keys.keys()}
         add_to_columns = {key: 0 for key in self.source_data.column_keys.keys()}
         constraints = dict()
         for row in self.source_data.row_keys.keys():
             m_row = self.source_data.row_keys[row]
-            perturbed_row = list()
             for column in self.source_data.column_keys.keys():
                 m_column = self.source_data.column_keys[column]
                 if self.source_data[(row, column)] == 0:
-                    perturbed_row.append(0)
                     constraints[(m_row, m_column)] = 0
 
                 elif self.source_data[(row, column)] == "c":
-                    perturbed_row.append("c")
                     perturbation = self.distribution[0.01]
                     add_to_rows[row] += perturbation
                     add_to_columns[column] += perturbation
@@ -266,12 +262,9 @@ class TotalsOnlyDataSource(BaseDataSource):
                 else:
                     value = float(self.source_data[(row, column)])
                     perturbation = self.distribution[value]
-                    perturbed_row.append(value + perturbation)
                     add_to_rows[row] += perturbation
                     add_to_columns[column] += perturbation
                     constraints[(m_row, m_column)] = value + perturbation
-
-            perturbed_matrix.append(perturbed_row)
 
         new_row_sum = self._perturb_row_or_column_sums(self.row_totals.elements, add_to_rows, self.source_data.row_keys)
         new_column_sum = self._perturb_row_or_column_sums(self.column_totals.elements, add_to_columns,
