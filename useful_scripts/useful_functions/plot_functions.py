@@ -23,16 +23,17 @@ def _add_labels_to_graph(xlabel: str = "", ylabel: str = "", title: str = ""):
 
 
 def _add_to_plot(xs: tuple, ys: tuple, styles: tuple, hold: bool = False, xlabel: str = "", ylabel: str = "",
-                 title: str = "",
-                 x_axis: tuple = None, y_axis: tuple = None):
+                 title: str = "", x_axis: tuple = None, y_axis: tuple = None, legends: tuple = None):
     matplotlib.rc('font', family='serif', serif='Computer Modern Roman')
     #  uses the TeX compiler to render the font times in the graphs
     matplotlib.rc('text', usetex=True)
     for i, x in enumerate(xs):
-        pyplot.plot(x, ys[i], styles[i])
+        pyplot.plot(x, ys[i], styles[i], legends[i])
         pyplot.hold(True)
     axes = list(x_axis if x_axis is not None else pyplot.axis()[:2]) + \
            list(y_axis if y_axis is not None else pyplot.axis()[2:])
+    if legends:
+        pyplot.legend(loc='upper center')
     pyplot.axis(axes)
     _add_labels_to_graph(xlabel, ylabel, title)
     pyplot.tight_layout(pad=0.5)
@@ -42,9 +43,9 @@ def _add_to_plot(xs: tuple, ys: tuple, styles: tuple, hold: bool = False, xlabel
 
 
 def plot(xs: tuple, ys: tuple, styles: tuple, hold: bool = False, xlabel: str = "", ylabel: str = "", title: str = "",
-         x_axis: tuple = None, y_axis: tuple = None):
+         x_axis: tuple = None, y_axis: tuple = None, legends: tuple = None):
     pyplot.figure()
-    _add_to_plot(xs, ys, styles, hold, xlabel, ylabel, title, x_axis, y_axis)
+    _add_to_plot(xs, ys, styles, hold, xlabel, ylabel, title, x_axis, y_axis, legends=legends)
 
 
 def background_plot(xs: tuple, ys: tuple, styles: tuple, hold: bool = False, xlabel: str = "", ylabel: str = "",

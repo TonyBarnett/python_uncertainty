@@ -63,7 +63,8 @@ if __name__ == '__main__':
          xlabel="Product",
          ylabel="Carbon footprint",
          y_axis=(-1, 14),
-         hold=True)
+         hold=True,
+         legends=('PAS2050 model', '@UK model', 'single-region input-output model'))
 
     save_to_usual_places("three_cf_comparison.pdf")
 
